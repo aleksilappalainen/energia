@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Voima ja energia -alueen kertaustehtävät</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: one centered column — formula toggles, two big buttons, a task card on squared notebook paper with the answer folding open beneath. */
+:root{
+  --bg:#eef2f7; --paper:#ffffff; --grid:#d6e2f0; --ink:#17243d; --muted:#5a6880;
+  --accent:#2350c8; --accent-ink:#ffffff; --easy:#1d7a55; --hard:#b4381f; --chal:#6a3fb0;
+  --mark:#ffe873; --line:#c9d5e4;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1522; --paper:#161f31; --grid:#22304a; --ink:#e6ecf7; --muted:#9aa8c0;
+  --accent:#7ea2ff; --accent-ink:#0f1522; --easy:#5fd3a2; --hard:#ff8f73; --chal:#c3a6ff;
+  --mark:#6b5a12; --line:#2c3a55; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1522; --paper:#161f31; --grid:#22304a; --ink:#e6ecf7; --muted:#9aa8c0;
+  --accent:#7ea2ff; --accent-ink:#0f1522; --easy:#5fd3a2; --hard:#ff8f73; --chal:#c3a6ff;
+  --mark:#6b5a12; --line:#2c3a55; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:4px 0 0;max-width:62ch}
+
+.fhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.fhead h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.fhead span{font-size:14px;color:var(--muted)}
+.formulas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:640px){.formulas{grid-template-columns:repeat(2,1fr)}}
+.fchip{background:var(--paper);border:1.5px solid var(--accent);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;text-align:left;color:var(--ink);position:relative}
+.fchip span{font-size:12px;color:var(--muted);letter-spacing:.03em}
+.fchip b{font-family:var(--display);font-weight:700;font-size:17px}
+.fchip::after{content:"✓";position:absolute;top:6px;right:9px;font-size:13px;font-weight:700;color:var(--accent)}
+.fchip[aria-pressed="false"]{border-style:dashed;border-color:var(--line);opacity:.55}
+.fchip[aria-pressed="false"] b{text-decoration:line-through;text-decoration-thickness:2px}
+.fchip{padding:12px 30px 12px 12px}
+.fchip[aria-pressed="false"]::after{content:""}
+i.v{font-family:var(--body);font-style:italic}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{font:inherit;cursor:pointer;border-radius:12px;transition:transform .08s ease, background .15s, opacity .15s}
+button:active{transform:translateY(1px)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn-task{font-family:var(--display);font-weight:700;font-size:19px;padding:16px 14px;border:2px solid currentColor;background:var(--paper);display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.btn-task small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
+.btn-easy{color:var(--easy)} .btn-hard{color:var(--hard)}
+.chal-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:-8px}
+.chal-row span{font-size:14px;color:var(--muted)}
+.btn-chal{background:var(--paper);color:var(--chal);border:1.5px dashed var(--chal);padding:7px 14px;font-weight:700;font-size:14px;border-radius:999px}
+.btn-chal:hover{border-style:solid}
+.badge.chal{color:var(--chal)}
+.btn-task:hover{background:color-mix(in srgb, currentColor 8%, var(--paper))}
+
+.card{background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:22px 22px;background-position:-1px -1px;
+  border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:16px}
+.meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1.5px solid currentColor;background:var(--paper)}
+.badge.easy{color:var(--easy)} .badge.hard{color:var(--hard)}
+.num{font-size:14px;color:var(--muted);background:var(--paper);padding:0 4px}
+.task{font-size:21px;line-height:1.5;margin:0;background:var(--paper);padding:2px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone;max-width:60ch}
+.task strong{background:linear-gradient(transparent 55%, var(--mark) 55%);font-weight:700;white-space:nowrap}
+.task.empty{font-size:17px;color:var(--muted)}
+
+.btn-answer{align-self:flex-start;background:var(--accent);color:var(--accent-ink);border:0;padding:12px 20px;font-weight:700;font-size:16px}
+.answer{background:var(--paper);border-top:2px dashed var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.answer .res{font-family:var(--display);font-weight:800;font-size:28px;font-variant-numeric:tabular-nums}
+.answer .res small{font-family:var(--body);font-weight:400;font-size:16px;color:var(--muted);margin-left:8px}
+.answer .lbl{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.steps{display:flex;flex-direction:column;gap:6px;font-variant-numeric:tabular-nums;overflow-x:auto;padding-block:2px}
+.steps .sn{margin:0;color:var(--muted);font-size:15px;max-width:62ch}
+.er{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-height:2.2em}
+.er .lab{color:var(--muted);font-size:14px}
+.er.form{font-weight:700}
+.giv{display:flex;flex-direction:column;gap:2px;padding:2px 0 6px;white-space:nowrap}
+.steps .sn+.er.form,.giv+.er,.er+.sn{margin-top:4px}
+.er .op{border-left:2px solid var(--ink);padding:2px 0 2px 10px;margin-left:10px;align-self:stretch;display:flex;align-items:center;font-weight:700;color:var(--accent)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.25}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 4px 1px}
+.frac>span:last-child{padding:1px 4px 0}
+.answer .round{font-size:15px;color:var(--muted);margin:0;max-width:62ch}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.btn-tool{background:var(--paper);color:var(--ink);border:1.5px solid var(--line);padding:8px 14px;font-weight:700;font-size:15px;border-radius:999px}
+.btn-tool[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.panel h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.panel p,.panel ul{margin:0;max-width:62ch}
+.panel ul{padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.ftable{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.ftable div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column}
+.ftable span{font-size:12px;color:var(--muted)}
+.ftable b{font-family:var(--display);font-weight:700;font-size:19px}
+.tscroll{overflow-x:auto}
+.panel table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.panel th,.panel td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+.panel th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.modes{display:flex;gap:4px;padding:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%}
+.mode-btn{background:transparent;border:0;padding:9px 16px;font-weight:700;font-size:15px;color:var(--muted);border-radius:9px}
+.mode-btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.mode{display:flex;flex-direction:column;gap:22px}
+[hidden]{display:none!important}
+.opts{display:flex;flex-direction:column;gap:8px;max-width:60ch}
+.opt{text-align:left;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);padding:11px 14px;font-size:16px;border-radius:10px}
+.opt:not(:disabled):hover{border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--easy);background:color-mix(in srgb,var(--easy) 14%,var(--paper));font-weight:700}
+.opt.wrong{border-color:var(--hard);background:color-mix(in srgb,var(--hard) 12%,var(--paper));text-decoration:line-through}
+.qhint{margin:0;color:var(--muted);font-size:15px;background:var(--paper);padding:2px 4px;width:fit-content}
+.qexp{margin:0;max-width:62ch;line-height:1.6}
+.qexp p{margin:0 0 8px}
+.qexp .steps{margin:4px 0 10px}
+.kround{font-size:14px;color:var(--muted)}
+.qtable{border-collapse:collapse;font-size:17px;background:var(--paper)}
+.qtable th,.qtable td{border:1px solid var(--line);padding:6px 12px;min-width:84px;height:1.6em;text-align:left}
+.qtable th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ucv{display:flex;flex-direction:column;gap:6px}
+.task p{margin:0 0 6px}
+.res .pres{display:inline-block;margin-right:20px;font-size:22px;white-space:nowrap}
+.plab{color:var(--ink)!important;font-size:16px!important;margin-top:8px!important}
+.claim{font-style:italic;padding:8px 12px;border-left:3px solid var(--line)}
+.chart{width:100%;max-width:440px;height:auto;display:block;background:var(--paper);margin:6px 0}
+.chart .gl{stroke:var(--grid);stroke-width:1}
+.chart .ax{stroke:var(--ink);stroke-width:1.5}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.chart .tl{fill:var(--ink);font-size:12px}
+.chart .pt{fill:var(--accent)}
+.chart .ml{fill:none;stroke:var(--hard);stroke-width:2;stroke-dasharray:5 4}
+.chart .fit{fill:none;stroke:var(--ink);stroke-width:1.5}
+.qtask{display:flex;flex-direction:column;gap:6px}
+.qtask p{margin:0}
+.qtask .wrongsol{font-size:18px;padding:8px 12px;border:1.5px dashed var(--hard);border-radius:8px;width:fit-content;max-width:100%;overflow-x:auto}
+.opts.rows,.opts.picks{gap:0;max-width:none}
+.trow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;padding:10px 0;border-bottom:1px solid var(--line);background:var(--paper)}
+.trow.thead{padding:4px 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.trow.thead .tbtns span{width:84px;text-align:center}
+.tt{flex:1 1 260px;min-width:0}
+.tbtns{display:inline-flex;gap:6px;flex-wrap:wrap}
+.ch{min-width:84px;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);padding:6px 10px;font-size:15px;border-radius:8px}
+.ch:not(:disabled):hover{border-color:var(--accent)}
+.ch:disabled{cursor:default}
+.ch.right{border-color:var(--easy);background:color-mix(in srgb,var(--easy) 14%,var(--paper));font-weight:700}
+.ch.wrong{border-color:var(--hard);background:color-mix(in srgb,var(--hard) 12%,var(--paper));text-decoration:line-through}
+.tfix{flex-basis:100%;font-size:15px;color:var(--muted)}
+.prow{padding:12px 0;border-bottom:1px solid var(--line);background:var(--paper);line-height:2.2}
+.prow .tbtns{vertical-align:middle}
+.ediag{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-size:15px;max-width:520px}
+.elab{font-weight:700}
+.eflow{display:flex;align-items:stretch;height:150px;color:var(--ink)}
+.ebox,.epart{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2px 6px;font-size:14px;line-height:1.25;min-width:0}
+.ebox{flex:1 1 0;border:2px solid var(--ink);border-radius:4px;background:color-mix(in srgb,var(--accent) 12%,var(--paper))}
+.earrow{flex:0 0 44px;align-self:center;height:20px}
+.eout{flex:1 1 0;display:flex;flex-direction:column;border:2px solid var(--ink);border-radius:4px;overflow:hidden;min-width:0}
+.epart+.epart{border-top:2px solid var(--ink)}
+.epart.eu{background:color-mix(in srgb,var(--easy) 20%,var(--paper))}
+.epart.eh{background:color-mix(in srgb,var(--hard) 16%,var(--paper))}
+@media (prefers-reduced-motion:reduce){button{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Fysiikka · 8. lk · Kpl 16–20</span>
+    <h1>Voima ja energia -alueen kertaustehtävät</h1>
+    <p class="lead">Arvo tehtävä, ratkaise se vihkoon ja tarkista vastaus. Laskutehtävien lukuarvot arvotaan joka kerta uudestaan, joten tehtäviä riittää loputtomiin.</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="Tehtävien laji">
+    <button type="button" class="mode-btn" id="m-calc" aria-pressed="true">Laskutehtävät</button>
+    <button type="button" class="mode-btn" id="m-theory" aria-pressed="false">Teoriakysymykset</button>
+  </div>
+
+  <div class="tools">
+    <button class="btn-tool" type="button" id="t-kaavat" aria-expanded="false" aria-controls="p-kaavat">Kaavat</button>
+    <button class="btn-tool" type="button" id="t-suureet" aria-expanded="false" aria-controls="p-suureet">Suureet ja yksiköt</button>
+    <button class="btn-tool" type="button" id="t-pyor" aria-expanded="false" aria-controls="p-pyor">Pyöristys</button>
+  </div>
+
+  <section class="panel" id="p-kaavat" hidden>
+    <h3>Kaavat</h3>
+    <div class="ftable">
+      <div><span>Massa → paino</span><b><i class="v">G</i> = <i class="v">m</i> · 10 N/kg</b></div>
+      <div><span>Työ</span><b><i class="v">W</i> = <i class="v">F</i><i class="v">s</i></b></div>
+      <div><span>Nostotyö</span><b><i class="v">W</i> = <i class="v">G</i><i class="v">h</i></b></div>
+      <div><span>Kalteva taso</span><b><i class="v">F</i><i class="v">s</i> = <i class="v">G</i><i class="v">h</i></b></div>
+      <div><span>Kaksivartinen vipu</span><b><i class="v">G</i><i class="v">a</i> = <i class="v">F</i><i class="v">b</i></b></div>
+      <div><span>Teho</span><b><i class="v">P</i> = <i class="v">W</i> / <i class="v">t</i></b></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-suureet" hidden>
+    <h3>Suureet ja yksiköt</h3>
+    <div class="tscroll"><table>
+      <thead><tr><th>Suure</th><th>Tunnus</th><th>Yksikkö</th></tr></thead>
+      <tbody>
+        <tr><td>energia</td><td><i class="v">E</i></td><td>joule, J</td></tr>
+        <tr><td>massa</td><td><i class="v">m</i></td><td>kilogramma, kg</td></tr>
+        <tr><td>paino (painovoima)</td><td><i class="v">G</i></td><td>newton, N</td></tr>
+        <tr><td>voima</td><td><i class="v">F</i></td><td>newton, N</td></tr>
+        <tr><td>matka</td><td><i class="v">s</i></td><td>metri, m</td></tr>
+        <tr><td>korkeus</td><td><i class="v">h</i></td><td>metri, m</td></tr>
+        <tr><td>kuorman varsi</td><td><i class="v">a</i></td><td>metri, m</td></tr>
+        <tr><td>voiman varsi</td><td><i class="v">b</i></td><td>metri, m</td></tr>
+        <tr><td>työ</td><td><i class="v">W</i></td><td>joule, J</td></tr>
+        <tr><td>aika</td><td><i class="v">t</i></td><td>sekunti, s</td></tr>
+        <tr><td>teho</td><td><i class="v">P</i></td><td>watti, W</td></tr>
+      </tbody>
+    </table></div>
+    <p>1 kJ = 1000 J · 1 kW = 1000 W</p>
+  </section>
+
+  <section class="panel" id="p-pyor" hidden>
+    <h3>Pyöristys</h3>
+    <ul>
+      <li>Vastauksessa on yhtä monta merkitsevää numeroa kuin epätarkimmassa lähtöarvossa.</li>
+      <li>Alkunollat ja kokonaisluvun loppunollat eivät ole merkitseviä, desimaaliluvun loppunollat ovat: 30 → 1, 1000 → 1, 0,040 → 2.</li>
+      <li>Vakio 10 N/kg ei vaikuta tarkkuuteen.</li>
+      <li>Laske välivaiheet tarkoilla arvoilla ja pyöristä vasta lopuksi.</li>
+    </ul>
+  </section>
+
+  <div class="mode" id="mode-calc">
+  <section aria-labelledby="fh">
+    <div class="fhead"><h2 id="fh">Tehtävätyypit</h2><span id="fcount">Napauta aihetta, niin sen tehtävät jäävät pois</span></div>
+    <div class="formulas" id="formulas"></div>
+  </section>
+
+  <div class="actions">
+    <button class="btn-task btn-easy" id="btn-easy" type="button">Tee perustehtävä<small>Sijoita kaavaan ja laske</small></button>
+    <button class="btn-task btn-hard" id="btn-hard" type="button">Tee vaikea tehtävä<small>Ratkaise yhtälöstä tuntematon. Näitä voi tulla kokeessa myös perustehtävinä.</small></button>
+  </div>
+  <div class="chal-row">
+    <button class="btn-chal" id="btn-chal" type="button">Tee haastava tehtävä</button>
+    <span>Kun vaikeat sujuvat. Näissä yhdistellään laskuja ja muunnetaan yksiköitä kuten kokeen vaikeimmissa tehtävissä.</span>
+  </div>
+
+  <article class="card" aria-live="polite">
+    <div class="meta" id="meta"><span class="badge" id="badge"></span><span class="num" id="num"></span></div>
+    <div class="task" id="task"></div>
+    <button class="btn-answer" id="btn-answer" type="button">Näytä vastaus</button>
+    <div class="answer" id="answer" hidden>
+      <div><div class="lbl">Vastaus</div><div class="res" id="res"></div></div>
+      <div><div class="lbl">Ratkaisu</div><div class="steps" id="steps"></div></div>
+      <p class="round" id="round"></p>
+    </div>
+  </article>
+  </div>
+
+  <div class="mode" id="mode-theory" hidden>
+    <div class="actions">
+      <button class="btn-task btn-easy" id="q-easy" type="button">Tee perustehtävä<small>Käsitteet, väittämät, ennusteet ja mittaustulokset</small></button>
+      <button class="btn-task btn-hard" id="q-hard" type="button">Tee vaikea tehtävä<small>Perustele, vertaile väitteitä, arvioi ja suunnittele tutkimus</small></button>
+    </div>
+    <article class="card" aria-live="polite">
+      <div class="meta"><span class="badge" id="qbadge"></span><span class="num" id="qnum"></span></div>
+      <div class="task qtask" id="qtext"></div>
+      <div class="opts" id="qopts"></div>
+      <p class="qhint" id="qhint" hidden>Mieti vastaus tai kirjoita se vihkoon. Vertaa sitten mallivastaukseen.</p>
+      <button class="btn-answer" id="q-show" type="button" hidden>Näytä mallivastaus</button>
+      <div class="answer" id="qans" hidden>
+        <div class="lbl" id="qlbl">Mallivastaus</div>
+        <p class="qexp" id="qexp"></p>
+      </div>
+    </article>
+  </div>
+
+</div>
+
+<script>
+/* ---------- apufunktiot ---------- */
+const rand=Math.random;
+const pick=a=>a[Math.floor(rand()*a.length)];
+const V=s=>`<i class="v">${s}</i>`;
+const name=()=>pick(['Aino','Eetu','Lumi','Onni','Venla','Elias','Sofia','Leo','Helmi','Niilo']);
+const roundSig=(x,n)=>x===0?0:Number(x.toPrecision(n));
+const decs=(x,n)=>x===0?n-1:Math.max(0,n-1-Math.floor(Math.log10(Math.abs(x))));
+function fmtSig(x,n){const r=roundSig(x,n),d=decs(r,n);return r.toLocaleString('fi-FI',{minimumFractionDigits:d,maximumFractionDigits:d});}
+/* tarkka arvo välivaiheisiin (enintään 4 desimaalia) */
+const raw=x=>roundSig(x,8).toLocaleString('fi-FI',{maximumFractionDigits:4});
+const sfp=()=>pick([2,2,3]);
+/* lähtöarvo: {v, sf, t} */
+/* Merkitsevät numerot: alkunollat eivät ole merkitseviä; kokonaisluvun loppunollat eivät ole merkitseviä (30 → 1, 1000 → 1); desimaaliluvun loppunollat ovat (0,040 → 2) */
+function digits(s){let d=s.replace(/[^\d,]/g,'');if(!d.includes(','))d=d.replace(/0+$/,'');return d.replace(',','').replace(/^0+/,'').length;}
+function inp(x,sf,unit){const v=roundSig(x,sf);const s=fmtSig(v,sf);return {v,sf:Math.max(1,digits(s)),t:`${s} ${unit}`};}
+const rnd=(lo,hi,unit,sf=sfp())=>inp(lo+rand()*(hi-lo),sf,unit);
+/* työ lähtöarvona, joskus kilojouleina */
+function wIn(W){const sf=pick([2,3,3]);
+  if(W>=1000&&rand()<0.4){const k=inp(W/1000,sf,'kJ');const J=k.v*1000;return {v:J,sf:k.sf,t:k.t,J:`${raw(J)} J`,conv:`Muunna: ${k.t} = ${raw(J)} J`};}
+  const i=inp(W,sf,'J');return {...i,J:i.t,conv:null};}
+const B=x=>`<strong>${x.t}</strong>`;
+
+/* ---------- kaavat ---------- */
+/* Laskutehtävien aiheet (valittavissa) */
+const FORMULAS=[
+  {id:'G',  label:'Massa ja paino'},
+  {id:'Fs', label:'Työ'},
+  {id:'Gh', label:'Nostotyö'},
+  {id:'ramp',label:'Kalteva taso'},
+  {id:'lever',label:'Kaksivartinen vipu'},
+  {id:'P',  label:'Teho'},
+];
+const on=Object.fromEntries(FORMULAS.map(f=>[f.id,true]));
+/* Teoriakysymykset tulevat aina kaikista kappaleista sekaisin. Kappalejako (sama kuin koegeneraattorissa)
+   on mukana vain, jotta generaattorit ovat yhteensopivia koegeneraattorin kanssa. */
+const SEL=new Set(['16','17','18','19','20a','20b','20c']);
+const has=(...c)=>c.every(x=>SEL.has(x));
+/* teoriatekstin kappaleet tunnistetaan sanoista */
+const L_='[a-zåäö]';
+const CHRX=[
+ ['17',new RegExp(`(^|[^a-zåäö-])työ(tä|n|hön|t)?(?!${L_})|W = Fs|jarrutusmatk|jarrutusvoim|vaikutusmatka`,'i')],
+ ['18',/nostoty|nostokorkeu|\bGh\b/i],
+ ['19',/teho|watti|hyötysuh|hyötyener|kilowat|\d\s?kW|hevosvoim|\bkWh/i],
+ ['20a',/kalteva|luiska|ramppi|ruuvi|serpentiini|mutkittel|mutkia|lankku|vaihtee|yksinkertai/i],
+ ['20b',/vipu|vivu|keinulaud|tukipiste|kanki|kange|sorkkarau|sakset|saksien|jakoavai|kahva/i],
+ ['20c',/väkipyör/i],
+];
+const okT=t=>CHRX.filter(([c,r])=>r.test(t)).every(([c])=>SEL.has(c));
+
+/* ---------- tilanteet ----------
+   Jokaisella tilanteella on omat realistiset lukuvälinsä. Ensin arvotaan tilanne, sitten luvut sen väleistä.
+   Vaikeissa tehtävissä arvotaan ensin tuntematon tilanteen välistä ja annettu arvo lasketaan siitä. */
+const R=(a,unit)=>rnd(a[0],a[1],unit);
+const U=a=>a[0]+rand()*(a[1]-a[0]);
+const who=sc=>sc.subj||name();
+const paino=(m,G)=>`Paino: ${V('G')} = ${m.t} · 10 N/kg = ${raw(G)} N`;
+const NF=' (Kitkaa ei huomioida.)';
+
+/* Nostot */
+const LIFT=[
+ {verb:'nostaa',obj:'kirjan',nom:'kirja',m:[0.3,2],h:[0.8,2.1],t:[0.5,2],to:h=>`${h} korkealle hyllylle`,toU:'hyllylle',askH:'Kuinka korkealla hylly on?'},
+ {verb:'nostaa',obj:'matkalaukun',nom:'matkalaukku',m:[8,25],h:[0.6,1],t:[1,3],to:h=>`auton takakonttiin ${h} korkeudelle`,toU:'auton takakonttiin',askH:'Kuinka korkealla takakontin pohja on?'},
+ {verb:'nostaa',obj:'koulurepun',nom:'koulureppu',m:[3,9],h:[0.6,0.9],t:[0.5,1.5],to:h=>`lattialta ${h} korkealle pöydälle`,toU:'lattialta pöydälle',askH:'Kuinka korkea pöytä on?'},
+ {verb:'nostaa',obj:'levytangon',nom:'levytanko',m:[20,120],h:[1.6,2.2],t:[0.8,3],to:h=>`lattialta ${h} korkeudelle pään yläpuolelle`,toU:'lattialta pään yläpuolelle',askH:'Kuinka korkealle tanko nousee?'},
+ {verb:'vetää',obj:'vesisangon',nom:'vesisanko',m:[5,12],h:[3,10],t:[5,20],to:h=>`kaivosta ${h} syvyydestä`,toU:'kaivosta ylös',askH:'Kuinka syvä kaivo on?'},
+ {subj:'Rakennusmies',verb:'vetää köydellä',obj:'tiiliämpärin',nom:'tiiliämpäri',m:[10,25],h:[3,8],t:[4,12],to:h=>`${h} korkealla oleville telineille`,toU:'telineille',askH:'Kuinka korkealla telineet ovat?'},
+ {subj:'Rakennusnosturi',verb:'nostaa',obj:'betonielementin',nom:'betonielementti',m:[500,3000],h:[10,40],t:[30,120],to:h=>`${h} korkeudelle`,toU:'rakennuksen katolle',askH:'Kuinka korkealla katto on?',motor:'Nosturin moottorin'},
+ {subj:'Hissi',verb:'nostaa',obj:'kuorman',nom:'kuorma',m:[150,900],h:[3,30],t:[5,40],to:h=>`${h} ylemmäs`,toU:'ylimpään kerrokseen',askH:'Kuinka korkealle hissi nousee?',motor:'Hissin moottorin'},
+ {subj:'Veneen vinssi',verb:'nostaa',obj:'ankkurin',nom:'ankkuri',m:[5,30],h:[2,20],t:[5,30],to:h=>`${h} syvyydestä`,toU:'järven pohjasta',askH:'Kuinka syvältä ankkuri nostetaan?',motor:'Vinssin moottorin'},
+];
+/* Vetäminen ja työntäminen vaakasuoraan */
+const PUSH=[
+ {verb:'työntää ostoskärryä',F:[20,80],s:[5,40],t:[5,40],fq:'Kuinka suurella voimalla kärryä työnnetään?',sq:'Kuinka pitkän matkan kärry kulkee?'},
+ {verb:'vetää pulkkaa tasaisella jäällä',F:[20,100],s:[20,300],t:[20,300],fq:'Kuinka suurella voimalla pulkkaa vedetään?',sq:'Kuinka pitkän matkan pulkkaa vedetään?'},
+ {subj:'Muuttomies',verb:'siirtää sohvaa lattiaa pitkin',F:[150,450],s:[1,6],t:[3,15],fq:'Kuinka suurella voimalla sohvaa työnnetään?',sq:'Kuinka pitkän matkan sohva siirtyy?'},
+ {subj:'Kolme kaverusta',verb:'työntää sammunutta autoa',F:[300,900],s:[5,60],t:[10,60],fq:'Kuinka suurella voimalla autoa työnnetään?',sq:'Kuinka pitkän matkan autoa työnnetään?'},
+ {subj:'Hevonen',verb:'vetää rekeä',F:[300,1500],s:[50,800],t:[60,600],fq:'Kuinka suurella voimalla hevonen vetää?',sq:'Kuinka pitkän matkan hevonen vetää rekeä?'},
+ {subj:'Oppilaat',verb:'siirtävät jalkapallomaalia nurmella',F:[200,600],s:[5,30],t:[10,40],fq:'Kuinka suurella voimalla maalia siirretään?',sq:'Kuinka pitkän matkan maalia siirretään?'},
+];
+/* Kalteva taso */
+const RAMP=[
+ {verb:'työntää',obj:'pyörätuolin istujineen',nom:'Pyörätuoli istujineen',m:[70,130],h:[0.2,0.8],s:[3,10],slope:0.15,rp:'luiskaa',rn:'luiska',to:h=>`${h} korkeudella olevalle ovelle`,toU:'ovelle',askH:'Kuinka korkealla ovi on?',can:'jaksaa työntää'},
+ {subj:'Muuttomies',verb:'työntää',obj:'pakastimen',nom:'Pakastin',m:[40,90],h:[0.8,1.3],s:[2,5],rp:'luiskaa',rn:'luiska',to:h=>`${h} korkeaan kuorma-autoon`,toU:'kuorma-autoon',askH:'Kuinka korkealla kuorma-auton lava on?',can:'jaksaa työntää'},
+ {verb:'työntää',obj:'mopon',nom:'Mopo',m:[70,110],h:[0.4,0.8],s:[2,4],rp:'ramppia',rn:'ramppi',to:h=>`${h} korkeaan peräkärryyn`,toU:'peräkärryyn',askH:'Kuinka korkealla peräkärryn pohja on?',can:'jaksaa työntää'},
+ {verb:'vierittää',obj:'tynnyrin',nom:'Tynnyri',m:[50,200],h:[0.5,1.5],s:[2,6],rp:'lankkua',rn:'lankku',to:h=>`${h} korkealle laiturille`,toU:'laiturille',askH:'Kuinka korkealla laituri on?',can:'jaksaa vierittää'},
+ {subj:'Kaksi muuttomiestä',verb:'työntää',obj:'pianon',nom:'Piano',m:[150,300],h:[0.6,1.2],s:[3,6],rp:'luiskaa',rn:'luiska',to:h=>`${h} korkealle lavalle`,toU:'lavalle',askH:'Kuinka korkealla lava on?',can:'jaksaa yhdessä työntää'},
+ {verb:'työntää',obj:'laatikon',nom:'Laatikko',m:[10,60],h:[0.4,1.2],s:[1.5,4],rp:'luiskaa',rn:'luiska',to:h=>`${h} korkealle lavalle`,toU:'lavalle',askH:'Kuinka korkealla lava on?',can:'jaksaa työntää'},
+];
+function rampDraw(sc){for(let i=0;i<60;i++){const h=R(sc.h,'m'),s=R(sc.s,'m');if(h.v<=s.v*(sc.slope||0.5))return {h,s};}
+  return {h:inp(sc.h[0],2,'m'),s:inp(sc.s[1],2,'m')};}
+/* Massa ja paino */
+const MASS=[['Repun',2,9],['Koiran',5,40],['Polkupyörän',9,18],['Mopon',70,110],['Henkilöauton',1000,2000],['Omenan',0.1,0.3],
+ ['Kännykän',0.15,0.25],['Norsun',2500,6000],['Jääkaapin',40,90],['Kissan',3,6],['Jalkapallon',0.4,0.45],['Kuorma-auton',8000,20000]];
+/* Teho */
+const POW=[
+ {subj:'Sähköpora',verb:'käy',P:[400,1000],t:[5,60]},
+ {subj:'Vesipumppu',verb:'pumppaa vettä',P:[300,1500],t:[10,180]},
+ {subj:'Kuntopyöräilijä',verb:'polkee',P:[80,300],t:[30,300]},
+ {subj:'Soutaja',verb:'soutaa',P:[100,400],t:[20,240]},
+ {subj:'Sähköpotkulaudan moottori',verb:'käy',P:[250,500],t:[10,180]},
+ {subj:'Hiihtäjä',verb:'hiihtää',P:[150,400],t:[30,300]},
+];
+
+/* ---------- ratkaisurivit ----------
+   Ratkaisu koostuu lohkoista: kaava → lähtöarvot allekkain → sijoitus ja ratkaisu (temppuviiva).
+   Rivi on selitysteksti (merkkijono), yhtälö E(eq, op, lab) tai lähtöarvolista {given:[...]}. */
+const fr=(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const E=(eq,op,lab,form)=>({eq,op,lab,form});
+const val=(x,u)=>`${raw(x)} ${u}`;
+const FS=`${V('F')}${V('s')}`, GH=`${V('G')}${V('h')}`, PWT=fr(V('W'),V('t')), MG=`${V('m')} · 10 N/kg`;
+/* lähtöarvot */
+const GV=(s,t)=>`${V(s)} = ${t}`;
+const Q=s=>`${V(s)} = ?`;
+const num=m=>m.t.replace(/ kg$/,'');
+const GM=m=>`${V('G')} = ${num(m)} · 10 N = ${val(m.v*10,'N')}`;
+const wg=W=>W.t===W.J?W.t:`${W.t} = ${W.J}`;
+/* lohko: kaava, lähtöarvot, ratkaisu */
+/* jos kysyttyä suuretta ei ole merkitty, se on kaavan vasen puoli (myös välivaiheissa) */
+/* lähtöarvot samaan järjestykseen kuin suureet kaavassa vasemmalta oikealle */
+const syms=h=>[...h.matchAll(/<i class="v">(\w)<\/i>/g)].map(x=>x[1]);
+const ord=(giv,order)=>giv.map((g,i)=>[order.indexOf(syms(g)[0]),i,g]).sort((a,b)=>(a[0]-b[0])||(a[1]-b[1])).map(x=>x[2]);
+const blk=(lhs,form,giv,rest)=>{const g=giv.some(x=>x.endsWith('= ?'))?giv:[...giv,Q(lhs)];
+  return [E(`${V(lhs)} = ${form}`,null,null,1),{given:ord(g,[lhs,...syms(form)])},...rest];};
+const blkR=(giv,rest)=>[E(`${FS} = ${GH}`,null,null,1),{given:ord(giv,['F','s','G','h'])},...rest];
+/* sijoitus suoraan kaavaan (lopputulos lisätään finish-funktiossa) */
+const subD=(lhs,sub)=>[E(`${V(lhs)} = ${sub}`)];
+/* lisää välituloksen arvo viimeiselle riville */
+const fin=(L,x,u)=>{L[L.length-1].eq+=` = ${val(x,u)}`;return L;};
+/* X = A · B, toinen tekijä tuntematon. A ja B: [tunnus, arvo tai null]; vakio [null, '10 N/kg'] */
+function pS(xt,A,B){
+  const uA=A[1]==null,k=uA?B:A,u=uA?A:B;
+  const sub=uA?`${V(A[0])} · ${B[1]}`:`${A[1]} · ${V(B[0])}`;
+  return [E(`${xt} = ${sub}`,`: ${k[1]}`),E(`${V(u[0])} = ${fr(xt,k[1])}`)];
+}
+/* P = W / t, tuntematon W tai t (null) */
+function qS(Pt,Wt,tt){
+  if(tt==null) return [E(`${Pt} = ${fr(Wt,V('t'))}`,`· ${V('t')}`),E(`${Pt} · ${V('t')} = ${Wt}`,`: ${Pt}`),E(`${V('t')} = ${fr(Wt,Pt)}`)];
+  return [E(`${Pt} = ${fr(V('W'),tt)}`,`· ${tt}`),E(`${V('W')} = ${Pt} · ${tt}`)];
+}
+/* Fs = Gh, yksi tuntematon (null) */
+function rS(F,s,G,h){
+  const sub=`${F??V('F')} · ${s??V('s')} = ${G??V('G')} · ${h??V('h')}`;
+  let u,d,n;
+  if(F==null){u='F';d=s;n=`${G} · ${h}`;}
+  else if(s==null){u='s';d=F;n=`${G} · ${h}`;}
+  else if(G==null){u='G';d=h;n=`${F} · ${s}`;}
+  else {u='h';d=G;n=`${F} · ${s}`;}
+  return [E(sub,`: ${d}`),E(`${V(u)} = ${fr(n,d)}`)];
+}
+/* massa painosta */
+const mBlk=(Gt,ask=true)=>blk('G',MG,[GV('G',Gt),...(ask?[Q('m')]:[])],pS(Gt,['m',null],[null,'10 N/kg']));
+
+/* Jokainen tehtävä palauttaa: text, steps (viimeinen = laskun sijoitus), x (tarkka tulos), unit, ins (lähtöarvot) */
+const EASY=[
+ {tags:['G'],f:()=>{const [o,lo,hi]=pick(MASS),m=rnd(lo,hi,'kg');
+   return {text:`${o} massa on ${B(m)}. Kuinka suuri on sen paino?`,
+   steps:blk('G',MG,[GV('m',m.t),Q('G')],subD('G',`${num(m)} · 10 N`)),x:m.v*10,unit:'N',ins:[m]}}},
+ {tags:['Fs'],f:()=>{const sc=pick(PUSH),F=R(sc.F,'N'),s=R(sc.s,'m');
+   return {text:`${who(sc)} ${sc.verb} voimalla ${B(F)} matkan ${B(s)}. Kuinka paljon työtä tehdään?`,
+   steps:blk('W',FS,[GV('F',F.t),GV('s',s.t),Q('W')],subD('W',`${F.t} · ${s.t}`)),x:F.v*s.v,unit:'J',ins:[F,s]}}},
+ {tags:['Gh'],f:()=>{const sc=pick(LIFT),G=inp(U(sc.m)*10,sfp(),'N'),h=R(sc.h,'m');
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj}, jonka paino on ${B(G)}, ${sc.to(B(h))}. Kuinka paljon työtä tehdään?`,
+   steps:blk('W',GH,[GV('G',G.t),GV('h',h.t),Q('W')],subD('W',`${G.t} · ${h.t}`)),x:G.v*h.v,unit:'J',ins:[G,h]}}},
+ {tags:['G','Gh'],f:()=>{const sc=pick(LIFT),m=R(sc.m,'kg'),h=R(sc.h,'m'),G=m.v*10;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.to(B(h))}. Kuinka paljon työtä tehdään?`,
+   steps:blk('W',GH,[GM(m),GV('h',h.t),Q('W')],subD('W',`${val(G,'N')} · ${h.t}`)),x:G*h.v,unit:'J',ins:[m,h]}}},
+ {tags:['ramp'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),G=inp(U(sc.m)*10,sfp(),'N');
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj}, jonka paino on ${B(G)}, ${B(s)} pitkää ${sc.rp} pitkin ${sc.to(B(h))}. Kuinka suuri voima tarvitaan?${NF}`,
+   steps:blkR([GV('G',G.t),GV('s',s.t),GV('h',h.t),Q('F')],rS(null,s.t,G.t,h.t)),x:G.v*h.v/s.v,unit:'N',ins:[G,s,h]}}},
+ {tags:['ramp','G'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),m=R(sc.m,'kg'),G=m.v*10;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${B(s)} pitkää ${sc.rp} pitkin ${sc.to(B(h))}. Kuinka suuri voima tarvitaan?${NF}`,
+   steps:blkR([GM(m),GV('s',s.t),GV('h',h.t),Q('F')],rS(null,s.t,val(G,'N'),h.t)),x:G*h.v/s.v,unit:'N',ins:[m,s,h]}}},
+ {tags:['P'],f:()=>{const sc=pick(POW),t=R(sc.t,'s'),W=wIn(U(sc.P)*t.v);
+   return {text:`${sc.subj} ${sc.verb} ajan ${B(t)} ja tekee ${B(W)} työtä. Mikä on teho?`,
+   steps:blk('P',PWT,[GV('W',wg(W)),GV('t',t.t),Q('P')],subD('P',fr(W.J,t.t))),x:W.v/t.v,unit:'W',ins:[W,t]}}},
+ {tags:['G','Gh','P'],f:()=>{const sc=pick(LIFT),m=R(sc.m,'kg'),h=R(sc.h,'m'),t=R(sc.t,'s'),G=m.v*10,W=G*h.v;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.to(B(h))} ajassa ${B(t)}. Kuinka suurella teholla nosto tehdään?`,
+   steps:['Lasketaan ensin työ.',...blk('W',GH,[GM(m),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',t.t),Q('P')],subD('P',fr(val(W,'J'),t.t)))],x:W/t.v,unit:'W',ins:[m,h,t]}}},
+ {tags:['Fs','P'],f:()=>{const sc=pick(PUSH),F=R(sc.F,'N'),s=R(sc.s,'m'),t=R(sc.t,'s'),W=F.v*s.v;
+   return {text:`${who(sc)} ${sc.verb} voimalla ${B(F)} matkan ${B(s)}. Siihen kuluu aikaa ${B(t)}. Mikä on teho?`,
+   steps:['Lasketaan ensin työ.',...blk('W',FS,[GV('F',F.t),GV('s',s.t)],fin(subD('W',`${F.t} · ${s.t}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',t.t),Q('P')],subD('P',fr(val(W,'J'),t.t)))],x:W/t.v,unit:'W',ins:[F,s,t]}}},
+];
+
+const HARD=[
+ {tags:['Fs'],f:()=>{const sc=pick(PUSH),F=R(sc.F,'N'),W=wIn(F.v*U(sc.s));
+   return {text:`${who(sc)} ${sc.verb} voimalla ${B(F)} ja tekee ${B(W)} työtä. ${sc.sq}`,
+   steps:blk('W',FS,[GV('W',wg(W)),GV('F',F.t),Q('s')],pS(W.J,['F',F.t],['s',null])),x:W.v/F.v,unit:'m',ins:[W,F]}}},
+ {tags:['Fs'],f:()=>{const sc=pick(PUSH),s=R(sc.s,'m'),W=wIn(s.v*U(sc.F));
+   return {text:`${who(sc)} ${sc.verb} matkan ${B(s)} ja tekee ${B(W)} työtä. ${sc.fq}`,
+   steps:blk('W',FS,[GV('W',wg(W)),GV('s',s.t),Q('F')],pS(W.J,['F',null],['s',s.t])),x:W.v/s.v,unit:'N',ins:[W,s]}}},
+ {tags:['G','Gh'],f:()=>{const sc=pick(LIFT),m=R(sc.m,'kg'),G=m.v*10,W=wIn(G*U(sc.h));
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.toU} ja tekee siinä ${B(W)} työtä. ${sc.askH}`,
+   steps:blk('W',GH,[GV('W',wg(W)),GM(m),Q('h')],pS(W.J,['G',val(G,'N')],['h',null])),x:W.v/G,unit:'m',ins:[W,m]}}},
+ {tags:['Gh'],f:()=>{const sc=pick(LIFT),G=inp(U(sc.m)*10,sfp(),'N'),W=wIn(G.v*U(sc.h));
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj}, jonka paino on ${B(G)}, ${sc.toU} ja tekee siinä ${B(W)} työtä. ${sc.askH}`,
+   steps:blk('W',GH,[GV('W',wg(W)),GV('G',G.t),Q('h')],pS(W.J,['G',G.t],['h',null])),x:W.v/G.v,unit:'m',ins:[W,G]}}},
+ {tags:['G','Gh'],f:()=>{const sc=pick(LIFT),h=R(sc.h,'m'),W=wIn(h.v*10*U(sc.m)),G=W.v/h.v;
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj} ${sc.to(B(h))} ja tekee siinä ${B(W)} työtä. Mikä on ${sc.obj.split(' ')[0]} massa?`,
+   steps:['Lasketaan ensin paino.',...blk('W',GH,[GV('W',wg(W)),GV('h',h.t),Q('G')],fin(pS(W.J,['G',null],['h',h.t]),G,'N')),
+     'Sitten massa.',...mBlk(val(G,'N'))],x:G/10,unit:'kg',ins:[W,h]}}},
+ {tags:['G'],f:()=>{const [o,lo,hi]=pick(MASS),G=inp((lo+rand()*(hi-lo))*10,sfp(),'N');
+   return {text:`${o} paino on ${B(G)}. Mikä on sen massa?`,
+   steps:mBlk(G.t),x:G.v/10,unit:'kg',ins:[G]}}},
+ {tags:['ramp','G'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),F=inp(U(sc.m)*10*h.v/s.v,sfp(),'N'),G=F.v*s.v/h.v;
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj} ${B(s)} pitkää ${sc.rp} pitkin ${sc.to(B(h))} voimalla ${B(F)}. Mikä on ${sc.obj} massa?${NF}`,
+   steps:['Lasketaan ensin paino.',...blkR([GV('F',F.t),GV('s',s.t),GV('h',h.t),Q('G')],fin(rS(F.t,s.t,null,h.t),G,'N')),
+     'Sitten massa.',...mBlk(val(G,'N'))],x:G/10,unit:'kg',ins:[F,s,h]}}},
+ {tags:['ramp','G'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),m=R(sc.m,'kg'),G=m.v*10,F=inp(G*h.v/s.v,sfp(),'N');
+   return {text:`${sc.nom}, jonka massa on ${B(m)}, pitää saada ${sc.rp} pitkin ${sc.to(B(h))}. ${who(sc)} ${sc.can} korkeintaan ${B(F)} voimalla. Kuinka pitkä ${sc.rn} tarvitaan?${NF}`,
+   steps:blkR([GV('F',F.t),GM(m),GV('h',h.t),Q('s')],rS(F.t,null,val(G,'N'),h.t)),x:G*h.v/F.v,unit:'m',ins:[F,m,h]}}},
+ {tags:['ramp','G'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),m=R(sc.m,'kg'),G=m.v*10,F=inp(G*h.v/s.v,sfp(),'N');
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${B(s)} pitkää ${sc.rp} pitkin ${sc.toU} voimalla ${B(F)}. ${sc.askH}${NF}`,
+   steps:blkR([GV('F',F.t),GV('s',s.t),GM(m),Q('h')],rS(F.t,s.t,val(G,'N'),null)),x:F.v*s.v/G,unit:'m',ins:[F,s,m]}}},
+ {tags:['P'],f:()=>{const sc=pick(POW),P=R(sc.P,'W'),W=wIn(P.v*U(sc.t));
+   return {text:`${sc.subj} ${sc.verb} teholla ${B(P)} ja tekee ${B(W)} työtä. Kuinka kauan siihen kuluu?`,
+   steps:blk('P',PWT,[GV('P',P.t),GV('W',wg(W)),Q('t')],qS(P.t,W.J,null)),x:W.v/P.v,unit:'s',ins:[W,P]}}},
+ {tags:['P'],f:()=>{const sc=pick(POW),P=R(sc.P,'W'),t=R(sc.t,'s');
+   return {text:`${sc.subj} ${sc.verb} teholla ${B(P)} ajan ${B(t)}. Kuinka paljon työtä tehdään?`,
+   steps:blk('P',PWT,[GV('P',P.t),GV('t',t.t),Q('W')],qS(P.t,null,t.t)),x:P.v*t.v,unit:'J',ins:[P,t]}}},
+ {tags:['P','G','Gh'],f:()=>{const sc=pick(LIFT.filter(l=>l.motor)),m=R(sc.m,'kg'),h=R(sc.h,'m'),G=m.v*10,W=G*h.v,P=inp(W/U(sc.t),sfp(),'W');
+   return {text:`${sc.motor} teho on ${B(P)}. Kuinka kauan kestää nostaa ${B(m)} ${sc.nom} ${sc.to(B(h))}?`,
+   steps:['Lasketaan ensin nostotyö.',...blk('W',GH,[GM(m),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W,'J')),
+     'Sitten aika.',...blk('P',PWT,[GV('P',P.t),GV('W',val(W,'J')),Q('t')],qS(P.t,val(W,'J'),null))],x:W/P.v,unit:'s',ins:[P,m,h]}}},
+ {tags:['P','Fs'],f:()=>{const sc=pick(PUSH),s=R(sc.s,'m'),t=R(sc.t,'s'),P=inp(U(sc.F)*s.v/t.v,sfp(),'W'),W=P.v*t.v;
+   return {text:`${who(sc)} ${sc.verb} matkan ${B(s)} ajassa ${B(t)}. Teho on ${B(P)}. ${sc.fq}`,
+   steps:['Lasketaan ensin työ.',...blk('P',PWT,[GV('P',P.t),GV('t',t.t),Q('W')],fin(qS(P.t,null,t.t),W,'J')),
+     'Sitten voima.',...blk('W',FS,[GV('W',val(W,'J')),GV('s',s.t),Q('F')],pS(val(W,'J'),['F',null],['s',s.t]))],x:W/s.v,unit:'N',ins:[P,t,s]}}},
+];
+
+/* Haastavat: vaativat oivallusta (yksikönmuunnos, kerrosten laskeminen, ylimääräinen tieto, useampi kappale) */
+const EXACT='Kappale- ja kerrosmäärät ovat tarkkoja lukuja, joten ne eivät vaikuta tarkkuuteen.';
+const ri=(a,b)=>a+Math.floor(rand()*(b-a+1));
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const GN=(mk,G)=>`${V('G')} = ${raw(mk)} · 10 N = ${val(G,'N')}`;
+const CHAL=[
+ {tags:['G'],f:()=>{const [o,lo,hi]=pick([['Kännykän',140,230],['Omenan',100,300],['Jalkapallon',410,450],['Kananmunan',50,70],['Suklaalevyn',100,200],['Kynän',8,20]]),g=rnd(lo,hi,'g'),mk=g.v/1000;
+   return {text:`${o} massa on ${B(g)}. Mikä on sen paino?`,
+   steps:blk('G',MG,[GV('m',`${g.t} = ${val(mk,'kg')}`),Q('G')],subD('G',`${raw(mk)} · 10 N`)),x:g.v/100,unit:'N',ins:[g]}}},
+ {tags:['Fs'],f:()=>{const s=rnd(0.4,3,'km'),W=inp(s.v*1000*(30+rand()*70)/1000,sfp(),'kJ'),n=name(),Wj=val(W.v*1000,'J'),sm=val(s.v*1000,'m');
+   return {text:`${n} vetää pulkkaa hiihtoretkellä ${B(s)} matkan ja tekee ${B(W)} työtä. Kuinka suurella voimalla ${n} vetää pulkkaa?`,
+   steps:blk('W',FS,[GV('W',`${W.t} = ${Wj}`),GV('s',`${s.t} = ${sm}`),Q('F')],pS(Wj,['F',null],['s',sm])),x:W.v/s.v,unit:'N',ins:[W,s]}}},
+ {tags:['G','Gh'],f:()=>{const m=rnd(4,18,'kg'),h=rnd(0.8,1.3,'m'),s=rnd(10,60,'m'),G=m.v*10;
+   return {text:`Muuttomies nostaa ${B(m)} laatikon lattialta ${B(h)} korkeudelle syliinsä ja kantaa sen sitten ${B(s)} matkan vaakasuoraa käytävää pitkin. Kuinka paljon nostotyötä hän tekee koko matkan aikana?`,
+   steps:[`Vaakasuorassa kantamisessa laatikko ei nouse ylemmäs, joten siinä ei tehdä nostotyötä. Matka ${s.t} on ylimääräinen tieto.`,...blk('W',GH,[GM(m),GV('h',h.t),Q('W')],subD('W',`${val(G,'N')} · ${h.t}`))],x:G*h.v,unit:'J',ins:[m,h]}}},
+ {tags:['G','Gh'],f:()=>{const k=ri(8,40),m=rnd(5,20,'kg'),h=rnd(0.8,1.8,'m'),G=m.v*10,W1=G*h.v;
+   return {text:`Varastotyöntekijä nostaa ${k} laatikkoa lattialta ${B(h)} korkealle hyllylle. Jokaisen laatikon massa on ${B(m)}. Kuinka paljon työtä hän tekee yhteensä?`,
+   steps:['Lasketaan ensin yhden laatikon nostotyö.',...blk('W',GH,[GM(m),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W1,'J')),
+     `Laatikoita on ${k}, joten kerrotaan yhden laatikon työ niiden määrällä.`,E(`${V('W')} = ${k} · ${val(W1,'J')}`,null,'Kaikki laatikot')],x:k*W1,unit:'J',ins:[m,h],note:EXACT}}},
+ {tags:['ramp','G'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),m=R(sc.m,'kg'),G=m.v*10,F=G*h.v/s.v;
+   return {text:`${sc.nom}, jonka massa on ${B(m)}, pitää saada ${sc.to(B(h))}. Kuinka paljon pienemmällä voimalla siitä selviää, jos käyttää ${B(s)} pitkää ${sc.rp} kuin jos nostaisi suoraan ylös?${NF}`,
+   steps:[`Suoraan nostettaessa tarvitaan voima, joka on yhtä suuri kuin paino: ${GM(m)}.`,`${cap(sc.rn)}a pitkin tarvittava voima:`,
+     ...blkR([GM(m),GV('s',s.t),GV('h',h.t),Q('F')],fin(rS(null,s.t,val(G,'N'),h.t),F,'N')),
+     'Lasketaan voimien erotus.',E(`${val(G,'N')} − ${val(F,'N')}`,null,'Erotus')],x:G-F,unit:'N',ins:[m,h,s]}}},
+ {tags:['ramp','G','P'],f:()=>{const sc=pick(RAMP),{h,s}=rampDraw(sc),m=R(sc.m,'kg'),t=rnd(3,20,'s'),G=m.v*10,W=G*h.v;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${B(s)} pitkää ${sc.rp} pitkin ${sc.to(B(h))}. Siihen kuluu aikaa ${B(t)}. Kuinka suuri on teho?${NF}`,
+   steps:[`Kaltevalla tasolla ${FS} = ${GH}, joten työ on sama kuin nostotyö. ${cap(sc.rn)}n pituutta ei tarvita.`,
+     ...blk('W',GH,[GM(m),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',t.t),Q('P')],subD('P',fr(val(W,'J'),t.t)))],x:W/t.v,unit:'W',ins:[m,h,t]}}},
+ {tags:['G','Gh','P'],f:()=>{const m=rnd(40,80,'kg'),fh=rnd(2.8,3.5,'m'),a=ri(1,3),b=a+ri(2,5),t=rnd(8,40,'s'),d=b-a,h=d*fh.v,G=m.v*10,W=G*h;
+   return {text:`Oppilas, jonka massa on ${B(m)}, juoksee portaita ${a}. kerroksesta ${b}. kerrokseen. Yhden kerroksen korkeus on ${B(fh)}. Matkaan kuluu ${B(t)}. Mikä on oppilaan teho?`,
+   steps:[`Kerrosvälejä on ${b} − ${a} = ${d}. Lasketaan ensin nostotyö.`,
+     ...blk('W',GH,[GM(m),GV('h',`${d} · ${fh.t} = ${val(h,'m')}`)],fin(subD('W',`${val(G,'N')} · ${val(h,'m')}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',t.t),Q('P')],subD('P',fr(val(W,'J'),t.t)))],x:W/t.v,unit:'W',ins:[m,fh,t],note:EXACT}}},
+ {tags:['G','Gh','P'],f:()=>{const k=ri(15,60),c=rnd(15,19,'cm',2),m=rnd(40,80,'kg'),t=rnd(6,30,'s'),h=k*c.v/100,G=m.v*10,W=G*h;
+   return {text:`Näkötornin portaissa on ${k} askelmaa, ja jokaisen askelman korkeus on ${B(c)}. Retkeilijä, jonka massa on ${B(m)}, nousee portaat ajassa ${B(t)}. Mikä on hänen tehonsa?`,
+   steps:['Lasketaan ensin nostotyö. Nousukorkeus saadaan askelmien määrästä.',
+     ...blk('W',GH,[GM(m),GV('h',`${k} · ${c.t} = ${raw(k*c.v)} cm = ${val(h,'m')}`)],fin(subD('W',`${val(G,'N')} · ${val(h,'m')}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',t.t),Q('P')],subD('P',fr(val(W,'J'),t.t)))],x:W/t.v,unit:'W',ins:[c,m,t],note:EXACT}}},
+ {tags:['G','Gh','P'],f:()=>{const k=ri(8,30),m=rnd(5,20,'kg'),h=rnd(0.8,1.8,'m'),G=m.v*10,W1=G*h.v,W=k*W1,mi=inp(W/(25+rand()*50)/60,sfp(),'min'),ts=mi.v*60;
+   return {text:`Varastotyöntekijä nostaa ${k} laatikkoa ${B(h)} korkealle hyllylle. Jokaisen laatikon massa on ${B(m)}, ja työhön kuluu ${B(mi)}. Mikä on hänen keskimääräinen tehonsa?`,
+   steps:['Lasketaan ensin yhden laatikon nostotyö.',...blk('W',GH,[GM(m),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W1,'J')),
+     E(`${V('W')} = ${k} · ${val(W1,'J')} = ${val(W,'J')}`,null,'Kaikki laatikot'),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',`${mi.t} = ${val(ts,'s')}`),Q('P')],subD('P',fr(val(W,'J'),val(ts,'s'))))],x:W/ts,unit:'W',ins:[m,h,mi],note:EXACT}}},
+ {tags:['G','Gh','P'],f:()=>{const L=rnd(200,2000,'l'),h=rnd(3,15,'m'),P=rnd(0.3,1.5,'kW'),G=L.v*10,W=G*h.v,Pw=P.v*1000,ts=W/Pw;
+   return {text:`Pumppu nostaa ${B(L)} vettä kaivosta ${B(h)} korkeudelle. Pumpun teho on ${B(P)}. Kuinka monta minuuttia pumppaamiseen kuluu?`,
+   steps:[`Yksi litra vettä on massaltaan 1 kg, joten veden massa on ${val(L.v,'kg')}. Lasketaan ensin nostotyö.`,
+     ...blk('W',GH,[GN(L.v,G),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W,'J')),
+     'Sitten aika.',...blk('P',PWT,[GV('P',`${P.t} = ${val(Pw,'W')}`),GV('W',val(W,'J')),Q('t')],fin(qS(val(Pw,'W'),val(W,'J'),null),ts,'s')),
+     E(`${V('t')} = ${fr(raw(ts),'60')} min`,null,'Minuuteiksi')],x:ts/60,unit:'min',ins:[L,h,P]}}},
+ {tags:['G','Gh','P'],f:()=>{const cab=rnd(300,600,'kg'),k=ri(3,8),pm=rnd(65,80,'kg'),b=ri(4,9),fh=rnd(2.8,3.4,'m'),P=rnd(5,15,'kW'),M=cab.v+k*pm.v,h=(b-1)*fh.v,G=M*10,W=G*h,Pw=P.v*1000;
+   return {text:`Hissikorin massa on ${B(cab)}. Hissiin nousee ${k} henkilöä, joiden keskimääräinen massa on ${B(pm)}. Hissi nousee 1. kerroksesta ${b}. kerrokseen, ja kerroksen korkeus on ${B(fh)}. Moottorin teho on ${B(P)}. Kuinka kauan nousu kestää?`,
+   steps:[E(`${V('m')} = ${cab.t} + ${k} · ${pm.t} = ${val(M,'kg')}`,null,'Kokonaismassa'),'Lasketaan ensin nostotyö.',
+     ...blk('W',GH,[GN(M,G),GV('h',`(${b} − 1) · ${fh.t} = ${val(h,'m')}`)],fin(subD('W',`${val(G,'N')} · ${val(h,'m')}`),W,'J')),
+     'Sitten aika.',...blk('P',PWT,[GV('P',`${P.t} = ${val(Pw,'W')}`),GV('W',val(W,'J')),Q('t')],qS(val(Pw,'W'),val(W,'J'),null))],x:W/Pw,unit:'s',ins:[cab,pm,fh,P],note:EXACT}}},
+ {tags:['G','Gh','P'],f:()=>{const m=rnd(0.5,3,'t'),hh=10+rand()*40,mi=rnd(0.5,3,'min'),P=inp(m.v*1000*10*hh/(mi.v*60)/1000,sfp(),'kW'),Pw=P.v*1000,ts=mi.v*60,W=Pw*ts,mk=m.v*1000,G=mk*10;
+   return {text:`Rakennusnosturin moottorin teho on ${B(P)}. Nosturi nostaa ${B(m)} betonielementin ajassa ${B(mi)}. Kuinka korkealle elementti nousee?`,
+   steps:['Lasketaan ensin työ tehon avulla.',...blk('P',PWT,[GV('P',`${P.t} = ${val(Pw,'W')}`),GV('t',`${mi.t} = ${val(ts,'s')}`),Q('W')],fin(qS(val(Pw,'W'),null,val(ts,'s')),W,'J')),
+     `Sitten korkeus. Massa on ${m.t} = ${val(mk,'kg')}.`,...blk('W',GH,[GV('W',val(W,'J')),GN(mk,G),Q('h')],pS(val(W,'J'),['G',val(G,'N')],['h',null]))],x:W/G,unit:'m',ins:[P,m,mi]}}},
+ {tags:['G','Gh','P'],f:()=>{const m=rnd(45,80,'kg'),bk=rnd(8,15,'kg'),h=rnd(20,120,'m'),mi=rnd(2,10,'min'),M=m.v+bk.v,G=M*10,W=G*h.v,ts=mi.v*60,n=name();
+   return {text:`${n} (${B(m)}) ajaa ${B(bk)} polkupyörällä mäen päälle. Mäki nousee ${B(h)}, ja nousuun kuluu ${B(mi)}. Kuinka suurella teholla ${n} polkee? (Kitkaa ja ilmanvastusta ei huomioida.)`,
+   steps:['Ylös nousevat sekä pyöräilijä että pyörä.',E(`${V('m')} = ${m.t} + ${bk.t} = ${val(M,'kg')}`,null,'Kokonaismassa'),'Lasketaan ensin nostotyö.',
+     ...blk('W',GH,[GN(M,G),GV('h',h.t)],fin(subD('W',`${val(G,'N')} · ${h.t}`),W,'J')),
+     'Sitten teho.',...blk('P',PWT,[GV('W',val(W,'J')),GV('t',`${mi.t} = ${val(ts,'s')}`),Q('P')],subD('P',fr(val(W,'J'),val(ts,'s'))))],x:W/ts,unit:'W',ins:[m,bk,h,mi]}}},
+ {tags:['P'],f:()=>{const sc=pick([['Pölynimuri',0.7,2],['Hiustenkuivaaja',1,2.2],['Sähkökiuas',4,9],['Sähköpora',0.4,1]]),P=rnd(sc[1],sc[2],'kW'),mi=rnd(2,30,'min'),Pw=P.v*1000,ts=mi.v*60,W=Pw*ts;
+   return {text:`${sc[0]}, jonka teho on ${B(P)}, on käynnissä ${B(mi)}. Kuinka monta kilojoulea työtä se tekee?`,
+   steps:blk('P',PWT,[GV('P',`${P.t} = ${val(Pw,'W')}`),GV('t',`${mi.t} = ${val(ts,'s')}`),Q('W')],[...fin(qS(val(Pw,'W'),null,val(ts,'s')),W,'J'),E(`${V('W')} = ${fr(raw(W),'1000')} kJ`,null,'Kilojouleiksi')]),x:W/1000,unit:'kJ',ins:[P,mi]}}},
+];
+
+/* ---------- Kaksivartinen vipu: Ga = Fb ----------
+   a = kuorman varsi, b = voiman varsi */
+const LEVER=[
+ {subj:'Rakennusmies',verb:'nostaa',obj:'kiven',nom:'Kivi',tool:'rautakangella',tp:'kankea',m:[80,300],a:[0.15,0.4],b:[1,1.8]},
+ {verb:'nostaa',obj:'pihalaatan',nom:'Pihalaatta',tool:'sorkkaraudalla',tp:'sorkkarautaa',m:[25,70],a:[0.05,0.15],b:[0.5,0.9]},
+ {subj:'Metsuri',verb:'kääntää',obj:'tukin',nom:'Tukki',tool:'kääntökangella',tp:'kankea',m:[150,400],a:[0.2,0.5],b:[1.2,2.2]},
+ {subj:'Isä',verb:'nostaa',obj:'lapsen',nom:'Lapsi',tool:'keinulaudalla',tp:'keinulaudan toista päätä',m:[15,35],a:[0.8,1.4],b:[1.6,2.4]},
+ {subj:'Puutarhuri',verb:'nostaa',obj:'kannon',nom:'Kanto',tool:'rautakangella',tp:'kankea',m:[40,150],a:[0.15,0.35],b:[1,1.6]},
+];
+const blkL=(giv,rest)=>[E(`${V('G')}${V('a')} = ${V('F')}${V('b')}`,null,null,1),{given:ord(giv,['G','a','F','b'])},...rest];
+/* x1·x2 = y1·y2, yksi tuntematon (null) */
+function pp(sy,v){
+  const t=sy.map((s,i)=>v[i]??V(s)),u=v.indexOf(null),p=u^1;
+  const other=u<2?`${v[2]} · ${v[3]}`:`${v[0]} · ${v[1]}`;
+  return [E(`${t[0]} · ${t[1]} = ${t[2]} · ${t[3]}`,`: ${v[p]}`),E(`${V(sy[u])} = ${fr(other,v[p])}`)];
+}
+const lS=(G,a,F,b)=>pp(['G','a','F','b'],[G,a,F,b]);
+const LV=()=>{const sc=pick(LEVER);return {sc,a:R(sc.a,'m'),b:R(sc.b,'m')};};
+const NFL=' (Vivun omaa painoa ei huomioida.)';
+
+EASY.push(
+ {tags:['lever'],f:()=>{const {sc,a,b}=LV(),G=inp(U(sc.m)*10,sfp(),'N');
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj}, jonka paino on ${B(G)}, ${sc.tool}. Kuorman varsi on ${B(a)} ja voiman varsi ${B(b)}. Kuinka suurella voimalla ${sc.tp} pitää painaa?${NFL}`,
+   steps:blkL([GV('G',G.t),GV('a',a.t),Q('F'),GV('b',b.t)],lS(G.t,a.t,null,b.t)),x:G.v*a.v/b.v,unit:'N',ins:[G,a,b]}}},
+ {tags:['lever','G'],f:()=>{const {sc,a,b}=LV(),m=R(sc.m,'kg'),G=m.v*10;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.tool}. Kuorman varsi on ${B(a)} ja voiman varsi ${B(b)}. Kuinka suurella voimalla ${sc.tp} pitää painaa?${NFL}`,
+   steps:blkL([GM(m),GV('a',a.t),Q('F'),GV('b',b.t)],lS(val(G,'N'),a.t,null,b.t)),x:G*a.v/b.v,unit:'N',ins:[m,a,b]}}},
+);
+HARD.push(
+ {tags:['lever','G'],f:()=>{const {sc,a,b}=LV(),m=R(sc.m,'kg'),G=m.v*10,F=inp(G*a.v/b.v,sfp(),'N');
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.tool}. Hän jaksaa painaa ${sc.tp} voimalla ${B(F)}. Kuorman varsi on ${B(a)}. Kuinka pitkä voiman varren pitää olla?${NFL}`,
+   steps:blkL([GM(m),GV('a',a.t),GV('F',F.t),Q('b')],lS(val(G,'N'),a.t,F.t,null)),x:G*a.v/F.v,unit:'m',ins:[m,a,F]}}},
+ {tags:['lever','G'],f:()=>{const {sc,a,b}=LV(),m=R(sc.m,'kg'),G=m.v*10,F=inp(G*a.v/b.v,sfp(),'N');
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.tool} painamalla voimalla ${B(F)}. Voiman varsi on ${B(b)}. Kuinka pitkä on kuorman varsi?${NFL}`,
+   steps:blkL([GM(m),Q('a'),GV('F',F.t),GV('b',b.t)],lS(val(G,'N'),null,F.t,b.t)),x:F.v*b.v/G,unit:'m',ins:[m,F,b]}}},
+ {tags:['lever'],f:()=>{const {sc,a,b}=LV(),G=inp(U(sc.m)*10,sfp(),'N'),F=inp(G.v*a.v/b.v,sfp(),'N');
+   return {text:`${sc.nom}, jonka paino on ${B(G)}, nostetaan ${sc.tool}. Voiman varsi on ${B(b)}, ja ${sc.tp} painetaan voimalla ${B(F)}. Kuinka pitkä on kuorman varsi?${NFL}`,
+   steps:blkL([GV('G',G.t),Q('a'),GV('F',F.t),GV('b',b.t)],lS(G.t,null,F.t,b.t)),x:F.v*b.v/G.v,unit:'m',ins:[G,F,b]}}},
+ {tags:['lever','G'],f:()=>{const {sc,a,b}=LV(),F=inp(U(sc.m)*10*a.v/b.v,sfp(),'N'),G=F.v*b.v/a.v;
+   return {text:`${who(sc)} ${sc.verb} ${sc.obj} ${sc.tool} painamalla voimalla ${B(F)}. Kuorman varsi on ${B(a)} ja voiman varsi ${B(b)}. Mikä on ${sc.obj.split(' ')[0]} massa?${NFL}`,
+   steps:['Lasketaan ensin paino.',...blkL([Q('G'),GV('a',a.t),GV('F',F.t),GV('b',b.t)],fin(lS(null,a.t,F.t,b.t),G,'N')),
+     'Sitten massa.',...mBlk(val(G,'N'))],x:G/10,unit:'kg',ins:[F,a,b]}}},
+);
+CHAL.push(
+ {tags:['lever','G'],f:()=>{const {sc,a}=LV(),L=rnd(sc.b[0]+sc.a[1]+0.1,sc.b[1]+sc.a[1],'m'),m=R(sc.m,'kg'),G=m.v*10,b=L.v-a.v;
+   return {text:`${who(sc)} ${sc.verb} ${B(m)} ${sc.obj} ${sc.tool}, jonka pituus on ${B(L)}. Tukipiste on ${B(a)} päässä siitä päästä, jonka alla kuorma on. Kuinka suurella voimalla ${sc.tp} pitää painaa toisesta päästä?${NFL}`,
+   steps:[`Voiman varsi on vivun pituus miinus kuorman varsi: ${V('b')} = ${L.t} − ${a.t} = ${val(b,'m')}.`,
+     ...blkL([GM(m),GV('a',a.t),Q('F'),GV('b',`${L.t} − ${a.t} = ${val(b,'m')}`)],lS(val(G,'N'),a.t,null,val(b,'m')))],x:G*a.v/b,unit:'N',ins:[m,L,a]}}},
+ {tags:['lever','G'],f:()=>{const {sc}=LV(),a=rnd(sc.a[0]*100,sc.a[1]*100,'cm'),b=R(sc.b,'m'),m=R(sc.m,'kg'),G=m.v*10,am=a.v/100,F=G*am/b.v;
+   return {text:`${sc.nom}, jonka massa on ${B(m)}, nostetaan ${sc.tool}. Kuorman varsi on ${B(a)} ja voiman varsi ${B(b)}. Kuinka paljon pienemmällä voimalla nosto onnistuu vivulla kuin ilman sitä?${NFL}`,
+   steps:[`Ilman vipua tarvitaan voima, joka on yhtä suuri kuin paino: ${GM(m)}. Muunna varret samaan yksikköön.`,
+     ...blkL([GM(m),GV('a',`${a.t} = ${val(am,'m')}`),Q('F'),GV('b',b.t)],fin(lS(val(G,'N'),val(am,'m'),null,b.t),F,'N')),
+     'Lasketaan voimien erotus.',E(`${val(G,'N')} − ${val(F,'N')}`,null,'Erotus')],x:G-F,unit:'N',ins:[m,a,b]}}},
+);
+
+/* Aiempien aiheiden kaavat kuuluvat myöhempiin: valittu aihe tuo mukaan tehtävät, joissa tarvitaan myös sen esitietoja */
+const PRE={G:[],Fs:[],Gh:['G'],ramp:['G'],lever:['G'],P:['G','Fs','Gh']};
+const allowed=g=>g.tags.every(t=>on[t]||g.tags.some(x=>on[x]&&PRE[x].includes(t)));
+
+/* ---------- vastaus ja pyöristys ---------- */
+function finish(t){
+  const n=Math.min(...t.ins.map(i=>i.sf));
+  const weak=t.ins.filter(i=>i.sf===n).map(i=>i.t);
+  const res=fmtSig(t.x,n);const exact=raw(t.x);
+  const amb=digits(res)<n;
+  const last=t.steps.length-1;
+  t.steps[last].eq+=` = ${exact} ${t.unit}`+(exact!==res?` ≈ <b>${res} ${t.unit}</b>`:'');
+  let alt='';const r=roundSig(t.x,n);
+  if((t.unit==='J'||t.unit==='W')&&Math.abs(r)>=1000) alt=`= ${fmtSig(r/1000,n)} k${t.unit}`;
+  if(amb) alt+=(alt?' ':'')+`(${n} merkitsevää numeroa)`;
+  const nn=n===1?'yhteen merkitsevään numeroon':`${n} merkitsevään numeroon`;
+  const round=(weak.length>1?`Epätarkimmat lähtöarvot (${weak.join(', ')}) ovat`:`Epätarkin lähtöarvo (${weak[0]}) on`)+` ${n===1?'yhden':n} merkitsevän numeron tarkkuudella, joten vastaus pyöristetään ${nn}.`;
+  return {res:`${res} ${t.unit}`,alt,round:round+(t.note?' '+t.note:'')};
+}
+
+/* ---------- UI ---------- */
+const $=id=>document.getElementById(id);
+let count=0,last=null;
+FORMULAS.forEach(fm=>{const b=document.createElement('button');b.type='button';b.className='fchip';b.id='f-'+fm.id;
+  b.setAttribute('aria-pressed','true');b.innerHTML=`<b>${fm.label}</b>`;
+  b.addEventListener('click',()=>{on[fm.id]=!on[fm.id];b.setAttribute('aria-pressed',on[fm.id]);updCount();});
+  $('formulas').appendChild(b);});
+function updCount(){const k=FORMULAS.filter(f=>on[f.id]).length;
+  $('fcount').textContent=k===FORMULAS.length?'Napauta aihetta, niin sen tehtävät jäävät pois':`${k}/${FORMULAS.length} aihetta käytössä`;}
+[['t-kaavat','p-kaavat'],['t-suureet','p-suureet'],['t-pyor','p-pyor']].forEach(([b,p])=>{$(b).addEventListener('click',()=>{const open=$(p).hidden;$(p).hidden=!open;$(b).setAttribute('aria-expanded',open);});});
+
+/* Laskutehtävien aihepiirien osuudet vastaavat koetta (300 arvottua koetta, koegeneraattori v5).
+   Perustehtävä: kokeen perustason laskut. Vaikea: kokeen vaikeat laskut ja perustason yhtälötehtävät (solve) yhteensä.
+   Pelkät massa → paino -laskut eivät ole kokeessa omina tehtävinään; ne tulevat vain, jos muita aiheita ei ole valittu. Haastavat ovat tasan. */
+const CALCW={easy:{fall:100,work:69,lift:71,P:51,ramp:63,lever:36},hard:{fall:100,brake:40,work:119,lift:120,P:64,ramp:84,lever:86}};
+const famP=g=>g.fam||(g.tags.includes('ramp')?'ramp':g.tags.includes('lever')?'lever':g.tags.includes('P')?'P':g.tags.includes('Gh')?'lift':g.tags.includes('Fs')?'work':'G');
+function pickCalc(list,level){const W=CALCW[level];if(!W)return pick(list);const fams=[...new Set(list.map(famP))].filter(f=>W[f]);if(!fams.length)return pick(list);
+  let r=rand()*fams.reduce((a,f)=>a+W[f],0);for(const f of fams){r-=W[f];if(r<=0)return pick(list.filter(g=>famP(g)===f));}return pick(list.filter(g=>famP(g)===fams[fams.length-1]));}
+function make(level){
+  const list={easy:EASY,hard:HARD,chal:CHAL}[level].filter(allowed);
+  $('answer').hidden=true;$('btn-answer').textContent='Näytä vastaus';
+  if(!list.length){
+    $('meta').hidden=true;$('btn-answer').hidden=true;$('task').className='task empty';
+    $('task').textContent=`Valituilla aiheilla ei synny ${{easy:'perustehtäviä',hard:'vaikeita tehtäviä',chal:'haastavia tehtäviä'}[level]}. Ota käyttöön lisää aiheita yläpuolelta.`;return;}
+  let g;for(let k=0;k<6;k++){g=pickCalc(list,level);if(g!==last||list.length<2)break;}last=g;
+  const t=g.f();count++;
+  $('meta').hidden=false;$('btn-answer').hidden=false;$('task').className='task';
+  $('badge').textContent={easy:'Perustehtävä',hard:'Vaikea',chal:'Haastava'}[level];$('badge').className='badge '+level;
+  $('num').textContent='Tehtävä '+count;
+  $('task').innerHTML=t.text;
+  if(t.parts){const r=renderParts(t);$('res').innerHTML=r.res;$('steps').innerHTML=r.steps;$('round').textContent='';return;}
+  const a=finish(t);
+  $('res').innerHTML=a.res+(a.alt?`<small>${a.alt}</small>`:'');
+  $('steps').innerHTML=t.steps.map(s=>typeof s==='string'?`<p class="sn">${s}</p>`:s.given?`<div class="giv">${s.given.map(g=>`<div>${g}</div>`).join('')}</div>`:`<div class="er${s.form?' form':''}">${s.lab?`<span class="lab">${s.lab}:</span>`:''}<span class="eq">${s.eq}</span>${s.op?`<span class="op">${s.op}</span>`:''}</div>`).join('');
+  $('round').textContent=a.round;
+}
+$('btn-easy').addEventListener('click',()=>make('easy'));
+$('btn-hard').addEventListener('click',()=>make('hard'));
+$('btn-chal').addEventListener('click',()=>make('chal'));
+$('btn-answer').addEventListener('click',()=>{const a=$('answer');a.hidden=!a.hidden;$('btn-answer').textContent=a.hidden?'Näytä vastaus':'Piilota vastaus'});
+/* ---------- Teoriakysymykset ----------
+   mc: {q, o:[vaihtoehdot], c:oikean indeksi, ex:selitys}   open: {q, a:mallivastaus} */
+const TF=['Tosi','Epätosi'];
+const QEASY=[
+ {q:'Missä tilanteessa tehdään työtä fysiikan mielessä?',o:['Pidät raskasta laukkua paikallaan','Nostat laukun lattialta pöydälle','Kannat laukkua tasaisella lattialla','Nojaat seinään'],c:1,ex:'Työtä tehdään, kun kappale liikkuu voiman suuntaan. Nostettaessa sekä voima että liike ovat ylöspäin.'},
+ {q:'Mikä on työn yksikkö?',o:['joule (J)','newton (N)','watti (W)','kilogramma (kg)'],c:0,ex:'Työn ja energian yksikkö on joule. 1 J on työ, joka tehdään, kun 1 N:n voima vaikuttaa 1 m:n matkan.'},
+ {q:'Mikä on tehon yksikkö?',o:['watti (W)','joule (J)','newton (N)','metri (m)'],c:0,ex:'Tehon yksikkö on watti. 1 W tarkoittaa, että työtä tehdään 1 J sekunnissa.'},
+ {q:'Kuinka monta joulea on 1 kJ?',o:['1000 J','100 J','10 J','1 000 000 J'],c:0,ex:'Etuliite kilo (k) tarkoittaa tuhatta, joten 1 kJ = 1000 J.'},
+ {q:'Mitä teho kertoo?',o:['Kuinka nopeasti työ tehdään','Kuinka suuri voima on','Kuinka pitkä matka kuljetaan','Kuinka painava kappale on'],c:0,ex:'Teho on työ jaettuna ajalla. Mitä lyhyemmässä ajassa sama työ tehdään, sitä suurempi on teho.'},
+ {q:'Kaksi yhtä painavaa oppilasta nousee samat portaat. Toinen kävelee ja toinen juoksee. Kumpi tekee enemmän nostotyötä?',o:['Yhtä paljon','Juoksija','Kävelijä','Sitä ei voi tietää'],c:0,ex:'Nostotyö riippuu vain painosta ja nostokorkeudesta, ei ajasta. Juoksijan teho on kuitenkin suurempi, koska hän tekee saman työn lyhyemmässä ajassa.'},
+ {q:'Kaksi yhtä painavaa oppilasta nousee samat portaat. Toinen kävelee ja toinen juoksee. Kumman teho on suurempi?',o:['Juoksijan','Kävelijän','Yhtä suuri','Sitä ei voi tietää'],c:0,ex:'Molemmat tekevät saman työn, mutta juoksija tekee sen lyhyemmässä ajassa. Teho P = W / t on silloin suurempi.'},
+ {q:'Mitä kaltevan tason avulla säästetään?',o:['Voimaa','Työtä','Matkaa','Energiaa'],c:0,ex:'Kaltevaa tasoa pitkin tarvitaan pienempi voima kuin nostettaessa suoraan, mutta matka on pidempi. Työ pysyy samana.'},
+ {q:'Mikä seuraavista pitää paikkansa kaltevasta tasosta ja vivusta?',o:['Voima pienenee, mutta matka kasvaa. Työ pysyy samana.','Voima ja matka pienenevät, joten työtä säästyy.','Voima kasvaa, mutta matka lyhenee.','Työ pienenee, koska voima pienenee.'],c:0,ex:'Kalteva taso ja vipu pienentävät tarvittavaa voimaa, mutta matka kasvaa. Työ pysyy samana.'},
+ {q:'Luiskan korkeus pysyy samana, mutta sen pituus kaksinkertaistetaan. Miten tarvittava voima muuttuu? (Kitkaa ei huomioida.)',o:['Puolittuu','Kaksinkertaistuu','Pysyy samana','Nelinkertaistuu'],c:0,ex:'Kaavasta Fs = Gh nähdään, että kun s kaksinkertaistuu ja Gh pysyy samana, F puolittuu.'},
+ {q:'Mikä on vivun tukipiste?',o:['Kohta, jonka ympäri vipu kiertyy','Kohta, jossa kuorma on','Kohta, jota painetaan','Vivun keskikohta aina'],c:0,ex:'Tukipiste on vivun kiertymiskohta. Varret mitataan tukipisteestä kuormaan ja voiman vaikutuskohtaan.'},
+ {q:'Mitä tapahtuu tarvittavalle voimalle, kun vivun voiman vartta pidennetään?',o:['Voima pienenee','Voima kasvaa','Voima pysyy samana','Vipu ei enää toimi'],c:0,ex:'Kaavasta Ga = Fb: kun b kasvaa, F pienenee. Siksi pitkällä kangella on helpompi nostaa.'},
+ {q:'Mikä seuraavista on kaksivartinen vipu?',o:['Keinulauta','Luiska','Ruuvi','Liukumäki'],c:0,ex:'Kaksivartisessa vivussa tukipiste on kuorman ja voiman välissä, kuten keinulaudassa.'},
+ {q:'Mitkä asiat vaikuttavat kaksivartisella vivulla tarvittavaan voimaan?',o:['Kuorman paino, kuorman varsi ja voiman varsi','Vain kuorman paino','Vain vivun materiaali','Vain nostoon kuluva aika'],c:0,ex:'Kaavasta Ga = Fb nähdään, että voima F riippuu kuorman painosta G sekä varsista a ja b.'},
+ {q:'Väite: Kun pidät painavaa kauppakassia paikallaan, teet fysiikan mielessä työtä.',o:TF,c:1,ex:'Epätosi. Kassi ei liiku, joten työtä ei tehdä. Lihakset kyllä väsyvät, koska ne jännittyvät ja kuluttavat energiaa.'},
+ {q:'Väite: Nostotyö riippuu kappaleen painosta ja nostokorkeudesta.',o:TF,c:0,ex:'Tosi. Nostotyö W = Gh.'},
+ {q:'Väite: Kaltevaa tasoa käyttämällä työn määrä pienenee.',o:TF,c:1,ex:'Epätosi. Voima pienenee, mutta matka kasvaa. Työ pysyy samana, ja kitkan takia sitä tarvitaan todellisuudessa jopa hieman enemmän.'},
+ {q:'Väite: Teho kertoo, kuinka paljon työtä tehdään sekunnissa.',o:TF,c:0,ex:'Tosi. Esimerkiksi 100 W tarkoittaa, että työtä tehdään 100 J sekunnissa.'},
+ {q:'Millä kappaleella on potentiaalienergiaa?',o:['Hyllyllä olevalla kirjalla','Lattialla olevalla pallolla','Vain liikkuvalla autolla','Ei millään paikallaan olevalla kappaleella'],c:0,ex:'Potentiaalienergia eli asemaenergia riippuu korkeudesta. Ylhäällä olevalla kappaleella on potentiaalienergiaa, vaikka se olisi paikallaan.'},
+ {q:'Millä kappaleella on liike-energiaa?',o:['Vierivällä pallolla','Hyllyllä olevalla kirjalla','Venytetyllä kuminauhalla','Pöydällä olevalla omenalla'],c:0,ex:'Liike-energiaa on jokaisella liikkuvalla kappaleella.'},
+ {q:'Pallo putoaa pöydältä lattialle. Mikä energianmuutos tapahtuu putoamisen aikana?',o:['Potentiaalienergia muuttuu liike-energiaksi','Liike-energia muuttuu potentiaalienergiaksi','Lämpö muuttuu liike-energiaksi','Energiaa syntyy tyhjästä'],c:0,ex:'Pallon korkeus pienenee ja nopeus kasvaa, joten potentiaalienergia muuttuu liike-energiaksi.'},
+ {q:'Mitä energian säilymisen laki tarkoittaa?',o:['Energiaa ei synny eikä häviä, se vain muuttuu muodosta toiseen','Energiaa voi säästää pakastimessa','Energia häviää vähitellen','Energiaa syntyy aina liikkeestä'],c:0,ex:'Energian kokonaismäärä pysyy samana. Energia muuttuu muodosta toiseen, esimerkiksi liike-energiasta lämmöksi.'},
+ {q:'Mitä hyötysuhde kertoo?',o:['Kuinka suuri osa energiasta muuttuu hyödylliseen muotoon','Kuinka nopeasti laite toimii','Kuinka paljon laite maksaa','Kuinka painava laite on'],c:0,ex:'Hyötysuhde on hyödyllisen energian osuus kaikesta laitteeseen tuodusta energiasta. Se ilmoitetaan usein prosentteina.'},
+ {q:'Voiko laitteen hyötysuhde olla yli 100 %?',o:['Ei voi','Voi, jos laite on hyvä','Voi, jos laite toimii nopeasti','Voi lyhyen aikaa'],c:0,ex:'Laite ei voi antaa enempää energiaa kuin siihen tuodaan. Osa energiasta muuttuu aina esimerkiksi lämmöksi, joten hyötysuhde on alle 100 %.'},
+ {q:'Mihin muotoon koneissa tavallisesti muuttuu se energia, jota ei saada hyötykäyttöön?',o:['Lämmöksi','Potentiaalienergiaksi','Massaksi','Se häviää kokonaan'],c:0,ex:'Esimerkiksi kitka muuttaa liike-energiaa lämmöksi. Energia ei häviä, mutta siitä ei ole hyötyä.'},
+ {q:'Mitä kiinteä väkipyörä tekee?',o:['Muuttaa voiman suunnan','Puolittaa tarvittavan voiman','Lyhentää köyden vetomatkaa','Lisää kuorman painoa'],c:0,ex:'Kiinteä väkipyörä ei pienennä voimaa, mutta sillä voi nostaa kuormaa vetämällä köyttä alaspäin, mikä on usein helpompaa.'},
+ {q:'Hevosvoima (hv) on vanha yksikkö, jota käytetään yhä esimerkiksi autojen yhteydessä. Minkä suureen yksikkö se on?',o:['Tehon','Työn','Voiman','Nopeuden'],c:0,ex:'Hevosvoima on tehon yksikkö. 1 hv on noin 736 W.'},
+ {q:'Minkä laitteen teho on tyypillisesti suurin?',o:['Sähkökiuas','Kännykän laturi','LED-lamppu','Kannettava tietokone'],c:0,ex:'Sähkökiukaan teho on tyypillisesti noin 6–9 kW. Kännykän laturin teho on noin 5–20 W.'},
+ {q:'Kuinka suuri on tavallisen ihmisen teho esimerkiksi pyöräillessä pidemmän aikaa?',o:['Noin 100 W','Noin 1 W','Noin 10 kW','Noin 1 000 kW'],c:0,ex:'Kuntoilijan jatkuva teho on noin 100–200 W. Hetkellisesti, esimerkiksi portaita juostessa, se voi olla selvästi suurempi.'},
+ {q:'Miksi polkupyörällä ajetaan jyrkkä ylämäki kevyellä vaihteella?',o:['Tarvitaan pienempi voima, mutta poljetaan useampi kierros','Silloin työtä tarvitaan vähemmän','Silloin pyörä painaa vähemmän','Silloin teho kasvaa itsestään'],c:0,ex:'Kevyellä vaihteella polkimiin tarvitaan pienempi voima, mutta polkimia pyöritetään enemmän. Työ pysyy samana: voima pienenee, mutta matka kasvaa.'},
+ {q:'Oppilas tutkii, miten luiskan pituus vaikuttaa tarvittavaan voimaan. Mitä hänen pitää tehdä?',o:['Muuttaa vain luiskan pituutta ja pitää kaiken muun samana','Muuttaa luiskan pituutta ja korkeutta yhtä aikaa','Vaihtaa vedettävää kappaletta joka mittauksella','Muuttaa kaikkea mahdollista, jotta saa paljon tuloksia'],c:0,ex:'Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Silloin voiman muutos johtuu varmasti luiskan pituudesta.'},
+ {q:'Miksi mittaus kannattaa toistaa useita kertoja?',o:['Jotta satunnaiset virheet pienenevät ja keskiarvo on luotettavampi','Jotta tulos muuttuu','Jotta tutkimus kestää kauemmin','Toistaminen ei ole tarpeen'],c:0,ex:'Yksittäinen mittaus voi epäonnistua. Toistomittausten keskiarvo on luotettavampi, ja poikkeava tulos huomataan.'},
+ {q:'Mikä on hypoteesi?',o:['Perusteltu ennuste siitä, mitä tutkimuksessa tapahtuu','Tutkimuksen lopullinen tulos','Mittauksissa käytetty laite','Taulukko mittaustuloksista'],c:0,ex:'Hypoteesi tehdään ennen tutkimusta. Tutkimus näyttää, pitääkö hypoteesi paikkansa.'},
+];
+
+const QHARD=[
+ {q:'Kannat raskasta laukkua pitkän matkan vaakasuoraa käytävää pitkin ja väsyt. Selitä, miksi et kuitenkaan tee laukkuun nostotyötä.',a:'Laukkua kannatteleva voima on ylöspäin, mutta laukku liikkuu vaakasuoraan. Laukku ei liiku voiman suuntaan, joten nostotyötä ei tehdä. Väsyminen johtuu siitä, että lihakset ovat jännittyneinä ja kuluttavat energiaa, mutta tämä energia ei siirry laukkuun työnä.'},
+ {q:'Selitä kaltevan tason avulla, miksi työ pysyy samana, vaikka tarvittava voima pienenee.',a:'Kun kappale työnnetään kaltevaa tasoa pitkin ylös, tarvitaan pienempi voima kuin nostettaessa suoraan. Matka on kuitenkin pidempi. Työ on molemmissa tapauksissa sama (Fs = Gh): voima pienenee, mutta matka kasvaa.'},
+ {q:'Miksi vuoristoteillä on paljon mutkia eikä tie nouse suoraan ylös?',a:'Mutkitteleva tie on kuin pitkä kalteva taso. Kun matka pitenee, tie on loivempi ja autoa ylöspäin vievä voima on pienempi. Auto jaksaa nousta ja ajaminen on turvallisempaa. Nostotyö on sama kuin suoraan noustessa.'},
+ {q:'Miksi oven kahva on mahdollisimman kaukana saranoista?',a:'Ovi toimii vipuna, jonka tukipiste on saranoissa. Kun kahva on kaukana saranoista, voiman varsi on pitkä, ja ovi aukeaa pienemmällä voimalla.'},
+ {q:'Sorkkaraudalla voi nostaa paljon painavampaa kuormaa kuin käsin. Selitä, miksi tämä ei riko energian säilymisen lakia.',a:'Vipua painava käsi liikkuu pitkän matkan, mutta kuorma nousee vain vähän. Pieni voima pitkällä matkalla tekee saman työn kuin suuri voima lyhyellä matkalla. Työtä ei synny lisää, vaan vipu muuttaa voiman ja matkan suhdetta.'},
+ {q:'Pallo pudotetaan lattialle, ja se pomppii yhä matalammalle, kunnes pysähtyy. Kuvaile pallon energianmuutokset. Mihin energia lopulta päätyy?',a:'Pudotessa potentiaalienergia muuttuu liike-energiaksi. Osuessaan lattiaan pallo puristuu kasaan, ja liike-energia muuttuu hetkeksi muodonmuutoksen energiaksi ja sitten takaisin liike-energiaksi. Ylöspäin noustessa liike-energia muuttuu potentiaalienergiaksi. Jokaisessa pompussa osa energiasta muuttuu lämmöksi ja ääneksi, joten pallo ei nouse yhtä korkealle. Lopulta kaikki energia on muuttunut lämmöksi. Energia ei häviä.'},
+ {q:'Missä heilurin kohdassa sen liike-energia on suurin?',o:['Alimmassa kohdassa','Ylimmässä kohdassa','Puolivälissä','Se on joka kohdassa yhtä suuri'],c:0,ex:'Alimmassa kohdassa heiluri liikkuu nopeimmin, joten liike-energia on suurin ja potentiaalienergia pienin. Ylimmässä kohdassa heiluri pysähtyy hetkeksi, joten potentiaalienergia on suurin.'},
+ {q:'Miksi LED-lamppu on parempi valinta kuin vanha hehkulamppu? Käytä vastauksessa käsitettä hyötysuhde.',a:'Hehkulampussa suurin osa sähköenergiasta muuttuu lämmöksi ja vain pieni osa valoksi, joten sen hyötysuhde on huono. LED-lampun hyötysuhde on paljon parempi: sama määrä valoa saadaan paljon pienemmällä teholla, joten sähköä kuluu vähemmän.'},
+ {q:'Sähkömoottori saa 1000 J sähköenergiaa ja tekee 600 J nostotyötä. Mikä seuraavista pitää paikkansa?',o:['Yli puolet energiasta muuttuu nostotyöksi, ja loput 400 J muuttuu pääosin lämmöksi','Loput 400 J häviää kokonaan','Kaikki energia muuttuu nostotyöksi','Moottori tuottaa enemmän energiaa kuin saa'],c:0,ex:'600 J on yli puolet 1000 J:sta. Loput 400 J muuttuu esimerkiksi kitkan ja sähkövastuksen takia lämmöksi. Energia ei häviä.'},
+ {q:'Energia säilyy aina. Miksi silti puhutaan energian kulutuksesta?',a:'Kun energiaa "kulutetaan", se ei häviä vaan muuttuu toiseen muotoon, usein lämmöksi, joka leviää ympäristöön. Tätä hajallaan olevaa lämpöä on vaikea käyttää uudelleen. Kulutus tarkoittaa siis käyttökelpoisen energian muuttumista vähemmän käyttökelpoiseen muotoon.'},
+ {q:'Suunnittele tutkimus, jolla selvität, miten luiskan pituus vaikuttaa voimaan, joka tarvitaan kappaleen vetämiseen ylös. Mitä muutat, mitä mittaat ja mitkä asiat pidät samoina?',a:'Muutetaan luiskan pituutta. Jokaisella pituudella mitataan voimamittarilla, kuinka suuri voima tarvitaan kappaleen vetämiseen. Samoina pidetään luiskan yläpään korkeus, vedettävä kappale ja luiskan pinta, jotta voiman muutos johtuu vain luiskan pituudesta. Jokainen mittaus toistetaan muutaman kerran ja lasketaan keskiarvo. Tulokset kootaan taulukkoon ja niistä piirretään kuvaaja.'},
+ {q:'Miten voisit mitata oman tehosi portaissa? Kerro, mitä mittaat, millä välineillä ja miten lasket tehon.',a:'Mitataan oma massa vaa\'alla, portaiden korkeus mittanauhalla (esim. yhden askelman korkeus kertaa askelmien määrä) ja nousuun kuluva aika sekuntikellolla. Lasketaan paino G = m · 10 N/kg, nostotyö W = Gh ja teho P = W / t. Mittaus kannattaa toistaa ja laskea keskiarvo.'},
+ {q:'Oppilas tutkii vipua. Hän muuttaa voiman varren pituutta ja mittaa, kuinka suuri voima tarvitaan kuorman nostamiseen. Mitkä asiat hänen pitää pitää samoina?',o:['Kuorman paino ja kuorman varsi','Voiman varsi ja voima','Vain kuorman paino','Ei mitään, kaikkea saa muuttaa'],c:0,ex:'Oppilas tutkii voiman varren vaikutusta voimaan. Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Kuorman paino ja kuorman varsi pidetään siis samoina.'},
+ {q:'Kun tutkitaan yhden suureen vaikutusta toiseen, miksi kaikki muut asiat pidetään samoina?',a:'Jos useampi asia muuttuu yhtä aikaa, ei voida tietää, mikä niistä aiheutti tuloksen muutoksen. Kun vain tutkittava suure muuttuu ja kaikki muu pysyy samana, tuloksen muutos johtuu juuri siitä.'},
+ {q:'Luiskan korkeus pidetään samana ja sen pituutta kasvatetaan. Millainen on kuvaaja, jossa vaaka-akselilla on luiskan pituus ja pystyakselilla tarvittava voima?',o:['Laskeva käyrä, joka loivenee','Nouseva suora','Vaakasuora suora','Nouseva käyrä, joka jyrkkenee'],c:0,ex:'Kun pituus kasvaa, voima pienenee (F = Gh / s). Voima ei kuitenkaan pienene tasaisesti: kaksinkertainen pituus puolittaa voiman, joten käyrä laskee ja loivenee.'},
+ {q:'Oppilas mittasi luiskalla tarvittavan voiman neljä kertaa ja sai tulokset 12 N, 13 N, 25 N ja 12 N. Mitä hänen kannattaa tehdä?',o:['Pitää 25 N todennäköisenä virhemittauksena ja tarkistaa se uusintamittauksella','Ottaa keskiarvo kaikista neljästä','Valita suurin tulos varmuuden vuoksi','Hylätä kaikki tulokset'],c:0,ex:'25 N poikkeaa selvästi muista. Se johtuu todennäköisesti virheestä, esimerkiksi nykäisystä. Mittaus toistetaan, ja keskiarvo lasketaan luotettavista tuloksista.'},
+ {q:'Miksi todellisuudessa kaltevaa tasoa pitkin tehty työ on hieman suurempi kuin suoran nostamisen työ?',a:'Kaltevalla tasolla kappale liukuu pintaa pitkin, ja kitka vastustaa liikettä. Osa työstä kuluu kitkan voittamiseen, ja se muuttuu lämmöksi. Laskuissa kitka jätetään huomiotta, jolloin työt ovat yhtä suuret.'},
+ {q:'Nosturi A nostaa kuorman 10 sekunnissa ja nosturi B saman kuorman yhtä korkealle 20 sekunnissa. Mitä voit sanoa nostureiden tehoista ja töistä?',o:['Työ on sama, mutta A:n teho on kaksinkertainen','A tekee kaksinkertaisen työn','B:n teho on kaksinkertainen','Teho ja työ ovat molemmilla samat'],c:0,ex:'Nostotyö W = Gh on sama. Teho P = W / t on A:lla kaksinkertainen, koska aika on puolet lyhyempi.'},
+ {q:'Sähköpotkulauta kulkee akun avulla. Mikä on oikea energianmuutosten ketju?',o:['Kemiallinen energia → sähköenergia → liike-energia (ja lämpö)','Liike-energia → sähköenergia → kemiallinen energia','Lämpö → liike-energia → sähköenergia','Potentiaalienergia → kemiallinen energia → valo'],c:0,ex:'Akkuun on varastoitunut kemiallista energiaa, joka muuttuu sähköenergiaksi ja moottorissa liike-energiaksi. Osa muuttuu lämmöksi.'},
+ {q:'Miksi jyrkkä ylämäki ajetaan polkupyörällä kevyellä vaihteella? Selitä voiman, matkan ja työn avulla.',a:'Kevyellä vaihteella polkimiin tarvitaan pienempi voima, mutta polkimet pyörivät useamman kierroksen saman matkan aikana. Voima pienenee, mutta matka kasvaa. Mäkeen nousemiseen tarvittava työ on sama, mutta se on helpompi tehdä pienellä voimalla.'},
+ {q:'Uimahyppääjä hyppää 10 metrin tornista veteen. Kuvaile energianmuutokset hypyn aikana.',a:'Tornissa hyppääjällä on potentiaalienergiaa. Pudotessa potentiaalienergia muuttuu liike-energiaksi, ja nopeus kasvaa. Pieni osa energiasta muuttuu ilmanvastuksen takia lämmöksi. Veteen osuessa liike-energia siirtyy veteen: vesi liikkuu, roiskuu ja lämpenee hieman, ja syntyy ääntä.'},
+];
+
+QEASY.push(
+ {q:'Mitä yhteistä on työllä ja energialla?',o:['Niillä on sama yksikkö, joule','Niillä on sama yksikkö, watti','Molemmat mitataan newtoneina','Niillä ei ole mitään yhteistä'],c:0,ex:'Työ ja energia mitataan jouleina. Kun tehdään työtä, energiaa siirtyy tai muuttuu muodosta toiseen.'},
+ {q:'Missä tilanteessa työtä EI tehdä?',o:['Työnnät seinää, mutta se ei liiku','Vedät pulkkaa mäkeä ylös','Nostat repun selkään','Työnnät ostoskärryä kaupassa'],c:0,ex:'Työtä tehdään vain, jos kappale liikkuu voiman suuntaan. Seinä ei liiku, joten työtä ei tehdä, vaikka voimaa käytetään.'},
+ {q:'Mitä tietoja tarvitset nostotyön laskemiseen?',o:['Kappaleen painon ja nostokorkeuden','Nostoon kuluneen ajan ja korkeuden','Kappaleen nopeuden ja massan','Pelkän nostokorkeuden'],c:0,ex:'Nostotyö W = Gh, eli tarvitaan paino G ja nostokorkeus h. Jos massa tunnetaan, paino lasketaan siitä.'},
+ {q:'Kappale nostetaan kaksi kertaa korkeammalle kuin aiemmin. Miten nostotyö muuttuu?',o:['Kaksinkertaistuu','Puolittuu','Pysyy samana','Nelinkertaistuu'],c:0,ex:'Kaavassa W = Gh työ on suoraan verrannollinen korkeuteen. Kaksinkertainen korkeus tarkoittaa kaksinkertaista työtä.'},
+ {q:'Sama työ tehdään puolessa ajassa. Miten teho muuttuu?',o:['Kaksinkertaistuu','Puolittuu','Pysyy samana','Nelinkertaistuu'],c:0,ex:'Teho P = W / t. Kun aika puolittuu ja työ pysyy samana, teho kaksinkertaistuu.'},
+ {q:'Kuinka monta wattia on 2,5 kW?',o:['2 500 W','250 W','25 W','25 000 W'],c:0,ex:'1 kW = 1000 W, joten 2,5 kW = 2,5 · 1000 W = 2 500 W.'},
+ {q:'Mitä tarkoittaa, että laitteen teho on 1 W?',o:['Laite tekee 1 J työtä sekunnissa','Laite tekee 1 N voiman','Laite painaa 1 kg','Laite käy 1 tunnin'],c:0,ex:'1 W = 1 J/s. Teho kertoo, kuinka monta joulea työtä tehdään sekunnissa.'},
+ {q:'Mikä seuraavista on esimerkki kaltevasta tasosta?',o:['Pyörätuoliluiska','Sakset','Keinulauta','Kiinteä väkipyörä'],c:0,ex:'Luiska on kalteva taso: sitä pitkin kuorma saadaan ylös pienemmällä voimalla, mutta pidempää matkaa.'},
+ {q:'Ruuvin kierre on kiertynyt ruuvin varren ympärille. Mihin yksinkertaiseen koneeseen ruuvi perustuu?',o:['Kaltevaan tasoon','Väkipyörään','Kaksivartiseen vipuun','Hammasrattaaseen'],c:0,ex:'Ruuvin kierre on kuin kalteva taso, joka on kierretty sylinterin ympärille.'},
+ {q:'Väite: Sakset ovat kaksivartinen vipu.',o:TF,c:0,ex:'Tosi. Saksien tukipiste on nivelessä, ja kädet ja leikattava materiaali ovat sen eri puolilla.'},
+ {q:'Väite: Keinulaudalla painavampi lapsi pystyy nostamaan kevyemmän lapsen, vaikka istuisi lähempänä tukipistettä.',o:TF,c:0,ex:'Tosi. Tasapainossa paino kertaa varsi on molemmin puolin sama, joten painavampi lapsi voi istua lähempänä tukipistettä.'},
+ {q:'Mitä tarvittavalle voimalle tapahtuu, kun kuorma siirretään lähemmäs vivun tukipistettä?',o:['Voima pienenee','Voima kasvaa','Voima pysyy samana','Vipu ei enää toimi'],c:0,ex:'Kaavasta Ga = Fb: kun kuorman varsi a lyhenee, tarvittava voima F pienenee.'},
+ {q:'Painavampi ja kevyempi lapsi istuvat keinulaudalla, ja lauta on tasapainossa. Kumpi istuu lähempänä tukipistettä?',o:['Painavampi lapsi','Kevyempi lapsi','Molemmat yhtä kaukana','Tasapaino ei ole mahdollinen'],c:0,ex:'Tasapainossa paino kertaa varsi on molemmilla puolilla sama. Painavamman lapsen varren on oltava lyhyempi.'},
+ {q:'Miksi ruuvimeisselin kahva on paljon paksumpi kuin sen varsi?',o:['Paksusta kahvasta kääntäminen vaatii pienemmän voiman','Paksu kahva on kevyempi','Paksu kahva tekee työn puolestamme','Paksuudella ei ole merkitystä'],c:0,ex:'Kahva ja varsi toimivat kuin pyörä ja akseli. Kun kahvaa käännetään suuremmalta säteeltä, tarvitaan pienempi voima, mutta käsi liikkuu pidemmän matkan.'},
+ {q:'Väite: Yksinkertaisen koneen avulla voidaan vähentää tarvittavaa työtä.',o:TF,c:1,ex:'Epätosi. Yksinkertainen kone voi pienentää voimaa tai muuttaa sen suuntaa, mutta työ pysyy samana. Kitkan takia sitä tarvitaan jopa hieman enemmän.'},
+ {q:'Väite: Kappaleen potentiaalienergia kasvaa, kun se nostetaan korkeammalle.',o:TF,c:0,ex:'Tosi. Mitä korkeammalla kappale on, sitä enemmän sillä on potentiaalienergiaa.'},
+ {q:'Väite: Kappaleen liike-energia on suurempi, kun se liikkuu nopeammin.',o:TF,c:0,ex:'Tosi. Liike-energia kasvaa nopeuden kasvaessa.'},
+ {q:'Pallo heitetään suoraan ylöspäin. Missä kohdassa sen potentiaalienergia on suurin?',o:['Ylimmässä kohdassa','Heittohetkellä','Puolivälissä','Juuri ennen kiinniottoa'],c:0,ex:'Ylimmässä kohdassa pallo on korkeimmalla ja pysähtyy hetkeksi. Liike-energia on muuttunut potentiaalienergiaksi.'},
+ {q:'Nostat kirjan hyllylle. Mihin tekemäsi nostotyö varastoituu?',o:['Kirjan potentiaalienergiaksi','Kirjan liike-energiaksi','Hyllyn lämmöksi','Se häviää'],c:0,ex:'Nostotyö varastoituu kirjan potentiaalienergiaksi. Jos kirja putoaa, potentiaalienergia muuttuu liike-energiaksi.'},
+ {q:'Mikä energianmuutos tapahtuu aurinkopaneelissa?',o:['Valo → sähköenergia','Sähköenergia → valo','Lämpö → liike-energia','Liike-energia → valo'],c:0,ex:'Aurinkopaneeli muuttaa auringon valon sähköenergiaksi.'},
+ {q:'Missä muodossa energia on varastoituneena ruokaan?',o:['Kemiallisena energiana','Liike-energiana','Potentiaalienergiana','Sähköenergiana'],c:0,ex:'Ruoassa energia on kemiallista energiaa. Elimistö muuttaa sitä esimerkiksi liike-energiaksi ja lämmöksi.'},
+ {q:'Mikä energianmuutos tapahtuu vesivoimalaitoksessa?',o:['Ylhäällä olevan veden potentiaalienergia → sähköenergia','Sähköenergia → veden liike-energia','Lämpö → veden potentiaalienergia','Kemiallinen energia → sähköenergia'],c:0,ex:'Padon takana korkealla olevan veden potentiaalienergia muuttuu liike-energiaksi, joka pyörittää turbiinia ja generaattoria. Näin syntyy sähköä.'},
+ {q:'Väite: Kun hierot käsiä yhteen, kitka muuttaa liike-energiaa lämmöksi.',o:TF,c:0,ex:'Tosi. Siksi kädet lämpenevät.'},
+ {q:'Laitteen hyötysuhde on 25 %. Mitä se tarkoittaa?',o:['Neljäsosa tuodusta energiasta muuttuu hyödylliseen muotoon','Laite toimii neljäsosan ajasta','Laite tuottaa 25 J energiaa','Laitteen teho on 25 W'],c:0,ex:'25 % on neljäsosa. Loput 75 % energiasta muuttuu hyödyttömäksi, yleensä lämmöksi.'},
+ {q:'Laite A (60 W) ja laite B (1 kW) ovat päällä yhtä kauan. Kumpi käyttää enemmän energiaa?',o:['Laite B','Laite A','Molemmat yhtä paljon','Sitä ei voi tietää'],c:0,ex:'1 kW = 1000 W on paljon enemmän kuin 60 W. Suurempitehoinen laite käyttää samassa ajassa enemmän energiaa.'},
+ {q:'Oppilas tutkii, miten nostokorkeus vaikuttaa nostotyöhön. Mikä hänen pitää pitää samana?',o:['Nostettava kappale','Nostokorkeus','Ei mitään','Mittauksen tulos'],c:0,ex:'Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Jos kappale vaihtuisi, työ muuttuisi myös painon takia, eikä tiedettäisi, mikä osa muutoksesta johtuu korkeudesta.'},
+ {q:'Väite: Kun tutkitaan yhden suureen vaikutusta toiseen, muut asiat pidetään samoina.',o:TF,c:0,ex:'Tosi. Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Muuten ei tiedetä, mistä tuloksen muutos johtuu.'},
+ {q:'Väite: Tutkimuksessa kannattaa muuttaa monta asiaa kerralla, jotta tuloksia saadaan nopeammin.',o:TF,c:1,ex:'Epätosi. Jos monta asiaa muuttuu yhtä aikaa, ei tiedetä, mikä niistä aiheutti tuloksen muutoksen.'},
+ {q:'Miksi mittaustulokset esitetään usein kuvaajana?',o:['Suureiden välinen riippuvuus näkyy kuvaajasta helposti','Kuvaaja tekee tuloksista tarkempia','Kuvaajaa ei tarvitse tulkita','Taulukkoa ei saa käyttää'],c:0,ex:'Kuvaajasta näkee nopeasti, kasvaako vai pieneneekö mitattava suure ja onko joku tulos poikkeava.'},
+ {q:'Mihin tutkimuksen tuloksia verrataan johtopäätöksiä tehtäessä?',o:['Hypoteesiin','Muiden oppilaiden arvauksiin','Mittausvälineen hintaan','Tutkimuksen pituuteen'],c:0,ex:'Johtopäätöksissä pohditaan, tukevatko tulokset hypoteesia vai eivät, ja mistä mahdolliset erot johtuvat.'},
+);
+
+QHARD.push(
+ {q:'Miksi työ ja energia mitataan samalla yksiköllä? Käytä esimerkkinä nostotyötä.',a:'Työtä tekemällä siirretään energiaa. Kun kappale nostetaan, siihen tehty nostotyö varastoituu kappaleen potentiaalienergiaksi. Tehty työ on siis yhtä suuri kuin energian muutos, ja siksi molempien yksikkö on joule.'},
+ {q:'Kaksi luiskaa vie samalle korkeudelle: lyhyt ja jyrkkä sekä pitkä ja loiva. Mitä voit sanoa tarvittavasta voimasta ja työstä? (Kitkaa ei huomioida.)',o:['Loivaa pitkin tarvitaan pienempi voima, mutta työ on sama','Loivaa pitkin tarvitaan pienempi voima ja vähemmän työtä','Jyrkkää pitkin tarvitaan pienempi voima','Molempia pitkin tarvitaan sama voima'],c:0,ex:'Fs = Gh: kun s kasvaa, F pienenee. Työ on molemmissa sama kuin nostotyö Gh.'},
+ {q:'Miksi tiukan mutterin saa auki helpommin pitkällä jakoavaimella kuin lyhyellä?',a:'Jakoavain toimii vipuna, jonka tukipiste on mutterissa. Pitkässä jakoavaimessa voiman varsi on pidempi, joten mutterin kääntämiseen tarvitaan pienempi voima. Käsi liikkuu kuitenkin pidemmän matkan.'},
+ {q:'Keinulaudalla 30 kg:n lapsi istuu 1,0 m:n päässä tukipisteestä. Kuinka kaukana tukipisteestä 20 kg:n lapsen pitää istua, jotta lauta on tasapainossa?',o:['1,5 m','0,67 m','1,0 m','2,0 m'],c:0,ex:'Tasapainossa Ga = Fb: 300 N · 1,0 m = 200 N · b, josta b = 1,5 m. Kevyemmän lapsen pitää istua kauempana.'},
+ {q:'Miksi paksua pahvia on helpompi leikata, kun se on lähellä saksien niveltä?',a:'Sakset ovat kaksivartinen vipu, jonka tukipiste on nivelessä. Kun pahvi on lähellä niveltä, kuorman varsi on lyhyt ja voiman varsi pitkä. Silloin pienellä käden voimalla saadaan terien väliin suuri voima.'},
+ {q:'Miksi vuoristoradan ensimmäinen mäki on aina korkein?',a:'Ensimmäiselle mäelle vaunu vedetään moottorilla, ja se saa potentiaalienergiaa. Sen jälkeen vaunu kulkee ilman moottoria, ja energia muuttuu potentiaali- ja liike-energian välillä. Osa energiasta muuttuu koko ajan kitkan ja ilmanvastuksen takia lämmöksi, joten vaunu ei jaksaisi nousta yhtä korkealle mäelle kuin ensimmäinen.'},
+ {q:'Missä vuoristoradan kohdassa vaunun nopeus on suurin?',o:['Radan alimmassa kohdassa','Ensimmäisen mäen huipulla','Radan lopussa','Nopeus on joka kohdassa sama'],c:0,ex:'Alimmassa kohdassa potentiaalienergiaa on vähiten, joten liike-energiaa ja nopeutta on eniten.'},
+ {q:'Pallo pudotetaan 2,0 m:n korkeudelta, ja se pomppaa 1,5 m:n korkeuteen. Kuinka suuri osa pallon potentiaalienergiasta säilyi?',o:['75 %','25 %','50 %','100 %'],c:0,ex:'Potentiaalienergia on verrannollinen korkeuteen: 1,5 m / 2,0 m = 0,75 = 75 %. Loput 25 % muuttui lämmöksi ja ääneksi.'},
+ {q:'Polttomoottoriauton hyötysuhde on noin 30 %. Mitä se tarkoittaa, ja mihin loput energiasta menee?',a:'Polttoaineen kemiallisesta energiasta vain noin 30 % muuttuu auton liike-energiaksi. Suurin osa muuttuu lämmöksi, joka poistuu pakokaasujen ja jäähdytysnesteen mukana, ja osa kuluu kitkaan moottorissa ja voimansiirrossa.'},
+ {q:'Suunnittele tutkimus, jolla selvität, miten kuorman varren pituus vaikuttaa vivun nostamiseen tarvittavaan voimaan.',a:'Kuorma siirretään eri etäisyyksille tukipisteestä, eli muutetaan kuorman vartta. Jokaisella etäisyydellä mitataan voimamittarilla, kuinka suuri voima tarvitaan, ja voimaa painetaan aina samasta kohdasta. Kuorman paino ja voiman varsi pidetään samoina, jotta voiman muutos johtuu vain kuorman varresta. Mittaukset toistetaan, ja tuloksista tehdään taulukko ja kuvaaja.'},
+ {q:'Miten tutkisit, vaikuttaako luiskan pinnan materiaali kappaleen vetämiseen tarvittavaan voimaan?',a:'Vaihdetaan luiskan pintaa, esimerkiksi puu, hiekkapaperi ja muovi. Jokaisella pinnalla mitataan voimamittarilla vetämiseen tarvittava voima. Samoina pidetään luiskan pituus ja korkeus, vedettävä kappale ja vetotapa (tasainen vauhti), jotta erot johtuvat vain pinnasta. Mittaukset toistetaan ja tuloksia verrataan. Erot johtuvat kitkasta.'},
+ {q:'Oppilas tutkii, miten nostokorkeus vaikuttaa nostotyöhön. Mikä seuraavista on hyvä hypoteesi?',o:['Kun nostokorkeus kaksinkertaistuu, myös nostotyö kaksinkertaistuu, koska W = Gh','Nostotyö on aina 10 J','Korkeudella ei ole vaikutusta, koska kappale on sama','Nostotyö pienenee, kun korkeus kasvaa'],c:0,ex:'Hyvä hypoteesi on perusteltu ennuste. Tässä peruste on kaava W = Gh.'},
+ {q:'Mittauksissa sama kappale nostettiin eri korkeuksille, ja nostotyö laskettiin. Millainen on kuvaaja, jossa vaaka-akselilla on korkeus ja pystyakselilla työ?',o:['Nouseva suora, joka kulkee origon kautta','Laskeva käyrä','Vaakasuora suora','Nouseva käyrä, joka loivenee'],c:0,ex:'Nostotyö on suoraan verrannollinen korkeuteen (W = Gh), joten kuvaaja on origon kautta kulkeva nouseva suora.'},
+ {q:'Mitkä virhelähteet voivat vaikuttaa, kun mitataan oman tehon suuruutta portaissa? Miten niitä voi vähentää?',a:'Ajanotossa on reaktioaikaa, joka vaikuttaa varsinkin lyhyissä mittauksissa. Portaiden korkeus voidaan mitata epätarkasti, ja vauhti voi vaihdella. Virheitä vähennetään mittaamalla korkeus huolellisesti (esim. useamman askelman korkeus kerralla), käyttämällä pidempiä portaita ja toistamalla mittaus useita kertoja ja laskemalla keskiarvo.'},
+ {q:'Miksi laskun vastaus pyöristetään epätarkimman lähtöarvon mukaan?',o:['Vastaus ei voi olla tarkempi kuin epätarkin mittaus, josta se on laskettu','Jotta vastaus olisi mahdollisimman pitkä','Koska laskin pyöristää aina väärin','Pyöristyksellä ei ole merkitystä fysiikassa'],c:0,ex:'Jos jokin lähtöarvo on mitattu vain kahden merkitsevän numeron tarkkuudella, vastauksen lisädesimaalit eivät pidä paikkaansa.'},
+ {q:'Nouset kolmanteen kerrokseen kerran portaita ja kerran hissillä. Kummassa tapauksessa sinuun tehdään enemmän nostotyötä? Mistä energia tulee kummassakin tapauksessa?',a:'Nostotyö on molemmissa sama, koska paino ja nousukorkeus ovat samat. Portaissa työn tekevät omat lihakset, ja energia tulee ruoan kemiallisesta energiasta. Hississä työn tekee sähkömoottori, ja energia tulee sähköverkosta.'},
+ {q:'Pumppu A nostaa vesimäärän tankkiin 2 minuutissa ja pumppu B saman vesimäärän samaan tankkiin 6 minuutissa. Miten pumppujen tehot eroavat?',o:['A:n teho on kolminkertainen B:hen verrattuna','B:n teho on kolminkertainen A:han verrattuna','Tehot ovat samat, koska työ on sama','A:n teho on kaksinkertainen'],c:0,ex:'Työ on sama, mutta A tekee sen kolmasosassa ajasta. P = W / t, joten A:n teho on kolminkertainen.'},
+ {q:'Selitä, miksi ruuvi on kalteva taso ja miksi sen kiertäminen puuhun onnistuu pienellä voimalla.',a:'Ruuvin kierre on kalteva taso, joka on kiertynyt ruuvin varren ympärille. Kun ruuvia kierretään yksi kierros, sen kierre kulkee pitkän matkan, mutta ruuvi uppoaa puuhun vain vähän. Pitkä matka ja pieni uppoamissyvyys tarkoittavat, että tarvittava voima on pieni.'},
+ {q:'Miksi auton tai polkupyörän jarrut kuumenevat jarrutettaessa?',a:'Jarrutettaessa jarrupalat hankaavat pyörää tai jarrulevyä. Kitka muuttaa ajoneuvon liike-energiaa lämmöksi, joten jarrut kuumenevat. Energia ei häviä, vaan se siirtyy lopulta lämpönä ympäristöön.'},
+ {q:'Pyöräilijä laskee pitkän mäen alas polkematta. Mikä on pääasiallinen energianmuutos?',o:['Potentiaalienergia → liike-energia (ja osin lämmöksi)','Liike-energia → potentiaalienergia','Kemiallinen energia → liike-energia','Lämpö → liike-energia'],c:0,ex:'Pyöräilijä laskeutuu alemmas, joten potentiaalienergia pienenee ja muuttuu liike-energiaksi. Osa muuttuu ilmanvastuksen ja kitkan takia lämmöksi.'},
+);
+
+/* ---------- Koetyyppiset teoriatehtävät (generoituvat) ----------
+   type: 'table' (rivit, joissa valitaan sarake), 'pick' (valitse oikea sana), 'open' (mallivastaus), 'mc' */
+/* tasapuolinen sekoitus (Fisher–Yates); sort(()=>rand()-.5) suosisi listan alkupäätä */
+const sample=(a,n)=>{const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b.slice(0,n);};
+const A=(x,n,u)=>`${fmtSig(x,n)} ${u}`;
+const P=(l,t)=>`<p><b>${l})</b> ${t}</p>`;
+const OPEN_HINT='Mieti vastaus tai kirjoita se vihkoon. Vertaa sitten mallivastaukseen.';
+const CALC_HINT='Laske vihkoon. Merkitse yksiköt myös laskuihin. Vertaa sitten mallivastaukseen.';
+
+/* Sidottu vai vapaa energia */
+const BOUND=[['Sokerin kemiallinen energia',0],['Bensiinin kemiallinen energia',0],['Polttopuun kemiallinen energia',0],['Pariston kemiallinen energia',0],['Leivän kemiallinen energia',0],
+ ['Pöydälle nostetun laukun potentiaalienergia',0],['Padon takana olevan veden potentiaalienergia',0],['Hyllyllä olevan kirjan potentiaalienergia',0],['Hyppytornissa seisovan uimarin potentiaalienergia',0],
+ ['Lampun valoenergia',1],['Auringon valoenergia',1],['Auton liike-energia',1],['Vierivän pallon liike-energia',1],['Tuulen liike-energia',1],['Kännykän näytön valoenergia',1],['Putoavan omenan liike-energia',1]];
+function genBound(n){const b=sample(BOUND.filter(x=>!x[1]),Math.ceil(n/2)),f=sample(BOUND.filter(x=>x[1]),Math.floor(n/2));
+  return {type:'table',q:'Onko kyseessä sidottu vai vapaa energia?',cols:['Sidottu','Vapaa'],rows:sample([...b,...f],n).map(([t,c])=>({t,c})),
+   ex:'Sidottu energia on varastoitunut, esimerkiksi kemiallinen energia ja potentiaalienergia. Vapaa energia on liikkeessä tai siirtymässä, esimerkiksi liike-energia ja valoenergia.'};}
+
+/* Oikein vai väärin, korjaa väärät */
+const TFE=[
+ ['Kun nuotiota poltetaan, energian kokonaismäärä kasvaa.',0,'Energian kokonaismäärä pysyy samana. Puun kemiallinen energia muuttuu lämmöksi ja valoksi.'],
+ ['Kappaleella ei ole liike-energiaa, jos sen nopeus hidastuu.',0,'Kappaleella on liike-energiaa aina, kun se liikkuu. Kun nopeus hidastuu, liike-energia pienenee.'],
+ ['Leivänpaahdin muuttaa lämpöenergiaa sähköenergiaksi.',0,'Leivänpaahdin muuttaa sähköenergiaa lämpöenergiaksi.'],
+ ['Työn suuruus lasketaan voiman ja ajan tulona.',0,'Työ lasketaan voiman ja matkan tulona: W = Fs.'],
+ ['Painon yksikkö on kilogramma.',0,'Painon yksikkö on newton (N). Kilogramma on massan yksikkö.'],
+ ['Kun kahvikuppia työnnetään pitkin pöydän pintaa, sen potentiaalienergia kasvaa.',0,'Kupin korkeus ei muutu, joten sen potentiaalienergia pysyy samana.'],
+ ['Työn yksikkö on newton.',0,'Työn yksikkö on joule (J).'],
+ ['Massan yksikkö on newton.',0,'Massan yksikkö on kilogramma (kg).'],
+ ['Kaltevaa tasoa käyttämällä säästetään työtä.',0,'Kalteva taso pienentää tarvittavaa voimaa, mutta työ pysyy samana.'],
+ ['Kun pidät painavaa kassia paikallaan, teet työtä.',0,'Kassi ei liiku, joten työtä ei tehdä.'],
+ ['Sähkölamppu muuttaa valoenergiaa sähköenergiaksi.',0,'Lamppu muuttaa sähköenergiaa valoksi ja lämmöksi.'],
+ ['Tehon yksikkö on joule.',0,'Tehon yksikkö on watti (W). Joule on työn ja energian yksikkö.'],
+ ['Tehon yksikkö on watti.',1],['Nostotyö varastoituu kappaleen potentiaalienergiaksi.',1],['Pudotessa kappaleen potentiaalienergia muuttuu liike-energiaksi.',1],
+ ['Aurinkopaneeli muuttaa valoenergiaa sähköenergiaksi.',1],['Teho kertoo, kuinka nopeasti työtä tehdään.',1],['Polkupyörällä jarrutettaessa liike-energia muuttuu lämmöksi.',1],['1 kJ on 1000 J.',1],
+];
+const TFH=[
+ ['Kappaleen potentiaalienergia riippuu sen nopeudesta.',0,'Potentiaalienergia riippuu kappaleen painosta ja korkeudesta. Nopeus vaikuttaa liike-energiaan.'],
+ ['Laitteen hyötysuhde voi olla 120 %.',0,'Hyötysuhde on aina alle 100 %, koska osa energiasta muuttuu esimerkiksi lämmöksi.'],
+ ['Kun luiskan pituus kaksinkertaistetaan ja korkeus pysyy samana, tarvittava voima kaksinkertaistuu.',0,'Voima puolittuu, koska Fs = Gh.'],
+ ['Jarrutettaessa energia häviää.',0,'Energia ei häviä, vaan liike-energia muuttuu lämmöksi.'],
+ ['Kemiallinen energia on vapaata energiaa.',0,'Kemiallinen energia on sidottua energiaa.'],
+ ['Liike-energia on sidottua energiaa.',0,'Liike-energia on vapaata energiaa.'],
+ ['Juoksija tekee portaissa enemmän nostotyötä kuin yhtä painava kävelijä.',0,'Nostotyö on sama, koska paino ja korkeus ovat samat. Juoksijan teho on suurempi.'],
+ ['Vivulla nostaminen vähentää tarvittavaa työtä.',0,'Vipu pienentää voimaa, mutta voiman vaikutusmatka kasvaa. Työ pysyy samana.'],
+ ['Kun kappale putoaa, sen potentiaalienergia kasvaa.',0,'Potentiaalienergia pienenee, koska korkeus pienenee. Se muuttuu liike-energiaksi.'],
+ ['Kun sama työ tehdään puolessa ajassa, teho kaksinkertaistuu.',1],
+ ['Kun kappale putoaa ilman ilmanvastusta, sen liike-energia maahan osuessa on yhtä suuri kuin potentiaalienergia alussa.',1],
+ ['Nostotyö on sama, nostetaanpa kappale hitaasti tai nopeasti.',1],
+ ['Sähkömoottorin tuottama hyötyenergia on aina pienempi kuin moottorin saama sähköenergia.',1],
+ ['Kun kappaletta kannetaan portaita ylös, sen potentiaalienergia kasvaa.',1],
+ ['Kaltevaa tasoa käytettäessä voiman vaikutusmatka on pidempi kuin suoraan nostettaessa.',1],
+];
+const genTF=(pool,n)=>()=>({type:'table',q:'Ovatko väittämät oikein vai väärin? Mieti, miten korjaisit väärät väittämät.',cols:['Oikein','Väärin'],
+  rows:sample(pool,n).map(([t,ok,fix])=>({t,c:ok?0:1,fix:fix?'Korjattu: '+fix:''})),ex:'Kokeessa väärät väittämät pitää myös korjata. Vertaa omaa korjaustasi yllä oleviin.'});
+
+/* Valitse oikea vaihtoehto */
+const PSE=['pienempi','yhtä suuri','suurempi'],PMOD=['pienenee','pysyy samana','kasvaa'];
+const PICKE=[
+ ['Kun käytetään kaltevaa tasoa apuna nostamisessa, tehty nostotyö on','kuin nostettaessa suoraan ylös.',PSE,1],
+ ['Kaltevaa tasoa käytettäessä tarvittava voima on','kuin suoraan ylös nostettaessa.',PSE,0],
+ ['Kaltevaa tasoa käytettäessä voiman vaikutusmatka on','kuin suoraan ylös nostettaessa.',['lyhyempi','yhtä pitkä','pidempi'],2],
+ ['Kun vivun voiman vartta pidennetään, tarvittava voima','.',PMOD,0],
+ ['Kun sama työ tehdään lyhyemmässä ajassa, teho on','.',PSE,2],
+ ['Kun kappale nostetaan korkeammalle, sen potentiaalienergia','.',PMOD,2],
+ ['Kun kappale putoaa, sen liike-energia','.',PMOD,2],
+ ['Kun kappale putoaa, sen potentiaalienergia','.',PMOD,0],
+ ['Kun energia muuttuu muodosta toiseen, energian kokonaismäärä','.',PMOD,1],
+ ['Kun kappaletta työnnetään vaakasuoraa pöytää pitkin, sen potentiaalienergia','.',PMOD,1],
+ ['Laitteen hyötysuhde on aina','100 %.',['alle','tasan','yli'],0],
+ ['Kun laatikko nostetaan hitaasti, nostotyö on','kuin nopeasti nostettaessa.',PSE,1],
+];
+const PICKH=[
+ ['Keinulaudalla painavamman lapsen on istuttava','tukipistettä kuin kevyemmän, jotta lauta on tasapainossa.',['lähempänä','yhtä kaukana','kauempana'],0],
+ ['Kun kuorma siirretään lähemmäs vivun tukipistettä, tarvittava voima','.',PMOD,0],
+ ['Kun pallo pomppii, pomppujen korkeus',', koska osa energiasta muuttuu lämmöksi.',PMOD,0],
+ ['Mitä suurempi laitteen hyötysuhde on, sitä','osa energiasta muuttuu lämmöksi.',['pienempi','suurempi'],0],
+ ['Kun luiskan korkeus pysyy samana ja pituus kasvaa, tarvittava voima','.',PMOD,0],
+ ['Kun jarrutusvoima on suurempi, jarrutusmatka on','.',['lyhyempi','yhtä pitkä','pidempi'],0],
+ ['Kun portaat juostaan nopeammin kuin kävellen, nostotyö','.',PMOD,1],
+ ['Kun portaat juostaan nopeammin kuin kävellen, teho','.',PMOD,2],
+ ['Kun vivun voiman varsi on kuorman vartta pidempi, voiman vaikutusmatka on','kuin kuorman nousumatka.',['lyhyempi','yhtä pitkä','pidempi'],2],
+ ['Kun pudonnut kappale on puolivälissä matkaa, sen liike-energia on','kuin sen potentiaalienergia (ilmanvastusta ei huomioida, nollataso maanpinnalla).',PSE,1],
+];
+const genPick=(pool,n)=>()=>({type:'pick',q:'Valitse oikea vaihtoehto.',items:sample(pool,n).map(([pre,post,o,c])=>({pre,post,o,c})),
+  ex:'Mieti jokaisen kohdan kohdalla, mikä kaava tai periaate asiaan liittyy (esim. Fs = Gh, Ga = Fb, P = W / t tai energian säilyminen).'});
+
+/* Energianmuutokset */
+const CONV=[
+ ['auton polttoaineessa','autolla ajetaan','Kemiallisena energiana.','Liike-energiaksi ja lämmöksi. Lisäksi syntyy ääntä.','sidottua'],
+ ['kynttilässä','kynttilä palaa','Kemiallisena energiana.','Lämmöksi ja valoksi.','sidottua'],
+ ['sähköpotkulaudan akussa','potkulaudalla ajetaan','Kemiallisena energiana.','Ensin sähköenergiaksi ja moottorissa liike-energiaksi. Lisäksi syntyy lämpöä ja ääntä.','sidottua'],
+ ['taskulampun paristossa','taskulamppu on päällä','Kemiallisena energiana.','Sähköenergian kautta valoksi ja lämmöksi.','sidottua'],
+ ['ruoassa','ihminen juoksee','Kemiallisena energiana.','Liike-energiaksi ja lämmöksi.','sidottua'],
+ ['polttopuussa','nuotio palaa','Kemiallisena energiana.','Lämmöksi ja valoksi.','sidottua'],
+ ['padon takana olevassa vedessä','vesi virtaa vesivoimalan läpi','Potentiaalienergiana.','Liike-energiaksi ja generaattorissa sähköenergiaksi. Osa muuttuu lämmöksi.','sidottua'],
+ ['tuulessa','tuulivoimala pyörii','Liike-energiana.','Sähköenergiaksi. Osa muuttuu lämmöksi ja ääneksi.','vapaata'],
+ ['hyppytornissa seisovassa uimarissa','uimari hyppää altaaseen','Potentiaalienergiana.','Ensin liike-energiaksi. Veteen osuessa liike-energia muuttuu veden liikkeeksi, ääneksi ja lämmöksi.','sidottua'],
+];
+function genConv(){const [src,use,a,b,sv]=pick(CONV.filter(c=>okT(c.join(' '))));
+ return {type:'open',q:P('a',`Missä muodossa energia on ${src}?`)+P('b',`Mihin muotoon energia muuttuu, kun ${use}? Mainitse vähintään kaksi merkittävintä.`)+P('c','Onko a-kohdan energia sidottua vai vapaata energiaa?'),
+  a:P('a',a)+P('b',b)+P('c',`Se on ${sv} energiaa.`)};}
+
+/* Ratkaisulohkot teoriatehtävien mallivastauksiin (sama muoto kuin laskutehtävissä) */
+const stepsHTML=st=>`<div class="steps">${st.map(s=>typeof s==='string'?`<p class="sn">${s}</p>`:s.given?`<div class="giv">${s.given.map(g=>`<div>${g}</div>`).join('')}</div>`:`<div class="er${s.form?' form':''}">${s.lab?`<span class="lab">${s.lab}:</span>`:''}<span class="eq">${s.eq}</span>${s.op?`<span class="op">${s.op}</span>`:''}</div>`).join('')}</div>`;
+const solveH=(steps,x,unit,ins,note)=>{const r=finish({steps,x,unit,ins,note});return stepsHTML(steps)+`<p class="kround">${r.round}</p>`;};
+const EP=`${V('E')}<sub>p</sub>`,EK=`${V('E')}<sub>k</sub>`;
+
+/* Suuruusjärjestys: perustasolla töitä, nostotöitä tai tehoja; vaikealla sekaisin */
+const ORDK=()=>[['Fs','17'],['lift','18'],['pow','19']].filter(x=>SEL.has(x[1])).map(x=>x[0]);
+function genOrder(hard){
+ const kind=hard?'mix':pick(ORDK());
+ for(;;){const cases=[];
+  const push=(t,W,calc)=>cases.push({t,W,calc});
+  const fs=()=>{const F=pick([20,25,40,50,60,80,100,120,150,200,250,300,400,500]),s=pick([0.5,1,1.5,2,2.5,3,4,5,6,8,10,12]);
+    push(`Voima ${raw(F)} N siirtää kappaletta ${raw(s)} m.`,F*s,`${V('W')} = ${raw(F)} N · ${raw(s)} m = ${raw(F*s)} J`);};
+  const lift=()=>{const m=pick([2,3,4,5,8,10,12,15,20,25,40]),h=pick([0.5,1,1.5,2,3,4]);
+    push(`Kappale, jonka massa on ${raw(m)} kg, nostetaan ${raw(h)} m ylöspäin.`,m*10*h,`${V('G')} = ${raw(m)} · 10 N = ${raw(m*10)} N, ${V('W')} = ${raw(m*10)} N · ${raw(h)} m = ${raw(m*10*h)} J`);};
+  const pow=()=>{const Pw=pick([20,25,40,50,60,80,100,120,150,200,250,300,400,500]),t=pick([2,4,5,10,20,30,60]);
+    push(`Laite tekee ${raw(Pw*t)} J työtä ajassa ${t} s.`,Pw,`${V('P')} = ${fr(raw(Pw*t)+' J',t+' s')} = ${raw(Pw)} W`);};
+  if(kind==='Fs')for(let i=0;i<4;i++)fs();
+  if(kind==='lift')for(let i=0;i<4;i++)lift();
+  if(kind==='pow')for(let i=0;i<4;i++)pow();
+  if(kind==='mix'){fs();fs();lift();
+    if(rand()<0.5){const F=pick([100,150,200,300]);push(`Laatikkoa pidetään paikallaan voimalla ${F} N puolen minuutin ajan.`,0,'Laatikko ei liiku, joten työtä ei tehdä: W = 0 J');}
+    else{const k=pick([0.5,0.8,1.2,1.5,2]);push(`Voima tekee työtä ${raw(k)} kJ.`,k*1000,`${raw(k)} kJ = ${raw(k*1000)} J`);}}
+  const Ws=cases.map(c=>c.W).sort((a,b)=>a-b);if(Ws.some((w,i)=>i&&w<=Ws[i-1]*1.05))continue;
+  const lab=sample(cases,cases.length).map((c,i)=>({...c,l:'ABCD'[i]}));
+  const ord=lab.slice().sort((a,b)=>a.W-b.W);
+  const intro={Fs:'Laita voimien tekemät työt suuruusjärjestykseen pienimmästä suurimpaan.',lift:'Laita nostotyöt suuruusjärjestykseen pienimmästä suurimpaan.',pow:'Laita laitteiden tehot suuruusjärjestykseen pienimmästä suurimpaan.',mix:'Laita voimien tekemät työt suuruusjärjestykseen pienimmästä suurimpaan.'}[kind];
+  return {type:'open',hint:`Laske jokaisen ${kind==='pow'?'laitteen teho':'tilanteen työ'} vihkoon ja kirjoita kirjaimet järjestykseen. Vertaa sitten mallivastaukseen.`,
+   q:`<p>${intro}</p>`+lab.map(c=>`<p><b>${c.l}</b> ${c.t}</p>`).join(''),
+   a:`<p><b>${ord.map(c=>c.l).join(' &lt; ')}</b></p>`+ord.map(c=>`<p>${c.l}: ${c.calc}</p>`).join('')};}}
+
+/* Suureet, tunnukset ja yksiköt */
+const UNITS=[['energia','E','joule, J','16'],['työ','W','joule, J','17'],['voima','F','newton, N','17'],['matka','s','metri, m','17'],['massa','m','kilogramma, kg',''],
+ ['paino','G','newton, N','18'],['korkeus','h','metri, m','18'],['teho','P','watti, W','19'],['aika','t','sekunti, s','19'],['kuorman varsi','a','metri, m','20b'],['voiman varsi','b','metri, m','20b']];
+const UNITS_=()=>UNITS.filter(u=>!u[3]||SEL.has(u[3]));
+function genUnits(){const rows=sample(UNITS_(),Math.min(6,UNITS_().length)).map(u=>({u,b:Math.floor(rand()*3)}));
+ const cell=(r,j,show)=>j===r.b&&!show?'':j===1?`<i>${r.u[1]}</i>`:r.u[j];
+ const tab=show=>`<div class="tscroll"><table class="qtable"><thead><tr><th>Suure</th><th>Tunnus</th><th>Yksikkö</th></tr></thead><tbody>${rows.map(r=>`<tr>${[0,1,2].map(j=>`<td>${j===r.b&&show?`<b>${cell(r,j,true)}</b>`:cell(r,j,show)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+ return {type:'open',hint:'Täydennä tyhjät kohdat vihkoon. Vertaa sitten mallivastaukseen.',q:'<p>Täydennä taulukon tyhjät kohdat.</p>'+tab(false),a:tab(true)};}
+/* Yksikkömuunnokset */
+function genUConv(){
+ const k=()=>pick([0.5,1.2,2.5,3.6,4.8,7.5,12]),J=()=>pick([250,800,1500,3200,4500,12000]);
+ const pool=[()=>{const x=k();return [`${raw(x)} kJ`,'J',`${raw(x*1000)} J`];},()=>{const x=J();return [`${raw(x)} J`,'kJ',`${raw(x/1000)} kJ`];}];
+ if(SEL.has('19'))pool.push(()=>{const x=k();return [`${raw(x)} kW`,'W',`${raw(x*1000)} W`];},()=>{const x=J();return [`${raw(x)} W`,'kW',`${raw(x/1000)} kW`];},()=>{const x=pick([1.5,2,3,4.5,6,12]);return [`${raw(x)} min`,'s',`${raw(x*60)} s`];});
+ if(SEL.has('18')||SEL.has('20b'))pool.push(()=>{const x=pick([35,48,60,85,120]);return [`${x} cm`,'m',`${raw(x/100)} m`];});
+ const ch=sample(pool,Math.min(4,pool.length)).map(f=>f());
+ return {type:'open',hint:'Muunna vihkoon. Vertaa sitten mallivastaukseen.',q:'<p>Muunna yksiköt.</p><div class="ucv">'+ch.map((c,i)=>`<p><b>${'abcd'[i]})</b> ${c[0]} = ________ ${c[1]}</p>`).join('')+'</div>',
+  a:ch.map((c,i)=>`<p><b>${'abcd'[i]})</b> ${c[0]} = <b>${c[2]}</b></p>`).join('')};}
+
+/* Hyötysuhde energiakaavioista */
+/* Energiakaavio: vasemmalla alkuperäinen energia, nuoli, oikealla syntyvät energiat jaettuna osuuksien mukaan.
+   parts: [nimi, näytettävä arvo tai null (= ?), koko, luokka] */
+function diag(l,src,Ein,parts){
+ return `<div class="ediag">${l?`<div class="elab">${l}</div>`:''}<div class="eflow">
+ <div class="ebox"><span>${src}</span><b>${Ein==null?'?':raw(Ein)} J</b></div>
+ <svg class="earrow" viewBox="0 0 44 20" aria-hidden="true"><path d="M2 10H38M30 3l9 7-9 7" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+ <div class="eout">${parts.map(([t,v,sz,c])=>`<div class="epart ${c||''}" style="flex:${sz} 1 0"><span>${t}</span><b>${v==null?'?':raw(v)} J</b></div>`).join('')}</div></div></div>`;}
+function genEff(){
+ /* päässälaskettavat osuudet: hyötyenergia / saatu energia */
+ const FR=[[1,4,'neljäsosa'],[1,2,'puolet'],[3,4,'kolme neljäsosaa'],[1,5,'viidesosa'],[2,5,'kaksi viidesosaa'],[3,5,'kolme viidesosaa'],[4,5,'neljä viidesosaa'],[1,10,'kymmenesosa'],[9,10,'yhdeksän kymmenesosaa']];
+ const IN=[200,400,500,600,800,1000,1200,1500,2000];
+ const mk=()=>{for(;;){const f=pick(FR),i=pick(IN);if(i*f[0]%f[1]===0)return {f,i,u:i*f[0]/f[1]};}};
+ for(;;){const A0=mk(),B0=mk();const fa=A0.f[0]/A0.f[1],fb=B0.f[0]/B0.f[1];if(Math.abs(fa-fb)<0.2||A0.u===B0.u)continue;
+  const hi=fa>fb?'A':'B',tricky=(fa>fb)!==(A0.u>B0.u);
+  const [thing,src,use]=pick([['hissin','Sähköenergia','Nostotyö'],['sähkömoottorin','Sähköenergia','Liike-energia'],['nosturin','Sähköenergia','Nostotyö'],['pumpun','Sähköenergia','Veden nostotyö'],['tuulettimen','Sähköenergia','Liike-energia']].filter(x=>okT(x[2])));
+  const d=(l,i,u)=>diag(l,src,i,[[use,u,Math.max(u,i*0.16),'eu'],['Lämpö',i-u,Math.max(i-u,i*0.16),'eh']]);
+  return {type:'mc',q:`<p>Kahden ${thing} toimintaa kuvataan energiakaavioilla. Kumman hyötysuhde on suurempi? Mieti perustelu ennen kuin valitset.</p>`+d('Laite A',A0.i,A0.u)+d('Laite B',B0.i,B0.u),
+   o:['A','B','Yhtä suuri'],c:hi==='A'?0:1,ordered:true,
+   ex:`Hyötysuhde kertoo, kuinka suuri osa laitteen saamasta energiasta muuttuu hyötyenergiaksi.<br>A: ${raw(A0.u)} J / ${raw(A0.i)} J on ${A0.f[2]}.<br>B: ${raw(B0.u)} J / ${raw(B0.i)} J on ${B0.f[2]}.<br>${hi}:ssa suurempi osa energiasta muuttuu hyödylliseksi.`+(tricky?' Huomaa, että pelkkä hyötyenergian määrä ei ratkaise.':'')};}}
+/* Energiakaavion lukeminen */
+const DEV=[
+ ['Hehkulamppu','Sähköenergia','Valo',[8,20],'valoa'],['LED-lamppu','Sähköenergia','Valo',[35,50],'valoa'],
+ ['Auton moottori','Kemiallinen energia','Liike-energia',[25,35],'liike-energiaa'],['Sähkömoottori','Sähköenergia','Liike-energia',[65,85],'liike-energiaa'],
+ ['Pyöräilijä','Kemiallinen energia','Liike-energia',[20,25],'liike-energiaa'],['Vesivoimala','Veden potentiaalienergia','Sähköenergia',[80,90],'sähköenergiaa'],
+ ['Aurinkopaneeli','Valoenergia','Sähköenergia',[15,25],'sähköenergiaa'],['Hissin moottori','Sähköenergia','Nostotyö',[50,80],'nostotyötä'],
+];
+function genDiag(hard){
+ const [dev,src,use,[lo,hi],usep]=pick(DEV.filter(d=>okT(d[0]+' '+d[1]+' '+d[2]))),Ein=pick([200,400,500,600,800,1000,1200,1500,2000,2500]);
+ let eta=lo+Math.floor(rand()*(hi-lo+1));let U=Math.round(Ein*eta/100/10)*10;if(U<=0)U=10;eta=U/Ein*100;const H=Ein-U,sz=x=>Math.max(x,Ein*0.16);
+ const k=Math.floor(rand()*3),parts=[[use,k===0?null:U,sz(U),'eu'],['Lämpö',k===1?null:H,sz(H),'eh']];
+ const ask=['Kuinka paljon '+usep+' syntyy?','Kuinka paljon lämpöä syntyy?','Kuinka paljon energiaa laite saa?'][k];
+ const ansV=[U,H,Ein][k],calc=[`${raw(Ein)} J − ${raw(H)} J = ${raw(U)} J`,`${raw(Ein)} J − ${raw(U)} J = ${raw(H)} J`,`${raw(U)} J + ${raw(H)} J = ${raw(Ein)} J`][k];
+ const q=[`<p>Energiakaavio kuvaa laitetta: <b>${dev}</b>.</p>`+diag('',src,k===2?null:Ein,parts),P('a',ask+' Perustele.')];
+ const a=[P('a',`<b>${raw(ansV)} J</b>. Energia ei häviä eikä synny tyhjästä, joten syntyvää energiaa on yhteensä yhtä paljon kuin laite saa: ${calc}.`)];
+ if(hard){q.push(P('b','Mikä kaaviossa on hyötyenergiaa?'),P('c','Muuttuuko laitteessa enemmän energiaa hyötyenergiaksi vai lämmöksi? Kumpi osuus on yli puolet?'));
+  q.push(P('d','Miksi laite ei voi muuttaa kaikkea saamaansa energiaa hyötyenergiaksi?'));
+  a.push(P('b',`${use}. Lämpö ei ole tässä hyödyllistä.`),P('c',U>H?`Enemmän energiaa muuttuu hyötyenergiaksi (${raw(U)} J > ${raw(H)} J), eli yli puolet.`:`Enemmän energiaa muuttuu lämmöksi (${raw(H)} J > ${raw(U)} J), eli hyötyenergiaksi muuttuu alle puolet.`),
+   P('d','Osa energiasta muuttuu aina esimerkiksi kitkan tai sähkövastuksen takia lämmöksi, joten hyötysuhde on alle 100 %.'));}
+ else{q.push(P('b','Missä muodossa energia on aluksi, ja mikä kaaviossa on hyötyenergiaa?'));a.push(P('b',`Aluksi: ${src}. Hyötyenergiaa: ${use}.`));}
+ return {type:'open',q:q.join(''),a:a.join('')};}
+
+/* Nousutehon mittaaminen */
+const RISE=[
+ ['kaverisi nousuteho, kun hän juoksee portaissa ensimmäisestä kerroksesta toiseen kerrokseen','kaverin massa (vaa\'alla)','portaiden pystysuora korkeus eli kerrosten välinen korkeusero (mittanauhalla, esim. yhden askelman korkeus kertaa askelmien määrä)','nousuun kuluva aika (sekuntikellolla)','Portaiden pituutta vinosti tai juoksijan nopeutta ei tarvita.'],
+ ['kaverisi nousuteho, kun hän kiipeää köyttä ylös liikuntatunnilla','kaverin massa (vaa\'alla)','kuinka korkealle hän nousee (mittanauhalla lattiasta)','nousuun kuluva aika (sekuntikellolla)','Köyden pituutta tai kiipeilijän nopeutta ei tarvita.'],
+ ['kaverisi teho, kun hän nostaa levytangon lattialta pään yläpuolelle','tangon massa (vaa\'alla tai painojen merkinnöistä)','kuinka korkealle tanko nousee (mittanauhalla)','nostoon kuluva aika (sekuntikellolla tai videolta)','Kaverin omaa massaa ei tarvita, koska nostetaan tankoa.'],
+ ['oma nousutehosi, kun nouset näkötornin portaat','oma massasi (vaa\'alla)','tornin portaiden pystysuora korkeus (esim. askelman korkeus kertaa askelmien määrä)','nousuun kuluva aika (sekuntikellolla)','Portaiden pituutta vinosti tai nopeutta ei tarvita.'],
+];
+function genRise(){const [what,m,h,t,note]=pick(RISE);
+ return {type:'open',q:`<p>Haluat selvittää, mikä on ${what}.</p>`+P('a','Luettele, mitä suureita sinun on mitattava tämän selvittämiseksi. Kerro suureet mahdollisimman tarkasti.')+P('b','Miten lasket tehon mitattujen suureiden avulla? Kerro laskuissasi käyttämät suureet yhtä tarkasti kuin a-kohdassa.'),
+  a:P('a',`Mitataan<br>• ${m}<br>• ${h}<br>• ${t}.<br>${note}`)+P('b',`1. Paino: ${V('G')} = ${V('m')} · 10 N/kg<br>2. Nostotyö: ${V('W')} = ${V('G')}${V('h')}, missä ${V('h')} on pystysuora nousukorkeus<br>3. Teho: ${V('P')} = ${fr(V('W'),V('t'))}, missä ${V('t')} on nousuun kulunut aika`)};}
+
+/* Etsi virhe oppilaan ratkaisusta */
+function genErr(){for(let i=0;i<80;i++){const g=genErr1();if(okT(g.q.replace(/<[^>]+>/g,' ')))return g;}return genErr1();}
+function genErr1(){
+ const k=Math.floor(rand()*5);
+ if(k===0){const m=pick([4,6,8,12,15,20,25]),h=pick([0.8,1.2,1.5,2,2.5]);
+  return {type:'open',q:`<p>Oppilas ratkaisi tehtävän: ”Laatikko, jonka massa on ${raw(m)} kg, nostetaan ${raw(h)} m korkealle. Laske nostotyö.”</p><p class="wrongsol">${V('W')} = ${V('G')}${V('h')} = ${raw(m)} kg · ${raw(h)} m = ${raw(m*h)} J</p><p>Mikä ratkaisussa on väärin? Laske oikea vastaus.</p>`,
+   a:`<p>Oppilas käytti massaa painon sijaan. Paino pitää laskea ensin: ${V('G')} = ${raw(m)} · 10 N = ${raw(m*10)} N.</p><p>${V('W')} = ${raw(m*10)} N · ${raw(h)} m = <b>${raw(m*10*h)} J</b></p>`};}
+ if(k===1){const F=pick([30,40,50,60,80]),t=pick([10,15,20,30]),s=pick([12,25,40,60]);
+  return {type:'open',q:`<p>Oppilas ratkaisi tehtävän: ”Pulkkaa vedetään ${t} sekunnin ajan voimalla ${F} N, ja se liikkuu ${s} m. Laske työ.”</p><p class="wrongsol">${V('W')} = ${V('F')} · ${V('t')} = ${F} N · ${t} s = ${raw(F*t)} J</p><p>Mikä ratkaisussa on väärin? Laske oikea vastaus.</p>`,
+   a:`<p>Työ lasketaan voiman ja matkan tulona, ei voiman ja ajan. Aikaa ei tarvita.</p><p>${V('W')} = ${V('F')}${V('s')} = ${F} N · ${s} m = <b>${raw(F*s)} J</b></p>`};}
+ if(k===2){const W=pick([1.2,2.4,3.6,4.8,6]),t=pick([8,10,12,15,20]);
+  return {type:'open',q:`<p>Oppilas ratkaisi tehtävän: ”Moottori tekee ${raw(W)} kJ työtä ${t} sekunnissa. Laske moottorin teho.”</p><p class="wrongsol">${V('P')} = ${fr(V('W'),V('t'))} = ${fr(raw(W),t)} = ${raw(W/t)} W</p><p>Mikä ratkaisussa on väärin? Laske oikea vastaus.</p>`,
+   a:`<p>Kilojouleja ei muutettu jouleiksi, eikä laskuun merkitty yksiköitä. ${raw(W)} kJ = ${raw(W*1000)} J.</p><p>${V('P')} = ${fr(raw(W*1000)+' J',t+' s')} = <b>${raw(W*1000/t)} W</b></p>`};}
+ if(k===3){const G=pick([200,300,400,500,600]),s=pick([3,4,5,6]),h=pick([0.5,0.8,1,1.2]);
+  return {type:'open',q:`<p>Oppilas ratkaisi tehtävän: ”Laatikko, jonka paino on ${G} N, vedetään ${s} m pitkää luiskaa pitkin ${raw(h)} m korkealle lavalle. Laske työ, kun kitkaa ei huomioida.”</p><p class="wrongsol">${V('W')} = ${V('G')} · ${V('s')} = ${G} N · ${s} m = ${raw(G*s)} J</p><p>Mikä ratkaisussa on väärin? Laske oikea vastaus.</p>`,
+   a:`<p>Painolla kerrotaan nostokorkeus, ei luiskan pituutta. Kaltevalla tasolla työ on sama kuin nostotyö (Fs = Gh).</p><p>${V('W')} = ${V('G')}${V('h')} = ${G} N · ${raw(h)} m = <b>${raw(G*h)} J</b></p>`};}
+ const G=pick([300,400,500,600,800]),a=pick([0.2,0.25,0.3,0.4]),b=pick([1,1.2,1.5,2]),F=G*a/b;
+ return {type:'open',q:`<p>Oppilas ratkaisi tehtävän: ”Kiveä, jonka paino on ${G} N, nostetaan kangella. Kuorman varsi on ${raw(a)} m ja voiman varsi ${raw(b)} m. Kuinka suuri voima tarvitaan?”</p><p class="wrongsol">${V('F')} = ${fr(V('G')+' · '+V('b'),V('a'))} = ${fr(`${G} N · ${raw(b)} m`,`${raw(a)} m`)} = ${raw(G*b/a)} N</p><p>Mikä ratkaisussa on väärin? Laske oikea vastaus.</p>`,
+  a:`<p>Varret ovat väärin päin. Kaavasta ${V('G')}${V('a')} = ${V('F')}${V('b')} saadaan ${V('F')} = ${fr(V('G')+V('a'),V('b'))}. Tulos on myös epäuskottava: vivulla tarvittavan voiman pitäisi olla pienempi kuin kiven paino.</p><p>${V('F')} = ${fr(`${G} N · ${raw(a)} m`,`${raw(b)} m`)} = <b>${raw(F)} N</b></p>`};}
+
+QEASY.push(
+ {id:'bound',gen:()=>genBound(4),ok:()=>has('16'),w:4},{id:'tf',gen:()=>genTF(TFE.filter(x=>okT(x[0]+' '+(x[2]||''))),5)(),ok:()=>TFE.filter(x=>okT(x[0]+' '+(x[2]||''))).length>=5,w:5},{id:'pick',gen:()=>genPick(PICKE.filter(x=>okT(x[0]+' '+x[1]+' '+x[2].join(' '))),3)(),ok:()=>PICKE.filter(x=>okT(x[0]+' '+x[1]+' '+x[2].join(' '))).length>=3,w:5},
+ {id:'conv',gen:genConv,ok:()=>has('16'),w:4},{id:'diagread',gen:()=>genDiag(false),ok:()=>has('19')&&DEV.some(d=>okT(d[0]+' '+d[1]+' '+d[2])),w:4},{id:'order',gen:()=>genOrder(false),ok:()=>ORDK().length>0,w:4},
+ {id:'units',gen:genUnits,ok:()=>true,w:3},{id:'uconv',gen:genUConv,ok:()=>true,w:3},
+ {q:'Haluat selvittää kaverisi nousutehon portaissa. Mitä suureita sinun pitää mitata?',o:['Kaverin massa, portaiden pystysuora korkeus ja nousuun kuluva aika','Kaverin nopeus ja portaiden pituus','Portaiden askelmien määrä ja kaverin pituus','Kaverin massa ja nopeus'],c:0,ex:'Teho lasketaan P = W / t. Nostotyö W = Gh vaatii painon (massasta) ja pystysuoran korkeuden, ja lisäksi tarvitaan aika.'},
+ {q:'Mikä seuraavista on sidottua energiaa?',o:['Bensiinin kemiallinen energia','Auringon valo','Vierivän pallon liike-energia','Tuulen liike-energia'],c:0,ex:'Kemiallinen energia ja potentiaalienergia ovat sidottua energiaa. Valo ja liike-energia ovat vapaata energiaa.'},
+ {q:'Mikä seuraavista on vapaata energiaa?',o:['Lampun valoenergia','Sokerin kemiallinen energia','Hyllyllä olevan kirjan potentiaalienergia','Pariston kemiallinen energia'],c:0,ex:'Valo- ja liike-energia ovat vapaata energiaa. Kemiallinen energia ja potentiaalienergia ovat sidottua.'},
+);
+QHARD.push(
+ {id:'boundh',gen:()=>genBound(6),ok:()=>has('16'),w:2},{id:'tfh',gen:()=>genTF(TFH.filter(x=>okT(x[0]+' '+(x[2]||''))),5)(),ok:()=>TFH.filter(x=>okT(x[0]+' '+(x[2]||''))).length>=5,w:5},{id:'pickh',gen:()=>genPick(PICKH.filter(x=>okT(x[0]+' '+x[1]+' '+x[2].join(' '))),4)(),ok:()=>PICKH.filter(x=>okT(x[0]+' '+x[1]+' '+x[2].join(' '))).length>=4,w:5},
+ {id:'orderh',gen:()=>genOrder(true),ok:()=>has('17','18'),w:4},
+ {id:'eff',gen:genEff,ok:()=>has('19'),w:5},{id:'diaghard',gen:()=>genDiag(true),ok:()=>has('19')&&DEV.some(d=>okT(d[0]+' '+d[1]+' '+d[2])),w:4},
+ {id:'rise',gen:genRise,ok:()=>has('18','19'),w:4},{id:'err',gen:genErr,ok:()=>['17','18','19','20a','20b'].some(c=>SEL.has(c)),w:6},
+ {q:'Suunnittele tutkimus, jolla selvität, miten pudotuskorkeus vaikuttaa siihen, kuinka korkealle pallo pomppaa. Mitä muutat, mitä mittaat ja mitkä asiat pidät samoina?',a:'Pudotetaan pallo eri korkeuksilta, esimerkiksi 0,5 m, 1,0 m, 1,5 m ja 2,0 m. Jokaisella korkeudella mitataan mittanauhalla (tai videolta), kuinka korkealle pallo pomppaa. Samoina pidetään pallo, alusta, pallon ilmanpaine ja pudotustapa (pallo päästetään irti ilman vauhtia), jotta pompun muutos johtuu vain pudotuskorkeudesta. Jokainen mittaus toistetaan muutaman kerran ja lasketaan keskiarvo. Tuloksista tehdään taulukko ja kuvaaja.'},
+ {q:'Suunnittele tutkimus, jolla selvität, miten luiskan korkeus vaikuttaa voimaan, joka tarvitaan kappaleen vetämiseen ylös. Mitä muutat, mitä mittaat ja mitkä asiat pidät samoina?',a:'Muutetaan luiskan yläpään korkeutta, esimerkiksi nostamalla sen alle kirjoja. Jokaisella korkeudella mitataan voimamittarilla, kuinka suuri voima tarvitaan kappaleen vetämiseen tasaisella vauhdilla. Samoina pidetään luiskan pituus, vedettävä kappale ja luiskan pinta, jotta voiman muutos johtuu vain korkeudesta. Mittaukset toistetaan ja lasketaan keskiarvo. Tuloksista tehdään taulukko ja kuvaaja.'},
+);
+
+/* =====================================================================
+   RYHMÄ A: opetussuunnitelman tavoitteisiin perustuvat tehtävätyypit (arvosanat 8 ja 9)
+   T4 kestävä valinta · T5 tutkimuskysymys · T7 mittausaineisto ja luotettavuus · T8 teknologia
+   T10 ilmiö–ominaisuus–suure · T11 ennusteet, mallit ja rajoitukset · T12 väitteiden vertailu ja lähteet
+   ===================================================================== */
+const chOk=x=>!x.ch||SEL.has(x.ch);
+const noisy=(x,p=0.03)=>x*(1+(rand()*2-1)*p);
+const n2=x=>fmtSig(x,2);
+
+/* A1 Tutkimuskysymys (T5) */
+const TQ=[
+ {ch:'20a',topic:'luiskan korkeuden vaikutusta luiskalla tarvittavaan voimaan',good:'Miten luiskan korkeus vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
+  bad:['Miten luiskat toimivat?','Miten luiskan korkeus ja pinnan materiaali vaikuttavat tarvittavaan voimaan?','Onko luiska hyödyllinen keksintö?'],
+  hyp:'Kun luiskan korkeus kasvaa, tarvittava voima kasvaa. Perustelu: kaltevalla tasolla Fs = Gh, joten kun h kasvaa ja s ja G pysyvät samoina, myös F kasvaa.',same:'luiskan pituus, vedettävä laatikko, luiskan pinta ja vetotapa (tasainen vauhti)'},
+ {ch:'20b',topic:'voiman varren pituuden vaikutusta vivulla tarvittavaan voimaan',good:'Miten voiman varren pituus vaikuttaa voimaan, joka tarvitaan kuorman nostamiseen kaksivartisella vivulla?',
+  bad:['Miten vipu toimii?','Miten voiman varsi ja kuorman paino vaikuttavat tarvittavaan voimaan?','Mikä on paras vipu?'],
+  hyp:'Kun voiman varsi pitenee, tarvittava voima pienenee. Perustelu: Ga = Fb, joten kun b kasvaa ja G ja a pysyvät samoina, F pienenee.',same:'kuorman paino ja kuorman varsi'},
+ {ch:'18',topic:'nostokorkeuden vaikutusta nostotyöhön',good:'Miten nostokorkeus vaikuttaa nostotyöhön, kun nostetaan samaa laatikkoa?',
+  bad:['Miksi nostaminen on raskasta?','Miten nostokorkeus ja laatikon massa vaikuttavat nostotyöhön?','Kuka luokasta jaksaa nostaa eniten?'],
+  hyp:'Kun nostokorkeus kaksinkertaistuu, nostotyö kaksinkertaistuu. Perustelu: W = Gh, ja paino G pysyy samana.',same:'nostettava laatikko ja nostotapa (tasainen vauhti)'},
+ {ch:'18',topic:'nostettavan kappaleen massan vaikutusta nostotyöhön',good:'Miten nostettavan kappaleen massa vaikuttaa nostotyöhön, kun nostokorkeus pysyy samana?',
+  bad:['Paljonko laatikko painaa?','Miten massa ja nostokorkeus vaikuttavat nostotyöhön?','Onko painavan nostaminen vaikeaa?'],
+  hyp:'Kun massa kaksinkertaistuu, nostotyö kaksinkertaistuu. Perustelu: paino G = m · 10 N/kg kaksinkertaistuu, ja W = Gh.',same:'nostokorkeus ja nostotapa'},
+ {ch:'16',topic:'pudotuskorkeuden vaikutusta pallon pomppukorkeuteen',good:'Miten pudotuskorkeus vaikuttaa siihen, kuinka korkealle pallo pomppaa?',
+  bad:['Miksi pallot pomppivat?','Miten pudotuskorkeus ja alusta vaikuttavat pomppukorkeuteen?','Mikä on hauskin pallo?'],
+  hyp:'Korkeammalta pudotettu pallo pomppaa korkeammalle, mutta ei koskaan pudotuskorkeuteen asti. Perustelu: korkeammalla pallolla on enemmän potentiaalienergiaa, ja osa energiasta muuttuu pompussa lämmöksi ja ääneksi.',same:'pallo, alusta ja pudotustapa (pallo päästetään irti ilman vauhtia)'},
+ {ch:'19',topic:'nousuajan vaikutusta nousutehoon portaissa',good:'Miten portaiden nousemiseen kuluva aika vaikuttaa nousutehoon, kun nousija ja portaat pysyvät samoina?',
+  bad:['Kuka on luokan nopein portaissa?','Miten nousuaika ja nousijan massa vaikuttavat tehoon?','Ovatko portaat hyvä kuntoilutapa?'],
+  hyp:'Mitä lyhyempi nousuaika, sitä suurempi teho. Perustelu: P = W / t, ja nostotyö W pysyy samana, kun nousija ja korkeus ovat samat.',same:'nousija (massa) ja portaat (nousukorkeus)'},
+ {ch:'20a',topic:'luiskan pinnan vaikutusta luiskalla tarvittavaan voimaan',good:'Miten luiskan pinnan materiaali vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
+  bad:['Mikä materiaali on paras?','Miten luiskan pinta ja korkeus vaikuttavat voimaan?','Miksi luiskat ovat liukkaita?'],
+  hyp:'Karhealla pinnalla tarvitaan suurempi voima kuin liukkaalla. Perustelu: kitka vastustaa liikettä, ja karhealla pinnalla kitka on suurempi.',same:'luiskan pituus ja korkeus, vedettävä laatikko ja vetotapa'},
+];
+function genTQ(hard){const t=pick(TQ.filter(chOk));
+ if(!hard)return {type:'mc',q:`Haluat tutkia ${t.topic}. Mikä seuraavista on täsmällisin tutkimuskysymys?`,o:[t.good,...t.bad],c:0,
+  ex:'Täsmällinen tutkimuskysymys rajaa yhden asian, jota muutetaan, ja yhden suureen, jota mitataan. Muut vaihtoehdot ovat liian yleisiä, muuttavat kahta asiaa yhtä aikaa tai niihin ei voi vastata mittaamalla.'};
+ return {type:'open',q:`<p>Haluat tutkia ${t.topic}.</p>`+P('a','Muotoile täsmällinen tutkimuskysymys.')+P('b','Kirjoita hypoteesi ja perustele se sillä, mitä tiedät ilmiöstä jo ennestään.')+P('c','Mitkä asiat pidät samoina? Miksi?'),
+  a:P('a',t.good)+P('b',t.hyp)+P('c',`Samoina pidetään ${t.same}. Kun vain tutkittava asia muuttuu, tuloksen muutos johtuu juuri siitä.`)};}
+
+/* Mittausaineistot taulukoihin ja kuvaajiin (T7, T11) */
+const DATASETS=[
+ {id:'ramp',ch:'20a',xn:'Luiskan pituus',xs:'s',xu:'m',yn:'Voima',ys:'F',yu:'N',xv:[1,1.5,2,3,4,6],pairs:[[1,2],[1.5,3],[2,4],[3,6]],predX:[5,8],
+  mk:()=>{const G=pick([120,150,200,240,300]),h=pick([0.5,0.6,0.8]);return {f:x=>G*h/x,info:`Sama laatikko, jonka paino on ${G} N, vedettiin eri pituisia luiskoja pitkin ${raw(h)} m korkeudelle. Vetämiseen tarvittava voima mitattiin voimamittarilla.`,G,h};},
+  dir:'Mitä pidempi luiska, sitä pienempi voima tarvitaan.',law:'Voiman ja luiskan pituuden tulo pysyy lähes samana, kuten malli Fs = Gh ennustaa.',half:true},
+ {id:'lift',ch:'18',xn:'Nostokorkeus',xs:'h',xu:'m',yn:'Nostotyö',ys:'W',yu:'J',xv:[0.5,1,1.5,2,2.5],pairs:[[0.5,1],[1,2]],predX:[3,4],
+  mk:()=>{const G=pick([40,60,80,120,150,200]);return {f:x=>G*x,info:`Sama laatikko nostettiin eri korkeuksille, ja jokaisesta nostosta laskettiin nostotyö.`,G};},
+  dir:'Mitä korkeammalle laatikko nostetaan, sitä enemmän tehdään nostotyötä.',law:'Työ on suoraan verrannollinen korkeuteen, kuten malli W = Gh ennustaa.',half:false},
+ {id:'lever',ch:'20b',xn:'Voiman varsi',xs:'b',xu:'m',yn:'Voima',ys:'F',yu:'N',xv:[0.5,1,1.5,2,3],pairs:[[0.5,1],[1,2],[1.5,3]],predX:[4,6],
+  mk:()=>{const G=pick([200,300,400,600]),a=pick([0.2,0.25,0.3]);return {f:x=>G*a/x,info:`Kiveä, jonka paino on ${G} N, nostettiin kangella. Kuorman varsi oli aina ${raw(a)} m. Voiman vartta muutettiin, ja tarvittava voima mitattiin.`,G,a};},
+  dir:'Mitä pidempi voiman varsi, sitä pienempi voima tarvitaan.',law:'Voiman ja voiman varren tulo pysyy lähes samana, kuten malli Ga = Fb ennustaa.',half:true},
+ {id:'bounce',ch:'16',xn:'Pudotuskorkeus',xs:'h',xu:'m',yn:'Pomppukorkeus',ys:'h',yu:'m',xv:[0.5,1,1.5,2,2.5],pairs:[[0.5,1],[1,2]],predX:[3,4],
+  mk:()=>{const k=pick([0.6,0.65,0.7,0.75,0.8]);return {f:x=>k*x,info:'Pallo pudotettiin eri korkeuksilta, ja mitattiin, kuinka korkealle se pomppasi.',k};},
+  dir:'Mitä korkeammalta pallo pudotetaan, sitä korkeammalle se pomppaa, mutta aina pudotuskorkeutta matalammalle.',law:'Pomppukorkeus on suoraan verrannollinen pudotuskorkeuteen. Osa energiasta muuttuu pompussa lämmöksi ja ääneksi, joten pallo ei nouse lähtökorkeuteen.',half:false},
+];
+const dsOk=()=>DATASETS.filter(chOk);
+function mkData(d,outlier){const p=d.mk(),ys=d.xv.map(x=>noisy(p.f(x)));let oi=-1;
+ if(outlier){const used=new Set(d.pairs.flat());const cand=d.xv.map((x,i)=>i).filter(i=>!used.has(d.xv[i])&&i>0);oi=pick(cand.length?cand:[d.xv.length-1]);ys[oi]=p.f(d.xv[oi])*pick([1.3,1.35,0.7,0.65]);}
+ return {p,ys:ys.map(y=>roundSig(y,2)),oi};}
+const lab=(d,w)=>w==='x'?`${d.xn} ${V(d.xs)} (${d.xu})`:`${d.yn} ${V(d.ys)} (${d.yu})`;
+function dataTable(d,ys){return `<div class="tscroll"><table class="qtable"><tbody><tr><th>${lab(d,'x')}</th>${d.xv.map(x=>`<td>${raw(x)}</td>`).join('')}</tr><tr><th>${lab(d,'y')}</th>${ys.map(y=>`<td>${raw(y)}</td>`).join('')}</tr></tbody></table></div>`;}
+function pairText(d,ys){const pr=pick(d.pairs.filter(([a,b])=>d.xv.includes(a)&&d.xv.includes(b)));const ya=ys[d.xv.indexOf(pr[0])],yb=ys[d.xv.indexOf(pr[1])];
+ return `Esimerkiksi kun ${d.xn.toLowerCase()} kaksinkertaistuu (${raw(pr[0])} ${d.xu} → ${raw(pr[1])} ${d.xu}), ${d.yn.toLowerCase()} ${d.half?'lähes puolittuu':'lähes kaksinkertaistuu'} (${raw(ya)} ${d.yu} → ${raw(yb)} ${d.yu}).`;}
+
+/* A2 Mittaustaulukko: johtopäätös ja ennuste (T7, T11) */
+function genData(hard){const d=pick(dsOk()),out=hard&&rand()<0.7,{p,ys,oi}=mkData(d,out),px=pick(d.predX),py=p.f(px);
+ const q=[`<p>${p.info}</p>`+dataTable(d,ys),hard?P('a','Tee johtopäätös ja perustele se mittaustuloksilla.'):P('a','Mitä mittaustuloksista voi päätellä?'),
+  P('b',`Ennusta, kuinka suuri ${d.yn.toLowerCase()} on, kun ${d.xn.toLowerCase()} on ${raw(px)} ${d.xu}. Perustele.`)];
+ const a=[P('a',d.dir+(hard?' '+pairText(d,ys)+' '+d.law:'')),
+  P('b',`Noin <b>${n2(py)} ${d.yu}</b>. ${d.half?`Riippuvuus jatkuu samanlaisena: ${d.xn.toLowerCase()} kasvaa, joten ${d.yn.toLowerCase()} pienenee samassa suhteessa.`:`Riippuvuus jatkuu samanlaisena: ${d.yn.toLowerCase()} kasvaa samassa suhteessa kuin ${d.xn.toLowerCase()}.`}`)];
+ if(hard){q.push(P('c','Onko tuloksissa poikkeava mittaus? Mitä sille kannattaa tehdä?'));
+  a.push(P('c',oi>=0?`Kyllä: kun ${d.xn.toLowerCase()} on ${raw(d.xv[oi])} ${d.xu}, tulos ${raw(ys[oi])} ${d.yu} ei sovi muiden tulosten riippuvuuteen. Mittaus on luultavasti epäonnistunut. Se toistetaan, eikä sitä käytetä johtopäätöksissä ennen kuin tulos on tarkistettu.`:'Ei selvästi poikkeavaa mittausta. Pienet erot johtuvat mittausepätarkkuudesta. Mittausten toistaminen ja keskiarvo parantaisivat luotettavuutta.'));}
+ return {type:'open',q:q.join(''),a:a.join('')};}
+
+/* Kuvaaja (SVG) */
+function niceStep(max,n=5){const r=max/n,p=Math.pow(10,Math.floor(Math.log10(r)));for(const m of [1,2,2.5,5,10])if(m*p>=r-1e-9)return m*p;return 10*p;}
+function chartSVG(d,pts,model){
+ const W=340,H=230,L=46,B=40,T=26,R=14;
+ const xmax0=Math.max(...pts.map(p=>p[0])),ymax0=Math.max(...pts.map(p=>p[1]),...(model?model.map(p=>p[1]):[]));
+ const xs=niceStep(xmax0),ysx=niceStep(ymax0),xmax=Math.ceil(xmax0/xs+0.001)*xs,ymax=Math.ceil(ymax0/ysx+0.001)*ysx;
+ const sx=x=>L+x/xmax*(W-L-R),sy=y=>H-B-y/ymax*(H-T-B);let g='';
+ for(let x=0;x<=xmax+1e-9;x+=xs)g+=`<line class="gl" x1="${sx(x)}" y1="${sy(0)}" x2="${sx(x)}" y2="${sy(ymax)}"/><text x="${sx(x)}" y="${H-B+15}" text-anchor="middle">${raw(x)}</text>`;
+ for(let y=0;y<=ymax+1e-9;y+=ysx)g+=`<line class="gl" x1="${sx(0)}" y1="${sy(y)}" x2="${sx(xmax)}" y2="${sy(y)}"/><text x="${L-6}" y="${sy(y)+4}" text-anchor="end">${raw(y)}</text>`;
+ g+=`<line class="ax" x1="${sx(0)}" y1="${sy(0)}" x2="${sx(xmax)}" y2="${sy(0)}"/><line class="ax" x1="${sx(0)}" y1="${sy(0)}" x2="${sx(0)}" y2="${sy(ymax)}"/>`;
+ g+=`<text class="tl" x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle">${d.xn} ${d.xs} (${d.xu})</text><text class="tl" x="4" y="14">${d.yn} ${d.ys} (${d.yu})</text>`;
+ if(model)g+=`<polyline class="ml" points="${model.filter(p=>p[1]<=ymax).map(p=>`${sx(p[0]).toFixed(1)},${sy(p[1]).toFixed(1)}`).join(' ')}"/>`;
+ g+=pts.map(p=>`<circle class="pt" cx="${sx(p[0])}" cy="${sy(p[1])}" r="4.5"/>`).join('');
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kuvaaja: ${d.yn.toLowerCase()} ja ${d.xn.toLowerCase()}">${g}</svg>`;}
+
+/* sovitettu kuvaaja mittauspisteiden kautta (sama kuin koegeneraattorissa) */
+const fitSVG=(d,pts,f)=>{const xm=Math.max(...pts.map(p=>p[0])),x0=d.half?Math.min(...pts.map(p=>p[0])):0,m=[];
+ for(let i=0;i<=60;i++){const x=x0+(xm-x0)*i/60;m.push([x,f(x)]);}
+ return chartSVG(d,pts,m).replace('class="ml"','class="fit"');};
+
+/* Mittaustaulukko, vaikea taso (sama muotoilu kuin kokeessa): a) johtopäätös kaksinkertaistamisen avulla,
+   b) ennuste lasketaan mittauksista muodostetulla mallilla (suhde tai tulo), c) poikkeava mittaus. */
+function genDataE(){const d=pick(dsOk()),out=rand()<0.7,{p,ys,oi}=mkData(d,out),px=pick(d.predX);
+ const ix=d.xv.map((x,i)=>i).filter(i=>i!==oi),vals=ix.map(i=>d.half?d.xv[i]*ys[i]:ys[i]/d.xv[i]);
+ const c=roundSig(vals.reduce((a,b)=>a+b,0)/vals.length,2),py=d.half?c/px:c*px,ex=ix[ix.length-1],xe=d.xv[ex],ye=ys[ex];
+ const yl=d.yn.toLowerCase(),xl=d.xn.toLowerCase();
+ const q=`<p>${p.info}</p>`+dataTable(d,ys)
+  +P('a',`Miten ${yl} muuttuu, kun ${xl} kaksinkertaistuu? Millainen riippuvuus suureiden välillä on? Perustele mittaustuloksilla.`)
+  +P('b',`Ennusta laskemalla, kuinka suuri ${yl} on, kun ${xl} on ${raw(px)} ${d.xu}. Käytä apuna a-kohdan riippuvuutta.`)
+  +P('c','Onko tuloksissa poikkeava mittaus? Mitä sille kannattaa tehdä?');
+ const mdl=d.half
+  ?`Riippuvuuden mukaan suureiden tulo pysyy lähes samana: esimerkiksi ${raw(xe)} ${d.xu} · ${raw(ye)} ${d.yu} ≈ ${raw(roundSig(xe*ye,2))}. Tulojen keskiarvo on noin ${raw(c)}.<br>Ennuste: ${raw(c)} / ${raw(px)} ${d.xu} ≈ <b>${n2(py)} ${d.yu}</b>`
+  :`Riippuvuuden mukaan suureiden suhde pysyy lähes samana: esimerkiksi ${raw(ye)} ${d.yu} / ${raw(xe)} ${d.xu} ≈ ${raw(roundSig(ye/xe,2))}. Suhteiden keskiarvo on noin ${raw(c)}.<br>Ennuste: ${raw(c)} · ${raw(px)} ${d.xu} ≈ <b>${n2(py)} ${d.yu}</b>`;
+ const a=P('a',d.dir+' '+pairText(d,ys)+' '+d.law)
+  +P('b',mdl+(oi>=0?'<br>Poikkeavaa mittausta (c) ei käytetä mallissa.':'')+`<br>Myös päättely kaksinkertaistumisesta hyväksytään, kun se on näytetty luvuilla.`)
+  +P('c',oi>=0?`Kyllä: kun ${xl} on ${raw(d.xv[oi])} ${d.xu}, tulos ${raw(ys[oi])} ${d.yu} ei sovi muiden tulosten riippuvuuteen. Mittaus on luultavasti epäonnistunut. Se toistetaan, eikä sitä käytetä johtopäätöksissä ennen kuin tulos on tarkistettu.`:'Ei selvästi poikkeavaa mittausta. Pienet erot johtuvat mittausepätarkkuudesta. Mittausten toistaminen ja keskiarvo parantaisivat luotettavuutta.');
+ return {type:'open',q,a};}
+
+/* A3 Kuvaajan tulkinta ja mallin rajoitus (T11) */
+function genGraph(hard){
+ const ds=dsOk();if(!hard){const d=pick(ds),{p,ys}=mkData(d,false),i=Math.floor(rand()*(d.xv.length-1)),xr=(d.xv[i]+d.xv[i+1])/2,yr=roundSig(p.f(xr),2);
+  return {type:'open',q:`<p>${p.info} Mittaustulokset (pisteet) ja niiden kautta piirretty kuvaaja on esitetty alla.</p>`+fitSVG(d,d.xv.map((x,k)=>[x,ys[k]]),p.f)+P('a',`Lue kuvaajasta, kuinka suuri ${d.yn.toLowerCase()} on, kun ${d.xn.toLowerCase()} on ${raw(xr)} ${d.xu}.`)+P('b',`Miten ${d.yn.toLowerCase()} muuttuu, kun ${d.xn.toLowerCase()} kasvaa?`),
+   a:P('a',`Noin <b>${raw(yr)} ${d.yu}</b>. Arvo luetaan kuvaajan kohdalta mittauspisteiden välistä. Lukutarkkuuden takia noin ±10 % poikkeava arvo hyväksytään.`)+P('b',d.dir)};}
+ const kinds=[];if(ds.some(d=>d.id==='ramp'))kinds.push('fric');if(ds.some(d=>d.id==='lift'))kinds.push('lift');if(ds.some(d=>d.id==='bounce'))kinds.push('bounce');
+ const k=pick(kinds.length?kinds:['basic']);
+ if(k==='fric'){const d=DATASETS.find(x=>x.id==='ramp'),G=pick([150,200,240,300]),h=pick([0.5,0.6]),fr0=pick([15,20,25,30]),xv=[1,1.5,2,3,4,5];
+  const pts=xv.map(x=>[x,roundSig(noisy(G*h/x+fr0,0.02),2)]),model=[];for(let x=0.8;x<=6.01;x+=0.1)model.push([x,G*h/x]);
+  return {type:'open',q:`<p>Laatikko (paino ${G} N) vedettiin eri pituisia luiskoja pitkin ${raw(h)} m korkeudelle. Pisteet ovat mittaustuloksia. Katkoviiva on mallin ${FS} = ${GH} mukainen voima.</p>`+chartSVG(d,pts,model)+P('a','Miksi mitatut voimat ovat suurempia kuin mallin mukaiset voimat?')+P('b','Mitä malli olettaa, mitä todellisuudessa ei ole? Missä tilanteessa malli kuvaa todellisuutta hyvin?')+P('c',`Ennusta mallin avulla, kuinka suuri voima tarvittaisiin ${raw(8)} m pitkällä luiskalla ilman kitkaa.`),
+   a:P('a',`Luiskan ja laatikon välillä on kitka. Osa vetämiseen käytetystä voimasta kuluu kitkan voittamiseen, joten mitattu voima on joka pituudella noin ${fr0} N mallia suurempi.`)+P('b','Malli olettaa, ettei kitkaa ole. Se kuvaa todellisuutta hyvin, kun pinta on liukas tai laatikko liikkuu pyörillä.')+P('c',`${V('F')} = ${fr(`${G} N · ${raw(h)} m`,'8 m')} = <b>${n2(G*h/8)} N</b>. Todellisuudessa tarvitaan kitkan takia enemmän.`)};}
+ if(k==='lift'){const d=DATASETS.find(x=>x.id==='lift'),G=pick([40,60,80,120,150]),xv=[0.5,1,1.5,2,2.5],pts=xv.map(x=>[x,roundSig(noisy(G*x,0.03),2)]);
+  return {type:'open',q:`<p>Sama laatikko nostettiin eri korkeuksille, ja jokaisesta nostosta laskettiin nostotyö. Tulokset ovat kuvaajassa.</p>`+chartSVG(d,pts)+P('a','Hahmottele pisteiden kautta kulkeva suora (kokeessa piirrät sen kuvaajaan). Millainen riippuvuus nostotyön ja nostokorkeuden välillä on?')+P('b','Määritä kuvaajasta laatikon paino. Kerro, miten sen sait.')+P('c','Ennusta nostotyö, kun laatikko nostetaan 4 m korkeuteen.'),
+   a:P('a','Nostotyö on suoraan verrannollinen nostokorkeuteen: pisteet ovat suoralla, joka kulkee origon kautta.')+P('b',`Malli on ${V('W')} = ${GH}, joten paino on ${V('G')} = ${fr(V('W'),V('h'))}. Esimerkiksi ${raw(pts[3][1])} J / 2 m ≈ <b>${raw(G)} N</b>.`)+P('c',`${V('W')} = ${raw(G)} N · 4 m = <b>${raw(G*4)} J</b>`)};}
+ if(k==='bounce'){const d=DATASETS.find(x=>x.id==='bounce'),kk=pick([0.6,0.7,0.75,0.8]),xv=[0.5,1,1.5,2],pts=xv.map(x=>[x,roundSig(noisy(kk*x,0.03),2)]);
+  return {type:'open',q:`<p>Pallo pudotettiin eri korkeuksilta, ja mitattiin, kuinka korkealle se pomppasi. Tulokset ovat kuvaajassa.</p>`+chartSVG(d,pts)+P('a','Hahmottele pisteiden kautta kulkeva suora (kokeessa piirrät sen kuvaajaan). Muodosta tuloksista malli täydentämällä lause: <i>Pomppukorkeus on noin ____ kertaa pudotuskorkeus.</i>')+P('b','Ennusta mallin avulla pomppukorkeus, kun pallo pudotetaan 3,0 m korkeudelta.')+P('c','Missä tilanteessa malli ei välttämättä enää pidä paikkaansa?'),
+   a:P('a',`Pomppukorkeus on noin <b>${raw(kk)}</b> kertaa pudotuskorkeus (esim. ${raw(pts[3][1])} m / 2 m). Pisteiden kautta piirretty suora kulkee origon kautta, joten pomppukorkeus on suoraan verrannollinen pudotuskorkeuteen.`)+P('b',`${raw(kk)} · 3,0 m ≈ <b>${n2(kk*3)} m</b>`)+P('c','Malli on tehty vain näillä korkeuksilla ja tällä pallolla ja alustalla. Hyvin korkealta pudotettaessa ilmanvastus vaikuttaa enemmän, ja eri alustalla tai pallolla osuus on erilainen.')};}
+ return genGraph(false);}
+
+/* A4 Ennusta ja perustele (T11, T10) */
+const PRED=[
+ {ch:'20a',sit:'Laatikko vedetään luiskaa pitkin lavalle. Luiska vaihdetaan kaksi kertaa pidempään, mutta lava on yhtä korkealla.',ask:'Miten vetämiseen tarvittava voima muuttuu? (Kitkaa ei huomioida.)',o:['Puolittuu','Pysyy samana','Kaksinkertaistuu'],c:0,
+  why:['Kaltevalla tasolla Fs = Gh. Kun s kaksinkertaistuu ja Gh pysyy samana, F puolittuu.','Työ on sama, joten myös voima pysyy samana.','Pidempi matka vaatii suuremman voiman.'],wc:0},
+ {ch:'20a',sit:'Laatikko vedetään luiskaa pitkin lavalle. Luiskan pituus pysyy samana, mutta lava nostetaan korkeammalle.',ask:'Miten vetämiseen tarvittava voima muuttuu? (Kitkaa ei huomioida.)',o:['Pienenee','Pysyy samana','Kasvaa'],c:2,
+  why:['Kaltevalla tasolla Fs = Gh. Kun h kasvaa ja s pysyy samana, F kasvaa.','Luiskan pituus ei muutu, joten voima ei muutu.','Korkeammalle vietäessä työ pienenee.'],wc:0},
+ {ch:'18',sit:'Sama laatikko nostetaan hyllylle kahdesti: ensin hitaasti, sitten nopeasti.',ask:'Miten nostotyö muuttuu, kun nostetaan nopeasti?',o:['Pienenee','Pysyy samana','Kasvaa'],c:1,
+  why:['Nostotyö W = Gh riippuu vain painosta ja korkeudesta, ei ajasta. Nopeassa nostossa teho on suurempi.','Nopeassa nostossa käytetään enemmän voimaa, joten työ kasvaa.','Nopeasti nostettaessa aikaa kuluu vähemmän, joten työtä tehdään vähemmän.'],wc:0},
+ {ch:'20b',sit:'Kiveä nostetaan kangella. Kivi siirretään lähemmäs tukipistettä, ja kangen toisesta päästä painetaan samasta kohdasta.',ask:'Miten tarvittava voima muuttuu?',o:['Pienenee','Pysyy samana','Kasvaa'],c:0,
+  why:['Ga = Fb. Kun kuorman varsi a lyhenee ja b pysyy samana, F pienenee.','Kiven paino ei muutu, joten voima ei muutu.','Kivi on lähempänä, joten sitä on vaikeampi liikuttaa.'],wc:0},
+ {ch:'16',sit:'Sama pallo pudotetaan ensin 1 m ja sitten 2 m korkeudelta samalle alustalle.',ask:'Kummasta korkeudesta pallo pomppaa korkeammalle?',o:['1 m:n pudotuksesta','Yhtä korkealle','2 m:n pudotuksesta'],c:2,
+  why:['Korkeammalta pudotetulla pallolla on enemmän potentiaalienergiaa, joten sillä on enemmän energiaa myös pomppuun.','Pallo on sama, joten se pomppaa aina yhtä korkealle.','Korkeammalta pudotettu pallo menettää enemmän energiaa ilmanvastukseen.'],wc:0},
+ {ch:'18',sit:'Kirja nostetaan ensin 1 m ja sitten 2 m korkeudelle.',ask:'Miten kirjan potentiaalienergia muuttuu, kun nostokorkeus kaksinkertaistuu?',o:['Puolittuu','Pysyy samana','Kaksinkertaistuu'],c:2,
+  why:['Nostotyö W = Gh kaksinkertaistuu, ja se varastoituu potentiaalienergiaksi.','Kirjan massa ei muutu, joten energiakaan ei muutu.','Korkeammalla kirja on kevyempi.'],wc:0},
+ {ch:'20b',sit:'Keinulauta on tasapainossa, kun painavampi lapsi istuu lähellä tukipistettä. Kevyempi lapsi siirtyy kauemmas tukipisteestä.',ask:'Mitä keinulaudalle tapahtuu?',o:['Kevyemmän lapsen pää laskee','Lauta pysyy tasapainossa','Painavamman lapsen pää laskee'],c:0,
+  why:['Kevyemmän lapsen varsi pitenee, joten paino kertaa varsi kasvaa hänen puolellaan.','Lasten painot eivät muutu, joten tasapaino säilyy.','Kun kevyempi siirtyy kauemmas, hänen vaikutuksensa pienenee.'],wc:0},
+ {ch:'19',sit:'Kaksi yhtä painavaa oppilasta nousee samat portaat. Toinen nousee kaksi kertaa nopeammin.',ask:'Miten nopeamman oppilaan teho eroaa hitaamman tehosta?',o:['Puolet pienempi','Yhtä suuri','Kaksi kertaa suurempi'],c:2,
+  why:['Nostotyö on sama, mutta aika puolet lyhyempi. P = W / t, joten teho kaksinkertaistuu.','Työ on sama, joten teho on sama.','Nopeampi tekee kaksinkertaisen työn.'],wc:0},
+];
+function genPred(hard){const t=pick(PRED.filter(chOk));
+ if(!hard){const wo=sample(t.why.map((w,i)=>({w,i})),3);
+  return {type:'pick',q:`<p>${t.sit}</p><p>${t.ask} Valitse ennuste ja sen perustelu.</p>`,items:[{pre:'Ennuste:',post:'',o:t.o,c:t.c},{pre:'Perustelu:',post:'',o:wo.map(x=>x.w),c:wo.findIndex(x=>x.i===t.wc)}],
+   ex:'Hyvä ennuste perustellaan mallilla tai lailla, esimerkiksi kaavalla, joka kertoo suureiden riippuvuuden.'};}
+ return {type:'open',q:`<p>${t.sit}</p><p>${t.ask} Ennusta ja perustele ennusteesi fysiikan avulla.</p>`,a:`<p><b>Ennuste:</b> ${t.o[t.c]}.</p><p><b>Perustelu:</b> ${t.why[t.wc]}</p>`};}
+
+/* A5 Kahden oppilaan väitteet (T12) */
+const DEB=[
+ {ch:'19',sit:'Kaksi yhtä painavaa oppilasta nousee samat portaat, toinen juosten ja toinen kävellen.',a:['Aino','Juoksija tekee enemmän työtä, koska hän ponnistelee enemmän.'],b:['Eetu','Molemmat tekevät yhtä paljon nostotyötä, mutta juoksijan teho on suurempi.'],r:1,
+  why:'Nostotyö W = Gh riippuu vain painosta ja korkeudesta, jotka ovat samat. Juoksija tekee saman työn lyhyemmässä ajassa, joten hänen tehonsa P = W / t on suurempi.',err:'Aino sekoittaa työn ja tehon: ponnistelun tuntu kertoo tehosta, ei työn määrästä.'},
+ {ch:'20a',sit:'Laatikko viedään lavalle joko nostamalla suoraan tai työntämällä luiskaa pitkin.',a:['Lumi','Luiskaa käyttämällä tarvitaan vähemmän työtä.'],b:['Onni','Luiskaa käyttämällä tarvitaan pienempi voima, mutta työ on yhtä suuri.'],r:1,
+  why:'Fs = Gh: luiskalla voima pienenee, mutta matka kasvaa samassa suhteessa. Työ pysyy samana (kitkaa ei huomioida).',err:'Lumi olettaa, että pienempi voima tarkoittaa pienempää työtä, mutta unohtaa pidemmän matkan.'},
+ {ch:'17',sit:'Oppilas kantaa painavaa laukkua pitkän matkan tasaisella käytävällä ja väsyy.',a:['Venla','Hän tekee laukkuun paljon nostotyötä, koska hän väsyy.'],b:['Leo','Laukkuun ei tehdä nostotyötä, koska se ei nouse ylöspäin.'],r:1,
+  why:'Nostotyötä tehdään vain, kun kappale nousee. Kannatteleva voima on ylöspäin, mutta laukku liikkuu vaakasuoraan. Väsyminen johtuu lihasten jännittämisestä.',err:'Venla päättelee työn väsymisestä, mutta fysiikassa työ edellyttää liikettä voiman suuntaan.'},
+ {ch:'16',sit:'Kivi pudotetaan, eikä ilmanvastusta huomioida.',a:['Elias','Juuri ennen maahan osumista kiven liike-energia on yhtä suuri kuin sen potentiaalienergia alussa.'],b:['Sofia','Liike-energiaa on enemmän kuin alussa potentiaalienergiaa, koska vauhti kasvaa koko ajan.'],r:0,
+  why:'Energia säilyy. Pudotessa potentiaalienergia muuttuu liike-energiaksi, joten maahan osuessa liike-energia on yhtä suuri kuin alussa ollut potentiaalienergia.',err:'Sofia huomaa oikein, että vauhti kasvaa, mutta energiaa ei synny lisää: liike-energian kasvu on yhtä suuri kuin potentiaalienergian väheneminen.'},
+ {ch:'20b',sit:'Kiveä nostetaan kangella.',a:['Helmi','Pidemmällä kangella tarvitaan pienempi voima, kun tukipiste on samassa kohdassa.'],b:['Niilo','Pidempi kanki on raskaampi, joten sen kanssa tarvitaan aina suurempi voima.'],r:0,
+  why:'Ga = Fb: kun voiman varsi b pitenee, voima F pienenee.',err:'Niilo nostaa esiin todellisen asian (kangen oma paino), mutta mallissa sitä ei huomioida, ja yleensä pidemmän varren hyöty on paljon suurempi kuin kangen painon vaikutus.'},
+ {ch:'19',sit:'Kahden laitteen energiankäyttöä verrataan energiakaavioilla.',a:['Aino','Laite, jonka hyötysuhde on suurempi, tuottaa aina enemmän hyötyenergiaa.'],b:['Eetu','Hyötysuhde kertoo, kuinka suuri osa energiasta muuttuu hyödylliseksi, ei hyötyenergian määrää.'],r:1,
+  why:'Hyötysuhde on hyötyenergian osuus laitteen saamasta energiasta. Jos laite saa vähän energiaa, se voi tuottaa vähemmän hyötyenergiaa, vaikka osuus on suuri.',err:'Aino sekoittaa osuuden ja määrän.'},
+ {ch:'19',sit:'Kahta moottoria verrataan.',a:['Onni','Suurempitehoinen moottori tekee aina enemmän työtä.'],b:['Lumi','Suurempitehoinen moottori tekee saman työn lyhyemmässä ajassa. Työn määrä riippuu myös siitä, kuinka kauan moottori käy.'],r:1,
+  why:'Teho kertoo, kuinka nopeasti työtä tehdään (P = W / t). Kun tehon kaavasta ratkaistaan työ, nähdään, että työ riippuu sekä tehosta että ajasta.',err:'Onni unohtaa ajan: pienitehoinen moottori voi tehdä enemmän työtä, jos se käy pidempään.'},
+];
+function genDeb(hard){const t=pick(DEB.filter(chOk)),[an,ac]=t.a,[bn,bc]=t.b,rn=t.r?bn:an;
+ const q=`<p>${t.sit}</p><p><b>${an}:</b> ”${ac}”</p><p><b>${bn}:</b> ”${bc}”</p>`;
+ if(!hard)return {type:'mc',q:q+'<p>Kumpi on oikeassa?</p>',o:[an,bn,'Molemmat','Ei kumpikaan'],c:t.r,ordered:true,ex:t.why};
+ return {type:'open',q:q+P('a','Kumpi on oikeassa? Perustele fysiikan avulla.')+P('b','Missä toisen päättely menee vikaan?'),a:P('a',`${rn}. ${t.why}`)+P('b',t.err)};}
+
+/* A6 Väitteen tai tietolähteen arviointi (T12) */
+const CLAIMS=[
+ {ch:'16',src:'Verkkokaupan mainos',txt:'”Ikuinen pyörä: kerran vauhtiin saatettuna se pyörii ikuisesti ja tuottaa ilmaista sähköä kotiisi!”',
+  a:'Väite ei pidä paikkaansa. Energiaa ei synny tyhjästä. Pyörästä otettu sähköenergia ja kitkan aiheuttama lämpö pienentävät pyörän liike-energiaa, joten pyörä pysähtyy. Lähde on mainos, jonka tarkoitus on myydä, joten se ei ole puolueeton. Väite kannattaa tarkistaa luotettavasta lähteestä, esimerkiksi oppikirjasta tai tutkimuslaitoksen sivuilta.'},
+ {ch:'19',src:'Tuote-esite',txt:'”Uuden moottorimme hyötysuhde on 120 %: se antaa enemmän energiaa kuin kuluttaa.”',
+  a:'Väite ei voi pitää paikkaansa. Hyötysuhde on aina alle 100 %, koska laite ei voi antaa enempää energiaa kuin saa, ja osa energiasta muuttuu aina lämmöksi. Esitteen laatija hyötyy tuotteen myynnistä, joten väitteeseen kannattaa suhtautua kriittisesti.'},
+ {ch:'20a',src:'Some-julkaisu',txt:'”Vinkki muuttoon: työnnä raskaat tavarat luiskaa pitkin, niin kulutat vähemmän energiaa kuin nostamalla!”',
+  a:'Väite on osittain väärä. Luiska pienentää tarvittavaa voimaa, mutta matka kasvaa, ja työ pysyy samana (Fs = Gh). Kitkan takia luiskalla tarvitaan todellisuudessa jopa hieman enemmän energiaa. Vinkki on silti hyödyllinen, koska pienempi voima on helpompi tuottaa. Some-julkaisun kirjoittaja ei välttämättä ole asiantuntija.'},
+ {ch:'20b',src:'Keskustelupalsta',txt:'”Vipu tuottaa lisää energiaa: pienellä voimalla saa nostettua ison kiven, joten energiaa syntyy.”',
+  a:'Väite ei pidä paikkaansa. Vivulla voima pienenee, mutta voiman vaikutusmatka kasvaa: kättä painetaan pidempi matka kuin kivi nousee. Työ on sama, eikä energiaa synny lisää. Keskustelupalstan kirjoittajan asiantuntemusta ei voi tarkistaa.'},
+ {ch:'18',src:'Kuntosalin mainos',txt:'”Nopea nosto kuluttaa kaksi kertaa enemmän energiaa kuin hidas nosto!”',
+  a:'Väite ei pidä paikkaansa nostotyön osalta: nostotyö W = Gh on sama nopeudesta riippumatta. Nopeassa nostossa teho on suurempi. Ihmisen elimistö voi kuluttaa eri nostotavoissa eri määriä energiaa, mutta mainos ei kerro, mihin väite perustuu. Mainoksen tarkoitus on houkutella asiakkaita.'},
+];
+function genClaim(){const t=pick(CLAIMS.filter(chOk));
+ return {type:'open',q:`<p>${t.src}:</p><p class="claim">${t.txt}</p>`+P('a','Pitääkö väite paikkansa? Perustele fysiikan avulla.')+P('b','Kuinka luotettava lähde on? Miten tarkistaisit väitteen?'),a:`<p>${t.a}</p>`};}
+
+/* A7 Kestävä valinta (T4). Kaavaa W = Pt ei käytetä valmiina: perustasolla päätellään tehosta ja ajasta laskematta,
+   vaikealla tasolla energia ratkaistaan tehon kaavasta P = W / t (temppuviiva). Energia jouleina. */
+const SUST=[
+ {ch:'19',what:'valaistus',A:['hehkulamppu',60],B:['LED-lamppu',8],t:[30,60,120],same:true,
+  extra:'Hehkulampussa suurin osa energiasta muuttuu lämmöksi, LED-lampussa selvästi suurempi osa valoksi.'},
+ {ch:'19',what:'veden keittäminen',A:['vedenkeitin',2000],B:['kattila liedellä',1500],tA:[2,3],tB:[6,8],same:false,
+  extra:'Suurempi teho ei tarkoita suurempaa energiankulutusta, jos laite tekee työn lyhyemmässä ajassa. Kattilasta lämpöä karkaa myös ympäristöön.'},
+ {ch:'19',what:'hiusten kuivaaminen',A:['hiustenkuivaaja täydellä teholla',2000],B:['hiustenkuivaaja puolella teholla',1000],tA:[4,5],tB:[12,15],same:false,
+  extra:'Puolella teholla kuivaaminen kestää yli kaksi kertaa kauemmin, joten energiaa kuluu enemmän.'},
+ {ch:'19',what:'saunan lämmittäminen',A:['pitkä saunavuoro',6000],B:['lyhyt saunavuoro',6000],tA:[60,90],tB:[30,40],same:false,sameP:true,
+  extra:'Kun kiukaan teho on sama, lyhyempi käyttöaika kuluttaa vähemmän energiaa.'},
+ {ch:'19',what:'pölynimurointi',A:['vanha pölynimuri',1600],B:['uusi pölynimuri',800],t:[10,15,20],same:true,
+  extra:'Uudempi laite tekee saman työn pienemmällä teholla, joten energiaa kuluu vähemmän.'},
+];
+function genSust(hard){const t=pick(SUST.filter(chOk).filter(x=>hard||x.same||x.sameP));
+ const ta=t.same?pick(t.t):pick(t.tA),tb=t.same?ta:pick(t.tB),WA=t.A[1]*ta*60,WB=t.B[1]*tb*60,best=WA<WB?t.A[0]:t.B[0];
+ const desc=`<p><b>${cap(t.A[0])}</b>: teho ${raw(t.A[1])} W, käyttöaika ${ta} min.<br><b>${cap(t.B[0])}</b>: teho ${raw(t.B[1])} W, käyttöaika ${tb} min.</p>`;
+ if(!hard){const why=t.same?'Käyttöaika on sama, joten pienempitehoinen kuluttaa vähemmän energiaa.':'Teho on sama, joten lyhyempi käyttöaika kuluttaa vähemmän energiaa.';
+  return {type:'mc',q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}.</p>${desc}<p>Kumpi kuluttaa vähemmän energiaa? Päättele laskematta.</p>`,o:[cap(t.A[0]),cap(t.B[0]),'Molemmat yhtä paljon'],c:WA<WB?0:1,ordered:true,
+   ex:`Teho kertoo, kuinka paljon energiaa laite kuluttaa sekunnissa (P = W / t). ${why} ${t.extra}`};}
+ /* energia ratkaistaan tehon kaavasta */
+ const sol=(n,Pw,tm,W)=>`<p class="sn plab"><b>${cap(n)}</b></p>`+stepsHTML(fin(blk('P',PWT,[GV('P',`${raw(Pw)} W`),Q('W'),GV('t',`${tm} min = ${raw(tm*60)} s`)],qS(`${raw(Pw)} W`,null,`${raw(tm*60)} s`)),W,'J'));
+ return {type:'open',hint:CALC_HINT,q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}.</p>${desc}`+P('a','Laske, kuinka paljon energiaa kumpikin kuluttaa. Muunna aika sekunneiksi.')+P('b','Kumpi on parempi valinta energiavarojen kestävän käytön kannalta? Perustele.'),
+  a:P('a','Energia ratkaistaan tehon kaavasta.')+sol(t.A[0],t.A[1],ta,WA)+sol(t.B[0],t.B[1],tb,WB)+P('b',`${cap(best)}, koska se kuluttaa vähemmän energiaa (ero ${raw(Math.abs(WA-WB))} J). ${t.extra} Kun energiaa kuluu vähemmän, sitä tarvitsee myös tuottaa vähemmän, mikä säästää energiavaroja.`)};}
+
+/* A8 Toimintaperiaate ja merkitys (T8) */
+const TECH=[
+ {ch:'20a',n:'pyörätuoliluiska',p:'Luiska on kalteva taso. Pyörätuolia työnnetään pidempi matka, mutta pienemmällä voimalla kuin nostettaessa suoraan ylös. Työ pysyy samana (Fs = Gh).',m:'Luiskat tekevät rakennuksista esteettömiä: pyörätuolin käyttäjät, lastenvaunujen kanssa liikkuvat ja ikääntyneet pääsevät kulkemaan itsenäisesti.'},
+ {ch:'20a',n:'mutkitteleva vuoristotie',p:'Mutkitteleva tie on pitkä kalteva taso. Kun matka pitenee, tie on loivempi, ja ylös pääsemiseen tarvitaan pienempi voima. Nostotyö on sama kuin suoraan noustessa.',m:'Loivat tiet mahdollistavat liikenteen ja tavarankuljetuksen vuoristossa ja tekevät ajamisesta turvallisempaa.'},
+ {ch:'20b',n:'sorkkarauta',p:'Sorkkarauta on kaksivartinen vipu. Kun voiman varsi on paljon kuorman vartta pidempi, pienellä voimalla saadaan suuri voima kuormaan (Ga = Fb). Kättä painetaan pidempi matka kuin kuorma liikkuu.',m:'Vipuja käytetään rakennus- ja pelastustyössä sekä monissa työkaluissa, joilla ihminen saa aikaan suuria voimia ilman koneita.'},
+ {ch:'20c',n:'lipputangon kiinteä väkipyörä',p:'Kiinteä väkipyörä muuttaa voiman suunnan: lippu nousee ylös, kun narua vedetään alaspäin. Voima on yhtä suuri kuin ilman väkipyörää.',m:'Väkipyöriä käytetään esimerkiksi rakennustyömailla, hisseissä ja purjeveneissä, joissa kuormaa on helpompi nostaa vetämällä alaspäin.'},
+ {ch:'17',n:'polkupyörän vaihteet',p:'Kevyellä vaihteella polkimiin tarvitaan pienempi voima, mutta polkimia pyöritetään useampi kierros saman matkan aikana. Työ pysyy samana, mutta se on helpompi tehdä pienellä voimalla.',m:'Vaihteiden ansiosta polkupyörällä pääsee myös mäkiä ylös, joten pyöräilystä tulee käytännöllinen ja vähäpäästöinen liikkumistapa.'},
+ {ch:'19',n:'hissi',p:'Hissin sähkömoottori tekee nostotyön W = Gh. Moottorin teho kertoo, kuinka nopeasti se tekee työn: suurempitehoinen moottori nostaa saman kuorman lyhyemmässä ajassa.',m:'Hissit mahdollistavat korkeat rakennukset ja esteettömän liikkumisen. Niiden energiankulutus kannattaa huomioida, sillä portaissa ei kulu sähköä.'},
+ {ch:'20a',n:'ruuvi',p:'Ruuvin kierre on kalteva taso, joka on kiertynyt ruuvin varren ympärille. Kierrettäessä kierre kulkee pitkän matkan, mutta ruuvi uppoaa vain vähän, joten tarvittava voima on pieni.',m:'Ruuveilla kiinnitetään rakenteita lujasti pienellä voimalla. Ne ovat rakentamisessa ja koneissa välttämättömiä.'},
+ {ch:'20b',n:'sakset',p:'Sakset ovat kaksivartinen vipu, jonka tukipiste on nivelessä. Kun leikattava on lähellä niveltä, kuorman varsi on lyhyt ja pienellä käden voimalla saadaan suuri leikkaava voima.',m:'Vipuperiaatteella toimivat leikkaavat työkalut ovat käytössä kotona, sairaaloissa ja teollisuudessa.'},
+];
+function genTech(hard){const t=pick(TECH.filter(chOk));
+ return {type:'open',q:`<p>Tarkastellaan sovellusta: <b>${t.n}</b>.</p>`+P('a','Selitä sen toimintaperiaate fysiikan käsitteiden avulla.')+(hard?P('b','Perustele, mikä merkitys tällaisella sovelluksella on yhteiskunnalle.'):''),
+  a:P('a',t.p)+(hard?P('b',t.m):'')};}
+
+/* A9 Ilmiö – ominaisuus – suure (T10) */
+const QCOLS=['Työ W','Potentiaalienergia Ep','Teho P','Paino G'];
+const QROWS=[
+ ['Pulkkaa vedetään 50 m matka.',0,'17'],['Voima siirtää laatikkoa lattiaa pitkin.',0,'17'],['Laatikkoa nostettaessa siihen vaikuttaa voima, ja se liikkuu voiman suuntaan.',0,'18'],
+ ['Kirja on korkealla hyllyllä.',1,'18'],['Hyppytornissa seisovalla uimarilla on varastoitunutta energiaa.',1,'18'],['Ylhäällä vuoristoradan huipulla olevan vaunun asemaan liittyvä energia.',1,'18'],
+ ['Kuinka nopeasti moottori tekee työtä.',2,'19'],['Laitteen kyljessä watteina ilmoitettu suure.',2,'19'],['Juoksija nousee portaat nopeammin kuin kävelijä.',2,'19'],
+ ['Maan vetovoima, joka vaikuttaa kappaleeseen.',3,'18'],['Massa kerrottuna luvulla 10 N/kg.',3,'18'],['Suure, joka ilmoitetaan newtoneina ja mitataan voimamittarilla roikottamalla.',3,'18'],
+];
+function genMatch(){const rows=QROWS.filter(r=>SEL.has(r[2]));const pickRows=[];[0,1,2,3].forEach(c=>{const r=rows.filter(x=>x[1]===c);if(r.length)pickRows.push(pick(r));});
+ sample(rows.filter(r=>!pickRows.includes(r)),Math.max(0,5-pickRows.length)).forEach(r=>pickRows.push(r));
+ return {type:'table',q:'Mihin suureeseen ilmiö tai ominaisuus liittyy?',cols:QCOLS,rows:sample(pickRows,pickRows.length).map(([t,c])=>({t,c})),
+  ex:'Yksiköt: työ ja potentiaalienergia jouleina (J), teho watteina (W), paino newtoneina (N).'};}
+
+/* A10 Tutkimuksen luotettavuuden arviointi (T7) */
+const FLAW=[
+ {ch:'20a',txt:'Oppilas tutki, miten luiskan pituus vaikuttaa tarvittavaan voimaan. Hän mittasi voiman jokaisella pituudella kerran. Pidemmillä luiskilla hän vaihtoi laatikon kevyempään, jotta sitä olisi helpompi vetää. Lopuksi hän päätteli, että pitkällä luiskalla tarvitaan paljon pienempi voima.',
+  a:'Virheet: (1) Laatikko vaihdettiin, joten muutettiin kahta asiaa yhtä aikaa. Voiman pieneneminen voi johtua myös kevyemmästä laatikosta. (2) Jokainen mittaus tehtiin vain kerran, joten satunnaiset virheet jäävät huomaamatta. Parannukset: sama laatikko kaikissa mittauksissa, korkeus samana, jokainen mittaus 3–5 kertaa ja keskiarvo.'},
+ {ch:'19',txt:'Oppilas mittasi nousutehonsa portaissa. Hän arvioi portaiden korkeuden silmämääräisesti ja mittasi portaiden pituuden vinosti kaiteen viertä. Ajan hän luki puhelimen kellosta, joka näyttää vain minuutit. Hän nousi portaat kerran.',
+  a:'Virheet: (1) Korkeus arvioitiin silmämääräisesti, ja lisäksi mitattiin vino pituus, vaikka nostotyöhön tarvitaan pystysuora korkeus. (2) Minuutteja näyttävä kello on liian epätarkka muutaman sekunnin mittaukseen. (3) Yksi mittaus. Parannukset: pystysuora korkeus mittanauhalla (askelman korkeus kertaa askelmien määrä), sekuntikello, useampi nousu ja keskiarvo.'},
+ {ch:'20b',txt:'Oppilas tutki, miten voiman varren pituus vaikuttaa vivulla tarvittavaan voimaan. Hän luki voimamittaria joka kerta hieman eri kohdasta vartta ja siirsi samalla kuormaa lähemmäs tukipistettä, koska kivi liukui. Tuloksia oli neljä.',
+  a:'Virheet: (1) Kuorman varsi muuttui, kun kivi liukui, joten muutettiin kahta asiaa yhtä aikaa. (2) Voiman vaikutuskohta vaihteli, joten voiman varsi ei ollut se, mitä merkittiin. Parannukset: kuorma kiinnitetään, voima mitataan aina mitatusta kohdasta, kuorman varsi pidetään samana ja mittaukset toistetaan.'},
+ {ch:'16',txt:'Oppilas tutki pudotuskorkeuden vaikutusta pallon pomppuun. Hän heitti pallon alas, luki pomppukorkeuden kaukaa silmämääräisesti ja vaihtoi välillä lattialta matolle, kun naapurit valittivat äänestä.',
+  a:'Virheet: (1) Pallo heitettiin, joten sillä oli alussa ylimääräistä liike-energiaa. (2) Alusta vaihtui, joten muutettiin kahta asiaa. (3) Korkeus luettiin epätarkasti. Parannukset: pallo pudotetaan irti päästämällä, alusta pysyy samana, pomppukorkeus luetaan mitta-asteikon vierestä tai videolta, ja mittaukset toistetaan.'},
+];
+function genFlaw(){const t=pick(FLAW.filter(chOk));
+ return {type:'open',q:`<p>${t.txt}</p>`+P('a','Mitkä asiat heikentävät tutkimuksen luotettavuutta?')+P('b','Miten tutkimusta pitäisi parantaa?'),a:`<p>${t.a}</p>`};}
+
+QEASY.push(
+ {id:'tq',gen:()=>genTQ(false),ok:()=>TQ.some(chOk),w:3},{id:'data',gen:()=>genData(false),ok:()=>dsOk().length>0,w:3},{id:'graph',gen:()=>genGraph(false),ok:()=>dsOk().length>0,w:3},
+ {id:'pred',gen:()=>genPred(false),ok:()=>PRED.some(chOk),w:4},{id:'deb',gen:()=>genDeb(false),ok:()=>DEB.some(chOk),w:3},{id:'sust',gen:()=>genSust(false),ok:()=>SUST.some(chOk),w:3},
+ {id:'tech',gen:()=>genTech(false),ok:()=>TECH.some(chOk),w:3},{id:'match',gen:genMatch,ok:()=>QROWS.filter(r=>SEL.has(r[2])).length>=4,w:3},
+);
+QHARD.push(
+ {id:'tqh',gen:()=>genTQ(true),ok:()=>TQ.some(chOk),w:3},{id:'datah',gen:genDataE,ok:()=>dsOk().length>0,w:4},{id:'graphh',gen:()=>genGraph(true),ok:()=>dsOk().length>0,w:4},
+ {id:'predh',gen:()=>genPred(true),ok:()=>PRED.some(chOk),w:3},{id:'debh',gen:()=>genDeb(true),ok:()=>DEB.some(chOk),w:4},{id:'claim',gen:genClaim,ok:()=>CLAIMS.some(chOk),w:3},
+ {id:'susth',gen:()=>genSust(true),ok:()=>SUST.some(chOk),w:3},{id:'techh',gen:()=>genTech(true),ok:()=>TECH.some(chOk),w:3},{id:'flaw',gen:genFlaw,ok:()=>FLAW.some(chOk),w:4},
+);
+
+/* =====================================================================
+   MONIOSAISET LASKUT (Laskutehtävät-välilehti): jokaisella kohdalla oma ratkaisu ja pyöristys
+   ===================================================================== */
+function calcFall(hard){
+ const [o,lo,hi]=pick([['Kuula',2,7.5],['Kivi',1,5],['Painonnostotanko',10,40],['Kirja',0.5,2],['Ämpäri',3,12]]);
+ const m=rnd(lo,hi,'kg'),h=rnd(1.2,2.4,'m'),G=m.v*10,W=G*h.v,Wr=A(W,Math.min(m.sf,h.sf),'J');
+ const gen={'Kuula':'kuulan','Kivi':'kiven','Painonnostotanko':'tangon','Kirja':'kirjan','Ämpäri':'ämpärin'}[o],ade={'Kuula':'kuulalla','Kivi':'kivellä','Painonnostotanko':'tangolla','Kirja':'kirjalla','Ämpäri':'ämpärillä'}[o];
+ const q=[`<p>${o}, jonka massa on <strong>${m.t}</strong>, nostetaan maasta <strong>${h.t}</strong> korkeudelle.</p>`,
+  P('a','Laske, kuinka suuri on nostotyö.'),P('b',`Kuinka suuri on ${gen} potentiaalienergia noston jälkeen? Potentiaalienergian nollataso on maanpinta. Perustele.`)];
+ const parts=[{lab:'a',steps:blk('W',GH,[GM(m),GV('h',h.t),Q('W')],subD('W',`${val(G,'N')} · ${h.t}`)),x:W,unit:'J',ins:[m,h]},
+  {lab:'b',res:Wr,ex:`${EP} = <b>${Wr}</b>, koska nostotyö varastoituu ${gen} potentiaalienergiaksi.`}];
+ if(hard){const alt=rand()<0.5,h2=inp(h.v*(0.25+rand()*0.5),2,'m'),Xk=inp(W*(0.3+rand()*0.4),2,'J');
+  q.push(P('c',`${o} päästetään putoamaan siltä korkeudelta, jolle se nostettiin. Kuinka suuri ${gen} liike-energia on juuri ennen kuin se osuu maahan? Perustele.`),
+   alt?P('d',`Millä korkeudella maasta ${ade} on liike-energiaa <strong>${Xk.t}</strong>?`):P('d',`Kuinka paljon ${ade} on liike-energiaa <strong>${h2.t}</strong> korkeudella maasta?`));
+  parts.push({lab:'c',res:Wr,ex:`${EK} = <b>${Wr}</b>. Pudotessa potentiaalienergia muuttuu liike-energiaksi, ja energia säilyy (ilmanvastusta ei huomioida).`});
+  if(alt){const Ep=W-Xk.v;
+   parts.push({lab:'d',pre:`Potentiaalienergiaa on vielä jäljellä ${EP} = ${val(W,'J')} − ${Xk.t} = ${val(Ep,'J')}.`,
+    steps:[E(`${EP} = ${GH}`,null,null,1),{given:[`${EP} = ${val(Ep,'J')}`,`${V('G')} = ${val(G,'N')}`,Q('h')]},...pS(val(Ep,'J'),['G',val(G,'N')],['h',null])],x:Ep/G,unit:'m',ins:[m,h,Xk]});}
+  else{const Ep2=G*h2.v;
+   parts.push({lab:'d',steps:[E(`${EP} = ${GH}`,null,null,1),{given:[`${V('G')} = ${val(G,'N')}`,GV('h',h2.t),`${EP} = ?`]},E(`${EP} = ${val(G,'N')} · ${h2.t} = ${val(Ep2,'J')}`),
+    'Loput potentiaalienergiasta on muuttunut liike-energiaksi.',E(`${EK} = ${val(W,'J')} − ${val(Ep2,'J')}`)],x:W-Ep2,unit:'J',ins:[m,h,h2]});}}
+ return {text:q.join(''),parts};}
+function calcBrake(){
+ const [who,what]=pick([['Minja','pyörällä'],['Eetu','potkulaudalla'],['Venla','rullaluistimilla'],['Onni','pyörällä'],['Lumi','potkulaudalla']]);
+ const En=rnd(1500,9000,'J'),pa={lab:'a',res:'lämmöksi',ex:'Lämmöksi (lämpöenergiaksi).'},pre=`Kitkavoima tekee työn, joka on yhtä suuri kuin liike-energia: ${V('W')} = ${En.t}.`;
+ if(rand()<0.5){const F=rnd(300,1500,'N');
+  return {text:`<p>${who} jarruttaa ${what}, jolloin kitkavoiman tekemä työ pysäyttää liikkeen. Jarrutuksen alkaessa hänellä on liike-energiaa <strong>${En.t}</strong>, ja kitkavoima on <strong>${F.t}</strong>.</p>`+P('a','Mihin energiamuotoon liike-energia muuttuu jarrutuksessa?')+P('b','Kuinka pitkä on jarrutusmatka?'),
+   parts:[pa,{lab:'b',pre,steps:blk('W',FS,[GV('W',En.t),GV('F',F.t),Q('s')],pS(En.t,['F',F.t],['s',null])),x:En.v/F.v,unit:'m',ins:[En,F]}]};}
+ const ss=rnd(2,15,'m');
+ return {text:`<p>${who} jarruttaa ${what}. Jarrutuksen alkaessa hänellä on liike-energiaa <strong>${En.t}</strong>, ja jarrutusmatka on <strong>${ss.t}</strong>.</p>`+P('a','Mihin energiamuotoon liike-energia muuttuu jarrutuksessa?')+P('b','Kuinka suuri on jarruttava kitkavoima?'),
+  parts:[pa,{lab:'b',pre,steps:blk('W',FS,[GV('W',En.t),Q('F'),GV('s',ss.t)],pS(En.t,['F',null],['s',ss.t])),x:En.v/ss.v,unit:'N',ins:[En,ss]}]};}
+EASY.push({tags:['G','Gh'],fam:'fall',f:()=>calcFall(false)});
+HARD.push({tags:['G','Gh'],fam:'fall',f:()=>calcFall(true)},{tags:['Fs'],fam:'brake',f:calcBrake});
+function renderParts(t){const res=[],html=[];
+ t.parts.forEach(p=>{
+  if(p.steps){const a=finish({steps:p.steps,x:p.x,unit:p.unit,ins:p.ins,note:p.note});
+   res.push(`<span class="pres"><b>${p.lab})</b> ${a.res}</span>`);
+   html.push(`<p class="sn plab"><b>${p.lab})</b>${p.pre?' '+p.pre:''}</p>`+stepsHTML(p.steps)+`<p class="kround">${a.round}</p>`);}
+  else{res.push(`<span class="pres"><b>${p.lab})</b> ${p.res}</span>`);html.push(`<p class="sn plab"><b>${p.lab})</b> ${p.ex}</p>`);}});
+ return {res:res.join(''),steps:html.join('')};}
+
+let qcount=0;
+const allowedQ=q=>q.gen?q.ok():okT(q.q+' '+(q.o?q.o.join(' '):'')+' '+(q.ex||q.a||''));
+/* Tehtävätyyppien osuudet vastaavat koetta: luvut ovat tyyppien esiintymiskerrat 300 arvotussa kokeessa (koegeneraattori v5).
+   Perustason monivalinnat (mc) ja vaikeat selitä- ja tutkimustehtävät ovat omia ryhmiään, joista kysymykset tulevat pakkana ilman toistoa. */
+const EXAMW={
+ easy:{conv:94,diagread:111,pick:115,tf:73,bound:90,order:106,mc:109,units:77,uconv:119,tq:138,data:117,graph:113,pred:85,deb:143,sust:152,tech:163,match:122},
+ hard:{eff:23,diaghard:41,rise:35,err:16,pickh:19,tfh:28,orderh:9,tqh:14,datah:42,graphh:42,susth:145,claim:11,techh:24,flaw:23,explain:29,research:33,predh:19,debh:11,boundh:0}};
+const isRes=q=>/Suunnittele|tutkisit|Miten voisit mitata/.test(q.q);
+const slotOf=(q,level)=>q.id||(level==='easy'?'mc':(q.a&&isRes(q))?'research':'explain');
+const decks={easy:{},hard:{}},lastSlot={easy:null,hard:null};
+function nextQ(level){const src=level==='easy'?QEASY:QHARD,W=EXAMW[level],wt=s=>W[s]??1;
+  const groups={};src.forEach(q=>{if(!allowedQ(q))return;const s=slotOf(q,level);(groups[s]=groups[s]||[]).push(q);});
+  let slots=Object.keys(groups).filter(s=>wt(s)>0);if(!slots.length)return null;
+  if(slots.length>1)slots=slots.filter(s=>s!==lastSlot[level]);
+  let r=rand()*slots.reduce((a,s)=>a+wt(s),0),sl=slots[slots.length-1];for(const s of slots){r-=wt(s);if(r<=0){sl=s;break;}}
+  lastSlot[level]=sl;const g=groups[sl];
+  if(g.length===1)return g[0].gen?g[0].gen():g[0];
+  let d=decks[level][sl];if(!d||!d.length)d=decks[level][sl]=sample(g,g.length);
+  const q=d.pop();return q.gen?q.gen():q;}
+function mark(btns,ci,b,i){btns.forEach((x,k)=>{x.disabled=true;if(k===ci)x.classList.add('right');});if(i!==ci)b.classList.add('wrong');return i===ci;}
+function makeQ(level){
+  const q=nextQ(level);
+  if(!q){$('qtext').innerHTML='<p>Valituista kappaleista ei löydy tämän tason kysymyksiä. Ota käyttöön lisää kappaleita yläpuolelta.</p>';
+    $('qopts').innerHTML='';$('qans').hidden=true;$('qhint').hidden=true;$('q-show').hidden=true;return;}
+  qcount++;
+  $('qbadge').textContent=level==='easy'?'Perustehtävä':'Vaikea';$('qbadge').className='badge '+level;
+  $('qnum').textContent='Kysymys '+qcount;$('qtext').innerHTML=q.q;
+  $('qans').hidden=true;$('qopts').innerHTML='';$('qopts').className='opts';
+  const type=q.type||(q.o?'mc':'open'),open=type==='open';
+  $('qhint').hidden=!open;$('qhint').textContent=q.hint||OPEN_HINT;$('q-show').hidden=!open;$('q-show').textContent='Näytä mallivastaus';
+  if(open){$('qlbl').textContent='Mallivastaus';$('qexp').innerHTML=q.a;return;}
+  if(type==='mc'){
+    const order=(q.o===TF||q.ordered)?q.o.map((_,i)=>i):sample(q.o.map((_,i)=>i),q.o.length);
+    order.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=q.o[i];
+      b.addEventListener('click',()=>{const ok=mark([...$('qopts').children],order.indexOf(q.c),b,order.indexOf(i));
+        $('qlbl').textContent=ok?'Oikein!':'Ei aivan. Oikea vastaus on merkitty vihreällä.';$('qexp').innerHTML=q.ex;$('qans').hidden=false;});
+      $('qopts').appendChild(b);});
+    return;}
+  /* table ja pick: jokaisesta kohdasta palaute heti, yhteenveto kun kaikki on vastattu */
+  let done=0,right=0;const items=type==='table'?q.rows:q.items;
+  const finishAll=()=>{if(++done<items.length)return;$('qlbl').textContent=`${right}/${items.length} oikein`;$('qexp').innerHTML=q.ex||'';$('qans').hidden=false;};
+  $('qopts').className='opts '+(type==='table'?'rows':'picks');
+  if(type==='table'&&q.cols.length<=2){
+    const head=document.createElement('div');head.className='trow thead';head.innerHTML=`<span class="tt"></span><span class="tbtns">${q.cols.map(c=>`<span>${c}</span>`).join('')}</span>`;$('qopts').appendChild(head);}
+  items.forEach(it=>{
+    const row=document.createElement('div');row.className=type==='table'?'trow':'prow';
+    const opts=type==='table'?q.cols:it.o;
+    const btns=opts.map((o,i)=>{const b=document.createElement('button');b.type='button';b.className='ch';b.textContent=o;
+      b.addEventListener('click',()=>{if(mark(btns,it.c,b,i))right++;if(it.fix){fx.hidden=false;}finishAll();});return b;});
+    const box=document.createElement('span');box.className='tbtns';btns.forEach(b=>box.appendChild(b));
+    const fx=document.createElement('div');fx.className='tfix';fx.hidden=true;fx.textContent=it.fix||'';
+    if(type==='table'){const t=document.createElement('span');t.className='tt';t.textContent=it.t;row.append(t,box,fx);}
+    else{const t1=document.createElement('span');t1.textContent=it.pre+' ';const t2=document.createElement('span');t2.textContent=(it.post.startsWith(',')||it.post==='.'?'':' ')+it.post;row.append(t1,box,t2);}
+    $('qopts').appendChild(row);});
+}
+$('q-easy').addEventListener('click',()=>makeQ('easy'));
+$('q-hard').addEventListener('click',()=>makeQ('hard'));
+$('q-show').addEventListener('click',()=>{const a=$('qans');a.hidden=!a.hidden;$('q-show').textContent=a.hidden?'Näytä mallivastaus':'Piilota mallivastaus';});
+function setMode(m){const th=m==='theory';$('mode-calc').hidden=th;$('mode-theory').hidden=!th;
+  $('m-calc').setAttribute('aria-pressed',!th);$('m-theory').setAttribute('aria-pressed',th);
+  if(th&&!qcount)makeQ('easy');}
+$('m-calc').addEventListener('click',()=>setMode('calc'));
+$('m-theory').addEventListener('click',()=>setMode('theory'));
+make('easy');
+</script>
+
+</html>
