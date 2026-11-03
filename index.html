@@ -1282,8 +1282,8 @@ const TECH=[
  {ch:'20b',n:'sakset',p:'Sakset ovat kaksivartinen vipu, jonka tukipiste on nivelessä. Kun leikattava on lähellä niveltä, kuorman varsi on lyhyt ja pienellä käden voimalla saadaan suuri leikkaava voima.',m:'Vipuperiaatteella toimivat leikkaavat työkalut ovat käytössä kotona, sairaaloissa ja teollisuudessa.'},
 ];
 function genTech(hard){const t=pick(TECH.filter(chOk));
- return {type:'open',q:`<p>Tarkastellaan sovellusta: <b>${t.n}</b>.</p>`+P('a',t.ask||'Selitä sen toimintaperiaate fysiikan käsitteiden avulla.')+(hard?P('b','Perustele, mikä merkitys tällaisella sovelluksella on yhteiskunnalle.'):''),
-  a:P('a',t.p)+(hard?P('b',t.m):'')};}
+ return {type:'open',q:`<p>Tarkastellaan sovellusta: <b>${t.n}</b>.</p>`+(hard?P('a',t.ask||'Selitä sen toimintaperiaate fysiikan käsitteiden avulla.')+P('b','Perustele, mikä merkitys tällaisella sovelluksella on yhteiskunnalle.'):`<p>${t.ask||'Selitä sen toimintaperiaate fysiikan käsitteiden avulla.'}</p>`),
+  a:hard?P('a',t.p)+P('b',t.m):`<p>${t.p}</p>`};}
 
 /* A9 Ilmiö – ominaisuus – suure (T10) */
 const QCOLS=['Työ W','Potentiaalienergia Ep','Teho P','Paino G'];
