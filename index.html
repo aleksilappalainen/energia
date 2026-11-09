@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Liike ja energia -alueen kertaustehtävät</title>
+<title>Voima ja energia -alueen kertaustehtävät</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
@@ -776,7 +776,7 @@ QEASY.push(
  {q:'Väite: Kappaleen liike-energia on suurempi, kun se liikkuu nopeammin.',o:TF,c:0,ex:'Tosi. Liike-energia kasvaa nopeuden kasvaessa.'},
  {q:'Pallo heitetään suoraan ylöspäin. Missä kohdassa sen potentiaalienergia on suurin?',o:['Ylimmässä kohdassa','Heittohetkellä','Puolivälissä','Juuri ennen kiinniottoa'],c:0,ex:'Ylimmässä kohdassa pallo on korkeimmalla ja pysähtyy hetkeksi. Liike-energia on muuttunut potentiaalienergiaksi.'},
  {q:'Nostat kirjan hyllylle. Mihin tekemäsi nostotyö varastoituu?',o:['Kirjan potentiaalienergiaksi','Kirjan liike-energiaksi','Hyllyn lämmöksi','Se häviää'],c:0,ex:'Nostotyö varastoituu kirjan potentiaalienergiaksi. Jos kirja putoaa, potentiaalienergia muuttuu liike-energiaksi.'},
- {q:'Mikä energianmuutos tapahtuu aurinkopaneelissa?',o:['Valo → sähköenergia','Sähköenergia → valo','Lämpö → liike-energia','Liike-energia → valo'],c:0,ex:'Aurinkopaneeli muuttaa auringon valon sähköenergiaksi.'},
+ {q:'Mikä energianmuutos tapahtuu aurinkopaneelissa?',o:['Valoenergia → sähköenergia','Sähköenergia → valoenergia','Lämpö → liike-energia','Liike-energia → valoenergia'],c:0,ex:'Aurinkopaneeli muuttaa auringon valon sähköenergiaksi.'},
  {q:'Missä muodossa energia on varastoituneena ruokaan?',o:['Kemiallisena energiana','Liike-energiana','Potentiaalienergiana','Sähköenergiana'],c:0,ex:'Ruoassa energia on kemiallista energiaa. Elimistö muuttaa sitä esimerkiksi liike-energiaksi ja lämmöksi.'},
  {q:'Mikä energianmuutos tapahtuu vesivoimalaitoksessa?',o:['Ylhäällä olevan veden potentiaalienergia → sähköenergia','Sähköenergia → veden liike-energia','Lämpö → veden potentiaalienergia','Kemiallinen energia → sähköenergia'],c:0,ex:'Padon takana korkealla olevan veden potentiaalienergia muuttuu liike-energiaksi, joka pyörittää turbiinia ja generaattoria. Näin syntyy sähköä.'},
  {q:'Väite: Kun hierot käsiä yhteen, kitka muuttaa liike-energiaa lämmöksi.',o:TF,c:0,ex:'Tosi. Siksi kädet lämpenevät.'},
@@ -785,7 +785,7 @@ QEASY.push(
  {q:'Oppilas tutkii, miten nostokorkeus vaikuttaa nostotyöhön. Mikä hänen pitää pitää samana?',o:['Nostettava kappale','Nostokorkeus','Ei mitään','Mittauksen tulos'],c:0,ex:'Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Jos kappale vaihtuisi, työ muuttuisi myös painon takia, eikä tiedettäisi, mikä osa muutoksesta johtuu korkeudesta.'},
  {q:'Väite: Kun tutkitaan yhden suureen vaikutusta toiseen, muut asiat pidetään samoina.',o:TF,c:0,ex:'Tosi. Kun tutkitaan yhden suureen vaikutusta toiseen, kaikki muut asiat pidetään samoina. Muuten ei tiedetä, mistä tuloksen muutos johtuu.'},
  {q:'Väite: Tutkimuksessa kannattaa muuttaa monta asiaa kerralla, jotta tuloksia saadaan nopeammin.',o:TF,c:1,ex:'Epätosi. Jos monta asiaa muuttuu yhtä aikaa, ei tiedetä, mikä niistä aiheutti tuloksen muutoksen.'},
- {q:'Miksi mittaustulokset esitetään usein kuvaajana?',o:['Suureiden välinen riippuvuus näkyy kuvaajasta helposti','Kuvaaja tekee tuloksista tarkempia','Kuvaajaa ei tarvitse tulkita','Taulukkoa ei saa käyttää'],c:0,ex:'Kuvaajasta näkee nopeasti, kasvaako vai pieneneekö mitattava suure ja onko joku tulos poikkeava.'},
+ {q:'Miksi mittaustulokset esitetään usein kuvaajana?',o:['Suureiden välinen riippuvuus näkyy kuvaajasta helposti','Kuvaajaan piirretyt pisteet ovat tarkempia kuin taulukon luvut','Kuvaajaa ei tarvitse tulkita','Taulukkoa ei saa käyttää'],c:0,ex:'Kuvaajasta näkee nopeasti, kasvaako vai pieneneekö mitattava suure ja onko joku tulos poikkeava.'},
  {q:'Mihin tutkimuksen tuloksia verrataan johtopäätöksiä tehtäessä?',o:['Hypoteesiin','Muiden oppilaiden arvauksiin','Mittausvälineen hintaan','Tutkimuksen pituuteen'],c:0,ex:'Johtopäätöksissä pohditaan, tukevatko tulokset hypoteesia vai eivät, ja mistä mahdolliset erot johtuvat.'},
 );
 
@@ -984,11 +984,19 @@ function genEff(){
    ex:`Hyötysuhde kertoo, kuinka suuri osa laitteen saamasta energiasta muuttuu hyötyenergiaksi.<br>A: ${raw(A0.u)} J / ${raw(A0.i)} J on ${A0.f[2]}.<br>B: ${raw(B0.u)} J / ${raw(B0.i)} J on ${B0.f[2]}.<br>${hi}:ssa suurempi osa energiasta muuttuu hyödylliseksi.`+(tricky?' Huomaa, että pelkkä hyötyenergian määrä ei ratkaise.':'')};}}
 /* Energiakaavion lukeminen */
 const DEV=[
- ['Hehkulamppu','Sähköenergia','Valo',[8,20],'valoa'],['LED-lamppu','Sähköenergia','Valo',[35,50],'valoa'],
+ ['Hehkulamppu','Sähköenergia','Valoenergia',[8,20],'valoenergiaa'],['LED-lamppu','Sähköenergia','Valoenergia',[35,50],'valoenergiaa'],
  ['Auton moottori','Kemiallinen energia','Liike-energia',[25,35],'liike-energiaa'],['Sähkömoottori','Sähköenergia','Liike-energia',[65,85],'liike-energiaa'],
  ['Pyöräilijä','Kemiallinen energia','Liike-energia',[20,25],'liike-energiaa'],['Vesivoimala','Veden potentiaalienergia','Sähköenergia',[80,90],'sähköenergiaa'],
- ['Aurinkopaneeli','Valoenergia','Sähköenergia',[15,25],'sähköenergiaa'],['Hissin moottori','Sähköenergia','Nostotyö',[50,80],'nostotyötä'],
+ ['Aurinkopaneeli','Valoenergia','Sähköenergia',[15,25],'sähköenergiaa'],['Hissin moottori','Sähköenergia','Kuorman potentiaalienergia',[50,80],'potentiaalienergiaa'],
 ];
+const HEATC={'Hehkulamppu':'Hehkulangassa on sähkövastus, joka kuumentaa lankaa: suurin osa sähköenergiasta muuttuu lämmöksi. Vastusta ei voi poistaa, koska hehkulamppu tuottaa valon juuri kuumentamalla lankaa.',
+ 'LED-lamppu':'LED-lampun osissa ja elektroniikassa on sähkövastus, joka lämmittää lamppua. Vastusta ei voi kokonaan poistaa, joten osa energiasta muuttuu aina lämmöksi.',
+ 'Auton moottori':'Polttoaineen palaessa moottori ja pakokaasut kuumenevat, ja liikkuvien osien kitka lämmittää moottoria. Palamista ja kitkaa ei voi järjestää niin, ettei lämpöä syntyisi.',
+ 'Sähkömoottori':'Moottorin laakereissa on kitkaa, ja sen käämeissä on sähkövastus, joka lämmittää niitä. Kitkaa ja sähkövastusta ei voi kokonaan poistaa.',
+ 'Pyöräilijä':'Lihakset lämpenevät työtä tehdessään, ja pyörän kitka ja ilmanvastus muuttavat liike-energiaa lämmöksi. Niitä ei voi kokonaan poistaa.',
+ 'Vesivoimala':'Turbiinin ja generaattorin liikkuvissa osissa on kitkaa, ja generaattorin ja sähköjohtojen sähkövastus lämmittää niitä. Kitkaa ja sähkövastusta ei voi kokonaan poistaa.',
+ 'Aurinkopaneeli':'Osa auringonvalosta lämmittää paneelia sen sijaan, että se muuttuisi sähköenergiaksi, ja paneelin sähkövastus lämmittää sitä lisää. Tätä ei voi kokonaan estää.',
+ 'Hissin moottori':'Moottorin ja vaijerien liikkuvissa osissa on kitkaa, ja moottorin sähkövastus lämmittää sitä. Kitkaa ja sähkövastusta ei voi kokonaan poistaa.'};
 function genDiag(hard){
  const [dev,src,use,[lo,hi],usep]=pick(DEV.filter(d=>okT(d[0]+' '+d[1]+' '+d[2]))),Ein=pick([200,400,500,600,800,1000,1200,1500,2000,2500]);
  let eta=lo+Math.floor(rand()*(hi-lo+1));let U=Math.round(Ein*eta/100/10)*10;if(U<=0)U=10;eta=U/Ein*100;const H=Ein-U,sz=x=>Math.max(x,Ein*0.16);
@@ -997,11 +1005,11 @@ function genDiag(hard){
  const ansV=[U,H,Ein][k],calc=[`${raw(Ein)} J − ${raw(H)} J = ${raw(U)} J`,`${raw(Ein)} J − ${raw(U)} J = ${raw(H)} J`,`${raw(U)} J + ${raw(H)} J = ${raw(Ein)} J`][k];
  const q=[`<p>Energiakaavio kuvaa laitetta: <b>${dev}</b>.</p>`+diag('',src,k===2?null:Ein,parts),P('a',ask+' Perustele.')];
  const a=[P('a',`<b>${raw(ansV)} J</b>. Energia ei häviä eikä synny tyhjästä, joten syntyvää energiaa on yhteensä yhtä paljon kuin laite saa: ${calc}.`)];
- if(hard){q.push(P('b','Mikä kaaviossa on hyötyenergiaa?'),P('c','Muuttuuko laitteessa enemmän energiaa hyötyenergiaksi vai lämmöksi? Kumpi osuus on yli puolet?'));
-  q.push(P('d','Miksi laite ei voi muuttaa kaikkea saamaansa energiaa hyötyenergiaksi?'));
-  a.push(P('b',`${use}. Lämpö ei ole tässä hyödyllistä.`),P('c',U>H?`Enemmän energiaa muuttuu hyötyenergiaksi (${raw(U)} J > ${raw(H)} J), eli yli puolet.`:`Enemmän energiaa muuttuu lämmöksi (${raw(H)} J > ${raw(U)} J), eli hyötyenergiaksi muuttuu alle puolet.`),
-   P('d','Osa energiasta muuttuu aina esimerkiksi kitkan tai sähkövastuksen takia lämmöksi, joten hyötysuhde on alle 100 %.'));}
- else{q.push(P('b','Missä muodossa energia on aluksi, ja mikä kaaviossa on hyötyenergiaa?'));a.push(P('b',`Aluksi: ${src}. Hyötyenergiaa: ${use}.`));}
+ if(hard){q.push(P('b','Mikä kaaviossa on hyötyenergiaa?'),P('c','Laitteen hyötysuhdetta halutaan parantaa. Miten kaavion pitäisi muuttua, kun laite saa saman määrän energiaa? Perustele.'));
+  q.push(P('d','Mistä lämpö tässä laitteessa syntyy? Miksi sitä ei voi kokonaan poistaa?'));
+  a.push(P('b',`${use}. Lämpö ei ole tässä hyödyllistä.`),P('c',`Hyötyenergian osuus kasvaa ja lämmön osuus pienenee: ${usep} olisi enemmän kuin ${raw(U)} J ja lämpöä vähemmän kuin ${raw(H)} J. Yhteismäärä pysyy samana (${raw(Ein)} J), koska energia ei häviä eikä synny tyhjästä. Hyötysuhde kertoo, kuinka suuri osa saadusta energiasta muuttuu hyötyenergiaksi.`),
+   P('d',HEATC[dev]||'Osa energiasta muuttuu aina esimerkiksi kitkan tai sähkövastuksen takia lämmöksi, eikä kitkaa tai sähkövastusta voi kokonaan poistaa.'));}
+ else{q.push(P('b','Mikä kaaviossa on hyötyenergiaa ja mikä hukkaa? Perustele.'));a.push(P('b',`Hyötyenergiaa on ${use.toLowerCase()}, koska laitteella halutaan tuottaa ${usep}. Hukkaa on lämpö, koska sitä ei tarvita laitteen tehtävään.`));}
  return {type:'open',q:q.join(''),a:a.join('')};}
 
 /* Nousutehon mittaaminen */
@@ -1040,7 +1048,7 @@ QEASY.push(
  {id:'conv',gen:genConv,ok:()=>has('16'),w:4},{id:'diagread',gen:()=>genDiag(false),ok:()=>has('19')&&DEV.some(d=>okT(d[0]+' '+d[1]+' '+d[2])),w:4},{id:'order',gen:()=>genOrder(false),ok:()=>ORDK().length>0,w:4},
  {id:'units',gen:genUnits,ok:()=>true,w:3},{id:'uconv',gen:genUConv,ok:()=>true,w:3},
  {q:'Haluat selvittää kaverisi nousutehon portaissa. Mitä suureita sinun pitää mitata?',o:['Kaverin massa, portaiden pystysuora korkeus ja nousuun kuluva aika','Kaverin nopeus ja portaiden pituus','Portaiden askelmien määrä ja kaverin pituus','Kaverin massa ja nopeus'],c:0,ex:'Teho lasketaan P = W / t. Nostotyö W = Gh vaatii painon (massasta) ja pystysuoran korkeuden, ja lisäksi tarvitaan aika.'},
- {q:'Mikä seuraavista on sidottua energiaa?',o:['Bensiinin kemiallinen energia','Auringon valo','Vierivän pallon liike-energia','Tuulen liike-energia'],c:0,ex:'Kemiallinen energia ja potentiaalienergia ovat sidottua energiaa. Valo ja liike-energia ovat vapaata energiaa.'},
+ {q:'Mikä seuraavista on sidottua energiaa?',o:['Bensiinin kemiallinen energia','Auringon valoenergia','Vierivän pallon liike-energia','Tuulen liike-energia'],c:0,ex:'Kemiallinen energia ja potentiaalienergia ovat sidottua energiaa. Valo ja liike-energia ovat vapaata energiaa.'},
  {q:'Mikä seuraavista on vapaata energiaa?',o:['Lampun valoenergia','Sokerin kemiallinen energia','Hyllyllä olevan kirjan potentiaalienergia','Pariston kemiallinen energia'],c:0,ex:'Valo- ja liike-energia ovat vapaata energiaa. Kemiallinen energia ja potentiaalienergia ovat sidottua.'},
 );
 QHARD.push(
@@ -1063,31 +1071,31 @@ const n2=x=>fmtSig(x,2);
 
 /* A1 Tutkimuskysymys (T5) */
 const TQ=[
- {ch:'20a',topic:'luiskan korkeuden vaikutusta luiskalla tarvittavaan voimaan',good:'Miten luiskan korkeus vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
+ {ch:'20a',topic:'luiskan korkeuden vaikutusta luiskalla tarvittavaan voimaan',mcGen:'vetämistä luiskaa pitkin',mcBad:['Miten voima muuttuu, kun luiskaa korotetaan ja samalla vaihdetaan karheampi pinta?', 'Miten laatikko liikkuu, kun luiskan korkeutta muutetaan?', 'Tarvitaanko luiskalla paljon voimaa?'],good:'Miten luiskan korkeus vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
   bad:['Miten luiskat toimivat?','Miten luiskan korkeus ja pinnan materiaali vaikuttavat tarvittavaan voimaan?','Onko luiska hyödyllinen keksintö?'],
   hyp:'Kun luiskan korkeus kasvaa, tarvittava voima kasvaa. Perustelu: kaltevalla tasolla Fs = Gh, joten kun h kasvaa ja s ja G pysyvät samoina, myös F kasvaa.',same:'luiskan pituus, vedettävä laatikko, luiskan pinta ja vetotapa (tasainen vauhti)'},
- {ch:'20b',topic:'voiman varren pituuden vaikutusta vivulla tarvittavaan voimaan',good:'Miten voiman varren pituus vaikuttaa voimaan, joka tarvitaan kuorman nostamiseen kaksivartisella vivulla?',
+ {ch:'20b',topic:'voiman varren pituuden vaikutusta vivulla tarvittavaan voimaan',mcGen:'kuorman nostamista kaksivartisella vivulla',mcBad:['Miten tarvittava voima muuttuu, kun voiman vartta pidennetään ja samalla vaihdetaan kevyempi kuorma?', 'Miltä nostaminen tuntuu, kun vivun vartta pidennetään?', 'Tarvitaanko vivulla paljon voimaa?'],good:'Miten voiman varren pituus vaikuttaa voimaan, joka tarvitaan kuorman nostamiseen kaksivartisella vivulla?',
   bad:['Miten vipu toimii?','Miten voiman varsi ja kuorman paino vaikuttavat tarvittavaan voimaan?','Mikä on paras vipu?'],
   hyp:'Kun voiman varsi pitenee, tarvittava voima pienenee. Perustelu: Ga = Fb, joten kun b kasvaa ja G ja a pysyvät samoina, F pienenee.',same:'kuorman paino ja kuorman varsi'},
- {ch:'18',topic:'nostokorkeuden vaikutusta nostotyöhön',good:'Miten nostokorkeus vaikuttaa nostotyöhön, kun nostetaan samaa laatikkoa?',
+ {ch:'18',topic:'nostokorkeuden vaikutusta nostotyöhön',mcGen:'laatikon nostamista',mcBad:['Miten nostotyö muuttuu, kun laatikko nostetaan korkeammalle ja samalla vaihdetaan painavampi laatikko?', 'Miltä laatikon nostaminen tuntuu eri korkeuksille?', 'Tehdäänkö nostaessa paljon työtä?'],good:'Miten nostokorkeus vaikuttaa nostotyöhön, kun nostetaan samaa laatikkoa?',
   bad:['Miksi nostaminen on raskasta?','Miten nostokorkeus ja laatikon massa vaikuttavat nostotyöhön?','Kuka luokasta jaksaa nostaa eniten?'],
   hyp:'Kun nostokorkeus kaksinkertaistuu, nostotyö kaksinkertaistuu. Perustelu: W = Gh, ja paino G pysyy samana.',same:'nostettava laatikko ja nostotapa (tasainen vauhti)'},
- {ch:'18',topic:'nostettavan kappaleen massan vaikutusta nostotyöhön',good:'Miten nostettavan kappaleen massa vaikuttaa nostotyöhön, kun nostokorkeus pysyy samana?',
+ {ch:'18',topic:'nostettavan kappaleen massan vaikutusta nostotyöhön',mcGen:'kappaleiden nostamista',mcBad:['Miten nostotyö muuttuu, kun nostetaan painavampi kappale ja samalla nostetaan korkeammalle?', 'Miltä painavan kappaleen nostaminen tuntuu?', 'Onko nostotyö suuri?'],good:'Miten nostettavan kappaleen massa vaikuttaa nostotyöhön, kun nostokorkeus pysyy samana?',
   bad:['Paljonko laatikko painaa?','Miten massa ja nostokorkeus vaikuttavat nostotyöhön?','Onko painavan nostaminen vaikeaa?'],
   hyp:'Kun massa kaksinkertaistuu, nostotyö kaksinkertaistuu. Perustelu: paino G = m · 10 N/kg kaksinkertaistuu, ja W = Gh.',same:'nostokorkeus ja nostotapa'},
- {ch:'16',topic:'pudotuskorkeuden vaikutusta pallon pomppukorkeuteen',good:'Miten pudotuskorkeus vaikuttaa siihen, kuinka korkealle pallo pomppaa?',
+ {ch:'16',topic:'pudotuskorkeuden vaikutusta pallon pomppukorkeuteen',mcGen:'pallon pomppimista',mcBad:['Miten pomppukorkeus muuttuu, kun palloa pudotetaan korkeammalta ja samalla vaihdetaan alusta?', 'Miten pallo käyttäytyy, kun se pudotetaan eri korkeuksilta?', 'Pomppaako pallo korkealle?'],good:'Miten pudotuskorkeus vaikuttaa siihen, kuinka korkealle pallo pomppaa?',
   bad:['Miksi pallot pomppivat?','Miten pudotuskorkeus ja alusta vaikuttavat pomppukorkeuteen?','Mikä on hauskin pallo?'],
   hyp:'Korkeammalta pudotettu pallo pomppaa korkeammalle, mutta ei koskaan pudotuskorkeuteen asti. Perustelu: korkeammalla pallolla on enemmän potentiaalienergiaa, ja osa energiasta muuttuu pompussa lämmöksi ja ääneksi.',same:'pallo, alusta ja pudotustapa (pallo päästetään irti ilman vauhtia)'},
- {ch:'19',topic:'nousuajan vaikutusta nousutehoon portaissa',good:'Miten portaiden nousemiseen kuluva aika vaikuttaa nousutehoon, kun nousija ja portaat pysyvät samoina?',
+ {ch:'19',topic:'nousuajan vaikutusta nousutehoon portaissa',mcGen:'portaiden nousemista',mcBad:['Miten teho muuttuu, kun portaat noustaan nopeammin ja samalla nousijaksi vaihtuu painavampi oppilas?', 'Miltä portaiden juokseminen tuntuu?', 'Onko portaissa nouseminen tehokasta?'],good:'Miten portaiden nousemiseen kuluva aika vaikuttaa nousutehoon, kun nousija ja portaat pysyvät samoina?',
   bad:['Kuka on luokan nopein portaissa?','Miten nousuaika ja nousijan massa vaikuttavat tehoon?','Ovatko portaat hyvä kuntoilutapa?'],
   hyp:'Mitä lyhyempi nousuaika, sitä suurempi teho. Perustelu: P = W / t, ja nostotyö W pysyy samana, kun nousija ja korkeus ovat samat.',same:'nousija (massa) ja portaat (nousukorkeus)'},
- {ch:'20a',topic:'luiskan pinnan vaikutusta luiskalla tarvittavaan voimaan',good:'Miten luiskan pinnan materiaali vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
+ {ch:'20a',topic:'luiskan pinnan vaikutusta luiskalla tarvittavaan voimaan',mcGen:'vetämistä luiskaa pitkin',mcBad:['Miten voima muuttuu, kun luiskan pinta vaihdetaan karheammaksi ja samalla luiskaa korotetaan?', 'Miten laatikko liukuu eri pinnoilla?', 'Onko karhea luiska hankala?'],good:'Miten luiskan pinnan materiaali vaikuttaa voimaan, joka tarvitaan laatikon vetämiseen luiskaa pitkin?',
   bad:['Mikä materiaali on paras?','Miten luiskan pinta ja korkeus vaikuttavat voimaan?','Miksi luiskat ovat liukkaita?'],
   hyp:'Karhealla pinnalla tarvitaan suurempi voima kuin liukkaalla. Perustelu: kitka vastustaa liikettä, ja karhealla pinnalla kitka on suurempi.',same:'luiskan pituus ja korkeus, vedettävä laatikko ja vetotapa'},
 ];
 function genTQ(hard){const t=pick(TQ.filter(chOk));
- if(!hard)return {type:'mc',q:`Haluat tutkia ${t.topic}. Mikä seuraavista on täsmällisin tutkimuskysymys?`,o:[t.good,...t.bad],c:0,
-  ex:'Täsmällinen tutkimuskysymys rajaa yhden asian, jota muutetaan, ja yhden suureen, jota mitataan. Muut vaihtoehdot ovat liian yleisiä, muuttavat kahta asiaa yhtä aikaa tai niihin ei voi vastata mittaamalla.'};
+ if(!hard)return {type:'mc',q:`Haluat tutkia ${t.mcGen}. Mikä seuraavista on täsmällisin tutkimuskysymys?`,o:[t.good,...t.mcBad],c:0,
+  ex:'Täsmällinen tutkimuskysymys rajaa yhden asian, jota muutetaan, ja yhden suureen, jota mitataan. Jos kahta asiaa muutetaan yhtä aikaa, ei voi tietää, kumpi aiheutti muutoksen. Kysymykseen pitää myös voida vastata mittaamalla, eikä se saa olla epämääräinen (esimerkiksi ”paljon” tai ”korkealle”).'};
  return {type:'open',q:`<p>Haluat tutkia ${t.topic}.</p>`+P('a','Muotoile täsmällinen tutkimuskysymys.')+P('b','Kirjoita hypoteesi ja perustele se sillä, mitä tiedät ilmiöstä jo ennestään.')+P('c','Mitkä asiat pidät samoina? Miksi?'),
   a:P('a',t.good)+P('b',t.hyp)+P('c',`Samoina pidetään ${t.same}. Kun vain tutkittava asia muuttuu, tuloksen muutos johtuu juuri siitä.`)};}
 
@@ -1096,9 +1104,9 @@ const DATASETS=[
  {id:'ramp',ch:'20a',xn:'Luiskan pituus',xs:'s',xu:'m',yn:'Voima',ys:'F',yu:'N',xv:[1,1.5,2,3,4,6],pairs:[[1,2],[1.5,3],[2,4],[3,6]],predX:[5,8],
   mk:()=>{const G=pick([120,150,200,240,300]),h=pick([0.5,0.6,0.8]);return {f:x=>G*h/x,info:`Sama laatikko, jonka paino on ${G} N, vedettiin eri pituisia luiskoja pitkin ${raw(h)} m korkeudelle. Vetämiseen tarvittava voima mitattiin voimamittarilla.`,G,h};},
   dir:'Mitä pidempi luiska, sitä pienempi voima tarvitaan.',law:'Voiman ja luiskan pituuden tulo pysyy lähes samana, kuten malli Fs = Gh ennustaa.',half:true},
- {id:'lift',ch:'18',xn:'Nostokorkeus',xs:'h',xu:'m',yn:'Nostotyö',ys:'W',yu:'J',xv:[0.5,1,1.5,2,2.5],pairs:[[0.5,1],[1,2]],predX:[3,4],
-  mk:()=>{const G=pick([40,60,80,120,150,200]);return {f:x=>G*x,info:`Sama laatikko nostettiin eri korkeuksille, ja jokaisesta nostosta laskettiin nostotyö.`,G};},
-  dir:'Mitä korkeammalle laatikko nostetaan, sitä enemmän tehdään nostotyötä.',law:'Työ on suoraan verrannollinen korkeuteen, kuten malli W = Gh ennustaa.',half:false},
+ {id:'lift',ch:'18',xn:'Nostokorkeus',xs:'h',xu:'m',yn:'Sähköenergia',ys:'E',yu:'J',xv:[0.5,1,1.5,2,2.5],pairs:[[0.5,1],[1,2]],predX:[3,4],
+  mk:()=>{const G=pick([40,60,80,100,120]),eta=pick([0.55,0.6,0.65,0.7]);return {f:x=>G*x/eta,info:`Laatikkoa nostettiin pienellä sähkömoottorilla eri korkeuksille. Joulemittari mittasi, kuinka paljon sähköenergiaa moottori käytti kussakin nostossa.`,G};},
+  dir:'Mitä korkeammalle laatikko nostetaan, sitä enemmän moottori käyttää sähköenergiaa.',law:'Käytetty sähköenergia on suoraan verrannollinen nostokorkeuteen, kuten malli W = Gh ennustaa: nostotyö kasvaa samassa suhteessa kuin korkeus.',half:false},
  {id:'lever',ch:'20b',xn:'Voiman varsi',xs:'b',xu:'m',yn:'Voima',ys:'F',yu:'N',xv:[0.5,1,1.5,2,3],pairs:[[0.5,1],[1,2],[1.5,3]],predX:[4,6],
   mk:()=>{const G=pick([200,300,400,600]),a=pick([0.2,0.25,0.3]);return {f:x=>G*a/x,info:`Kiveä, jonka paino on ${G} N, nostettiin kangella. Kuorman varsi oli aina ${raw(a)} m. Voiman vartta muutettiin, ja tarvittava voima mitattiin.`,G,a};},
   dir:'Mitä pidempi voiman varsi, sitä pienempi voima tarvitaan.',law:'Voiman ja voiman varren tulo pysyy lähes samana, kuten malli Ga = Fb ennustaa.',half:true},
@@ -1174,9 +1182,9 @@ function genGraph(hard){
   const pts=xv.map(x=>[x,roundSig(noisy(G*h/x+fr0,0.02),2)]),model=[];for(let x=0.8;x<=6.01;x+=0.1)model.push([x,G*h/x]);
   return {type:'open',q:`<p>Laatikko (paino ${G} N) vedettiin eri pituisia luiskoja pitkin ${raw(h)} m korkeudelle. Pisteet ovat mittaustuloksia. Katkoviiva on mallin ${FS} = ${GH} mukainen voima.</p>`+chartSVG(d,pts,model)+P('a','Miksi mitatut voimat ovat suurempia kuin mallin mukaiset voimat?')+P('b','Mitä malli olettaa, mitä todellisuudessa ei ole? Missä tilanteessa malli kuvaa todellisuutta hyvin?')+P('c',`Ennusta mallin avulla, kuinka suuri voima tarvittaisiin ${raw(8)} m pitkällä luiskalla ilman kitkaa.`),
    a:P('a',`Luiskan ja laatikon välillä on kitka. Osa vetämiseen käytetystä voimasta kuluu kitkan voittamiseen, joten mitattu voima on joka pituudella noin ${fr0} N mallia suurempi.`)+P('b','Malli olettaa, ettei kitkaa ole. Se kuvaa todellisuutta hyvin, kun pinta on liukas tai laatikko liikkuu pyörillä.')+P('c',`${V('F')} = ${fr(`${G} N · ${raw(h)} m`,'8 m')} = <b>${n2(G*h/8)} N</b>. Todellisuudessa tarvitaan kitkan takia enemmän.`)};}
- if(k==='lift'){const d=DATASETS.find(x=>x.id==='lift'),G=pick([40,60,80,120,150]),xv=[0.5,1,1.5,2,2.5],pts=xv.map(x=>[x,roundSig(noisy(G*x,0.03),2)]);
-  return {type:'open',q:`<p>Sama laatikko nostettiin eri korkeuksille, ja jokaisesta nostosta laskettiin nostotyö. Tulokset ovat kuvaajassa.</p>`+chartSVG(d,pts)+P('a','Hahmottele pisteiden kautta kulkeva suora (kokeessa piirrät sen kuvaajaan). Millainen riippuvuus nostotyön ja nostokorkeuden välillä on?')+P('b','Määritä kuvaajasta laatikon paino. Kerro, miten sen sait.')+P('c','Ennusta nostotyö, kun laatikko nostetaan 4 m korkeuteen.'),
-   a:P('a','Nostotyö on suoraan verrannollinen nostokorkeuteen: pisteet ovat suoralla, joka kulkee origon kautta.')+P('b',`Malli on ${V('W')} = ${GH}, joten paino on ${V('G')} = ${fr(V('W'),V('h'))}. Esimerkiksi ${raw(pts[3][1])} J / 2 m ≈ <b>${raw(G)} N</b>.`)+P('c',`${V('W')} = ${raw(G)} N · 4 m = <b>${raw(G*4)} J</b>`)};}
+ if(k==='lift'){const d=DATASETS.find(x=>x.id==='lift'),G=pick([60,80,100,120]),eta=pick([0.55,0.6,0.65,0.7]),xv=[0.5,1,1.5,2,2.5],pts=xv.map(x=>[x,roundSig(noisy(G*x/eta,0.03),2)]),E2=pts[3][1];
+  return {type:'open',q:`<p>Laatikkoa, jonka paino on ${G} N, nostettiin pienellä sähkömoottorilla eri korkeuksille. Joulemittari mittasi, kuinka paljon sähköenergiaa moottori käytti kussakin nostossa. Tulokset ovat kuvaajassa.</p>`+chartSVG(d,pts)+P('a','Hahmottele pisteiden kautta kulkeva suora (kokeessa piirrät sen kuvaajaan). Millainen riippuvuus käytetyn sähköenergian ja nostokorkeuden välillä on?')+P('b','Laske nostotyö, kun laatikko nostetaan 2 m korkeuteen. Vertaa sitä kuvaajasta luettuun sähköenergiaan. Miksi ne eroavat?')+P('c','Ennusta, kuinka paljon sähköenergiaa moottori käyttää, kun laatikko nostetaan 4 m korkeuteen.'),
+   a:P('a','Käytetty sähköenergia on suoraan verrannollinen nostokorkeuteen: pisteet ovat suoralla, joka kulkee origon kautta.')+P('b',`${V('W')} = ${GH} = ${raw(G)} N · 2 m = <b>${raw(G*2)} J</b>. Kuvaajasta luettu sähköenergia on noin ${raw(E2)} J. Sähköenergiaa kuluu enemmän kuin nostotyötä, koska osa sähköenergiasta muuttuu moottorissa ja kitkassa lämmöksi.`)+P('c',`Kun korkeus kaksinkertaistuu (2 m → 4 m), energia kaksinkertaistuu: noin 2 · ${raw(E2)} J ≈ <b>${n2(2*E2)} J</b>.`)};}
  if(k==='bounce'){const d=DATASETS.find(x=>x.id==='bounce'),kk=pick([0.6,0.7,0.75,0.8]),xv=[0.5,1,1.5,2],pts=xv.map(x=>[x,roundSig(noisy(kk*x,0.03),2)]);
   return {type:'open',q:`<p>Pallo pudotettiin eri korkeuksilta, ja mitattiin, kuinka korkealle se pomppasi. Tulokset ovat kuvaajassa.</p>`+chartSVG(d,pts)+P('a','Hahmottele pisteiden kautta kulkeva suora (kokeessa piirrät sen kuvaajaan). Muodosta tuloksista malli täydentämällä lause: <i>Pomppukorkeus on noin ____ kertaa pudotuskorkeus.</i>')+P('b','Ennusta mallin avulla pomppukorkeus, kun pallo pudotetaan 3,0 m korkeudelta.')+P('c','Missä tilanteessa malli ei välttämättä enää pidä paikkaansa?'),
    a:P('a',`Pomppukorkeus on noin <b>${raw(kk)}</b> kertaa pudotuskorkeus (esim. ${raw(pts[3][1])} m / 2 m). Pisteiden kautta piirretty suora kulkee origon kautta, joten pomppukorkeus on suoraan verrannollinen pudotuskorkeuteen.`)+P('b',`${raw(kk)} · 3,0 m ≈ <b>${n2(kk*3)} m</b>`)+P('c','Malli on tehty vain näillä korkeuksilla ja tällä pallolla ja alustalla. Hyvin korkealta pudotettaessa ilmanvastus vaikuttaa enemmän, ja eri alustalla tai pallolla osuus on erilainen.')};}
@@ -1248,26 +1256,26 @@ function genClaim(){const t=pick(CLAIMS.filter(chOk));
 /* A7 Kestävä valinta (T4). Kaavaa W = Pt ei käytetä valmiina: perustasolla päätellään tehosta ja ajasta laskematta,
    vaikealla tasolla energia ratkaistaan tehon kaavasta P = W / t (temppuviiva). Energia jouleina. */
 const SUST=[
- {ch:'19',what:'valaistus',A:['hehkulamppu',60],B:['LED-lamppu',8],t:[30,60,120],same:true,
+ {ch:'19',what:'valaistus',goal:'Molemmat lamput valaisevat huonetta yhtä kirkkaasti.',A:['hehkulamppu',60],B:['LED-lamppu',8],t:[30,60,120],same:true,
   extra:'Hehkulampussa suurin osa energiasta muuttuu lämmöksi, LED-lampussa selvästi suurempi osa valoksi.'},
- {ch:'19',what:'veden keittäminen',A:['vedenkeitin',2000],B:['kattila liedellä',1500],tA:[2,3],tB:[6,8],same:false,
+ {ch:'19',what:'veden keittäminen',goal:'Molemmilla keitetään sama määrä vettä (1 litra) kiehuvaksi.',A:['vedenkeitin',2000],B:['kattila liedellä',1500],tA:[2,3],tB:[6,8],same:false,
   extra:'Suurempi teho ei tarkoita suurempaa energiankulutusta, jos laite tekee työn lyhyemmässä ajassa. Kattilasta lämpöä karkaa myös ympäristöön.'},
- {ch:'19',what:'hiusten kuivaaminen',A:['hiustenkuivaaja täydellä teholla',2000],B:['hiustenkuivaaja puolella teholla',1000],tA:[4,5],tB:[12,15],same:false,
+ {ch:'19',what:'hiusten kuivaaminen',goal:'Hiukset kuivuvat molemmilla tavoilla yhtä kuiviksi.',A:['hiustenkuivaaja täydellä teholla',2000],B:['hiustenkuivaaja puolella teholla',1000],tA:[4,5],tB:[12,15],same:false,
   extra:'Puolella teholla kuivaaminen kestää yli kaksi kertaa kauemmin, joten energiaa kuluu enemmän.'},
- {ch:'19',what:'saunan lämmittäminen',A:['pitkä saunavuoro',6000],B:['lyhyt saunavuoro',6000],tA:[60,90],tB:[30,40],same:false,sameP:true,
+ {ch:'19',what:'saunan lämmittäminen',goal:'Kiuas on päällä koko saunavuoron ajan.',A:['pitkä saunavuoro',6000],B:['lyhyt saunavuoro',6000],tA:[60,90],tB:[30,40],same:false,sameP:true,
   extra:'Kun kiukaan teho on sama, lyhyempi käyttöaika kuluttaa vähemmän energiaa.'},
- {ch:'19',what:'pölynimurointi',A:['vanha pölynimuri',1600],B:['uusi pölynimuri',800],t:[10,15,20],same:true,
+ {ch:'19',what:'pölynimurointi',goal:'Molemmilla imuroidaan sama huone yhtä puhtaaksi.',A:['vanha pölynimuri',1600],B:['uusi pölynimuri',800],t:[10,15,20],same:true,
   extra:'Uudempi laite tekee saman työn pienemmällä teholla, joten energiaa kuluu vähemmän.'},
 ];
 function genSust(hard){const t=pick(SUST.filter(chOk).filter(x=>hard||x.same||x.sameP));
  const ta=t.same?pick(t.t):pick(t.tA),tb=t.same?ta:pick(t.tB),WA=t.A[1]*ta*60,WB=t.B[1]*tb*60,best=WA<WB?t.A[0]:t.B[0];
  const desc=`<p><b>${cap(t.A[0])}</b>: teho ${raw(t.A[1])} W, käyttöaika ${ta} min.<br><b>${cap(t.B[0])}</b>: teho ${raw(t.B[1])} W, käyttöaika ${tb} min.</p>`;
  if(!hard){const why=t.same?'Käyttöaika on sama, joten pienempitehoinen kuluttaa vähemmän energiaa.':'Teho on sama, joten lyhyempi käyttöaika kuluttaa vähemmän energiaa.';
-  return {type:'mc',q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}.</p>${desc}<p>Kumpi kuluttaa vähemmän energiaa? Päättele laskematta.</p>`,o:[cap(t.A[0]),cap(t.B[0]),'Molemmat yhtä paljon'],c:WA<WB?0:1,ordered:true,
+  return {type:'mc',q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}. ${t.goal}</p>${desc}<p>Kumpi kuluttaa vähemmän energiaa? Päättele laskematta.</p>`,o:[cap(t.A[0]),cap(t.B[0]),'Molemmat yhtä paljon'],c:WA<WB?0:1,ordered:true,
    ex:`Teho kertoo, kuinka paljon energiaa laite kuluttaa sekunnissa (P = W / t). ${why} ${t.extra}`};}
  /* energia ratkaistaan tehon kaavasta */
  const sol=(n,Pw,tm,W)=>`<p class="sn plab"><b>${cap(n)}</b></p>`+stepsHTML(fin(blk('P',PWT,[GV('P',`${raw(Pw)} W`),Q('W'),GV('t',`${tm} min = ${raw(tm*60)} s`)],qS(`${raw(Pw)} W`,null,`${raw(tm*60)} s`)),W,'J'));
- return {type:'open',hint:CALC_HINT,q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}.</p>${desc}`+P('a','Laske, kuinka paljon energiaa kumpikin kuluttaa. Muunna aika sekunneiksi.')+P('b','Kumpi on parempi valinta energiavarojen kestävän käytön kannalta? Perustele.'),
+ return {type:'open',hint:CALC_HINT,q:`<p>Vertaillaan kahta tapaa, kun kyseessä on ${t.what}. ${t.goal}</p>${desc}`+P('a','Laske, kuinka paljon energiaa kumpikin kuluttaa. Muunna aika sekunneiksi.')+P('b','Kumpi on parempi valinta energiavarojen kestävän käytön kannalta? Perustele.'),
   a:P('a','Energia ratkaistaan tehon kaavasta.')+sol(t.A[0],t.A[1],ta,WA)+sol(t.B[0],t.B[1],tb,WB)+P('b',`${cap(best)}, koska se kuluttaa vähemmän energiaa (ero ${raw(Math.abs(WA-WB))} J). ${t.extra} Kun energiaa kuluu vähemmän, sitä tarvitsee myös tuottaa vähemmän, mikä säästää energiavaroja.`)};}
 
 /* A8 Toimintaperiaate ja merkitys (T8) */
