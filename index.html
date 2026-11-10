@@ -1171,11 +1171,78 @@ function genDataE(){const d=pick(dsOk()),out=rand()<0.7,{p,ys,oi}=mkData(d,out),
   +P('c',oi>=0?`Kyllä: kun ${xl} on ${raw(d.xv[oi])} ${d.xu}, tulos ${raw(ys[oi])} ${d.yu} ei sovi muiden tulosten riippuvuuteen. Mittaus on luultavasti epäonnistunut. Se toistetaan, eikä sitä käytetä johtopäätöksissä ennen kuin tulos on tarkistettu.`:'Ei selvästi poikkeavaa mittausta. Pienet erot johtuvat mittausepätarkkuudesta. Mittausten toistaminen ja keskiarvo parantaisivat luotettavuutta.');
  return {type:'open',q,a};}
 
+/* Mittaustaulukko, perustaso (sama muotoilu kuin kokeessa) */
+function genDataP(){const d=pick(dsOk()),{p,ys}=mkData(d,false),px=pick(d.predX);
+ const vals=d.xv.map((x,i)=>d.half?x*ys[i]:ys[i]/x),c=roundSig(vals.reduce((a,b)=>a+b,0)/vals.length,2),py=d.half?c/px:c*px;
+ const yl=d.yn.toLowerCase(),xl=d.xn.toLowerCase(),u=d.yu;
+ const law=d.id==='ramp'&&p.G?`kaltevalla tasolla Fs = Gh, joten F = ${raw(p.G)} N · ${raw(p.h)} m / ${raw(px)} m ≈ ${n2(p.G*p.h/px)} N. `
+  :d.id==='lever'&&p.G?`Ga = Fb, joten F = ${raw(p.G)} N · ${raw(p.a)} m / ${raw(px)} m ≈ ${n2(p.G*p.a/px)} N. `:'';
+ const dat=d.half?`suureiden tulo on mittauksissa noin ${raw(c)}, joten ${raw(c)} / ${raw(px)} ${d.xu} ≈ ${n2(py)} ${u}.`
+  :`suureiden suhde on mittauksissa noin ${raw(c)}, joten ${raw(c)} · ${raw(px)} ${d.xu} ≈ ${n2(py)} ${u}.`;
+ const mx=Math.max(...d.xv),lo=d.xv.filter(x=>x<px).pop(),hi=d.xv.find(x=>x>px);
+ const between=px<mx&&lo!=null&&hi!=null?` Arvio mittausten väliltä hyväksytään: ${raw(px)} ${d.xu} on ${raw(lo)} ${d.xu}:n ja ${raw(hi)} ${d.xu}:n välissä, joten ${yl} on ${raw(ys[d.xv.indexOf(lo)])} ${u}:n ja ${raw(ys[d.xv.indexOf(hi)])} ${u}:n välissä.`:' Myös kaksinkertaistumiseen perustuva päättely luvuilla hyväksytään.';
+ const q=`<p>${p.info}</p>`+dataTable(d,ys)
+  +P('a',`Miten ${yl} muuttuu, kun ${xl} kaksinkertaistuu? Käytä apuna taulukon lukuja.`)
+  +P('b',`Ennusta, kuinka suuri ${yl} on, kun ${xl} on ${raw(px)} ${d.xu}. Perustele.`);
+ const a=P('a',`${d.dir} ${pairText(d,ys)}`)
+  +P('b',`Noin <b>${n2(law?(d.id==='ramp'?p.G*p.h/px:p.G*p.a/px):py)} ${u}</b>. Perustelu esimerkiksi: ${law||''}${law?'Tai: ':''}${dat}${between}`);
+ return {type:'open',q,a};}
+
+/* Tutkimuskysymysten vertailu ja parantaminen (T5, vaikea taso). Sama tehtävätyyppi kuin kokeessa,
+   mutta kertaussivun omat tilanteet ja kysymykset (kokeen TQC-taulukon tilanteita ei käytetä).
+   Muunnelmat: two = kaksi muutettavaa asiaa, meas = ei mitattavaa suuretta, prec = toinen täsmällisempi, imp = paranna kysymystä.
+   Mitattava suure on aina oikeasti mitattava (aika, matka, korkeus, voima, lämpötila, määrä), ei kaavasta laskettu. */
+const TQP=[
+ {ch:'16',topic:'heiluria',same:'punnus, langan pituus ja lähtötapa (punnus päästetään irti ilman vauhtia)',
+  good:'Miten heilurin lähtökorkeus vaikuttaa siihen, kuinka korkealle punnus nousee toisella puolella?',
+  two:'Miten heilurin lähtökorkeus ja punnuksen massa vaikuttavat siihen, kuinka korkealle punnus nousee toisella puolella?',
+  meas:'Miten heiluri käyttäytyy, kun se päästetään liikkeelle eri korkeuksilta?',
+  prec:['Heiluuko heiluri hyvin?','Miten heilurin lähtökorkeus vaikuttaa punnuksen nousukorkeuteen toisella puolella, kun punnus ja langan pituus pysyvät samoina?','Ensimmäisestä kysymyksestä ei selviä, mitä muutetaan ja mitä mitataan, eikä ”hyvin” ole mitattava suure.','punnus, langan pituus ja lähtötapa'],
+  imp:['Miksi heiluri lopulta pysähtyy?','Miten heilurin lähtökorkeus vaikuttaa siihen, kuinka monta heilahdusta heiluri tekee ennen pysähtymistä?','heilurin lähtökorkeus','heilahdusten määrä ennen pysähtymistä','punnus, langan pituus ja mittauspaikka']},
+ {ch:'19',topic:'portaiden nousemista',same:'nousija, portaat ja nousutapa (juosten)',
+  good:'Miten repun massa vaikuttaa aikaan, joka kuluu samojen portaiden nousemiseen juosten?',
+  two:'Miten repun massa ja portaiden pituus vaikuttavat nousemiseen kuluvaan aikaan?',
+  meas:'Miltä portaiden nouseminen tuntuu, kun repussa on painoa?',
+  prec:['Onko portaiden nouseminen raskasta?','Miten repun massa vaikuttaa aikaan, joka kuluu samojen portaiden nousemiseen juosten, kun nousija pysyy samana?','Ensimmäisestä kysymyksestä ei selviä, mitä muutetaan ja mitä mitataan, eikä ”raskas” ole mitattava suure.','nousija, portaat ja nousutapa'],
+  imp:['Ovatko portaat hyvää kuntoilua?','Miten portaiden askelmien määrä vaikuttaa nousemiseen kuluvaan aikaan, kun sama oppilas nousee kävellen?','askelmien määrä','nousemiseen kuluva aika','nousija ja nousutapa (kävellen)']},
+ {ch:'17',topic:'polkupyörän jarruttamista',same:'pyörä, pyöräilijä, renkaiden paine, tien pinta ja jarrutustapa',
+  good:'Miten mäen lähtökorkeus vaikuttaa jarrutusmatkaan, kun pyöräilijä laskee mäen polkematta ja jarruttaa mäen alla?',
+  two:'Miten mäen lähtökorkeus ja renkaiden paine vaikuttavat jarrutusmatkaan?',
+  meas:'Miten pyörä käyttäytyy, kun sillä jarrutetaan eri mäkien alla?',
+  prec:['Jarruttaako pyörä hyvin?','Miten mäen lähtökorkeus vaikuttaa jarrutusmatkaan, kun pyörä, pyöräilijä ja jarrutustapa pysyvät samoina?','Ensimmäisestä kysymyksestä ei selviä, mitä muutetaan ja mitä mitataan, eikä ”hyvin” ole mitattava suure.','pyörä, pyöräilijä, renkaiden paine, tien pinta ja jarrutustapa'],
+  imp:['Miksi pyörä pysähtyy jarrutettaessa?','Miten tien pinta (asfaltti tai sora) vaikuttaa jarrutusmatkaan, kun pyörä lähtee samalta korkeudelta?','tien pinta','jarrutusmatka','lähtökorkeus, pyörä, pyöräilijä ja jarrutustapa']},
+ {ch:'19',topic:'lamppujen lämpenemistä',same:'lampputyyppi, käyttöaika, mittauskohta ja huoneen lämpötila',
+  good:'Miten lampun teho vaikuttaa lampun pinnan lämpötilaan viiden minuutin käytön jälkeen?',
+  two:'Miten lampun teho ja lampputyyppi vaikuttavat lampun lämpenemiseen?',
+  meas:'Miltä lamppu tuntuu, kun sitä on käytetty jonkin aikaa?',
+  prec:['Kuumeneeko lamppu paljon?','Miten lampun teho vaikuttaa lampun pinnan lämpötilaan viiden minuutin käytön jälkeen, kun lampputyyppi ja huoneen lämpötila pysyvät samoina?','Ensimmäisestä kysymyksestä ei selviä, mitä muutetaan ja mitä mitataan, eikä ”paljon” ole täsmällinen.','lampputyyppi, käyttöaika, mittauskohta ja huoneen lämpötila'],
+  imp:['Ovatko LED-lamput parempia kuin hehkulamput?','Miten lampputyyppi (hehkulamppu tai LED-lamppu) vaikuttaa lampun pinnan lämpötilaan viiden minuutin käytön jälkeen, kun lamput valaisevat yhtä kirkkaasti?','lampputyyppi','lampun pinnan lämpötila','käyttöaika, valon kirkkaus, mittauskohta ja huoneen lämpötila']},
+ {ch:'20c',topic:'kiinteää väkipyörää',same:'väkipyörä, köysi ja vetotapa (tasainen vauhti)',
+  good:'Miten kuorman massa vaikuttaa voimaan, jolla kiinteän väkipyörän köyttä pitää vetää?',
+  two:'Miten kuorman massa ja köyden paksuus vaikuttavat vetämiseen tarvittavaan voimaan?',
+  meas:'Miten väkipyörä pyörii, kun kuormaa vaihdetaan?',
+  prec:['Helpottaako väkipyörä nostamista?','Miten kuorman massa vaikuttaa voimaan, jolla kiinteän väkipyörän köyttä vedetään tasaisella vauhdilla, kun väkipyörä ja köysi pysyvät samoina?','Ensimmäisestä kysymyksestä ei selviä, mitä muutetaan ja mitä mitataan, eikä ”helpottaa” ole mitattava suure.','väkipyörä, köysi ja vetotapa'],
+  imp:['Miksi lipputangossa on väkipyörä?','Miten vetosuunta (alaspäin tai sivulle) vaikuttaa voimaan, jolla kiinteän väkipyörän köyttä pitää vetää, kun kuorma pysyy samana?','vetosuunta','vetämiseen tarvittava voima (voimamittarilla)','kuorma, väkipyörä ja köysi']},
+];
+function genTQCmpP(){const s=pick(TQP.filter(chOk)),kind=pick(['two','meas','prec','imp']);
+ const tq=t=>`<i>”${t}”</i>`;
+ if(kind==='imp'){const [bad,good,chg,mit,same]=s.imp;
+  return {type:'open',q:`<p>Oppilas kirjoitti tutkimuskysymyksen: ${tq(bad)}</p>`+P('a','Paranna kysymystä niin, että siihen voi vastata mittaamalla.')+P('b','Kerro, mitä muutit ja miksi parannettuun kysymykseen voi vastata mittaamalla. Mitkä asiat tutkimuksessa pitää pitää samoina?'),
+   a:P('a',`Esimerkiksi: ${tq(good)} Muutkin kysymykset käyvät, jos niissä on yksi muutettava asia ja yksi mitattava suure.`)
+    +P('b',`Kysymykseen lisättiin muutettava asia (${chg}) ja mitattava suure (${mit}). Alkuperäiseen kysymykseen ei voi vastata mittaamalla, koska siitä ei selviä, mitä muutetaan ja mitä mitataan. Samoina pidetään ${same}.`)};}
+ let bad,good,same,why;
+ if(kind==='two'){bad=s.two;good=s.good;same=s.same;why=b=>`Siinä muutetaan vain yhtä asiaa ja mitataan yhtä suuretta. ${b} kysymyksessä muutetaan kahta asiaa yhtä aikaa. Silloin ei voi tietää, kumpi aiheutti mitatun muutoksen, eikä tuloksista voi tehdä luotettavaa johtopäätöstä.`;}
+ else if(kind==='meas'){bad=s.meas;good=s.good;same=s.same;why=b=>`Siinä on mitattava suure, joten siihen voi vastata mittaamalla. ${b} kysymykseen voi vastata vain kuvailemalla. Silloin tuloksia ei voi verrata luvuilla eikä tehdä luotettavaa johtopäätöstä.`;}
+ else{[bad,good,,same]=s.prec;const v=s.prec[2];why=()=>`Siinä kerrotaan tarkasti, mitä muutetaan, mitä mitataan ja mitkä asiat pidetään samoina, joten tutkimus voidaan toistaa ja tulokset ovat luotettavia. ${v}`;}
+ const gA=rand()<0.5,A=gA?good:bad,B=gA?bad:good,gN=gA?'Ainon':'Eetun',bN=gA?'Eetun':'Ainon';
+ return {type:'open',q:`<p>Kaksi oppilasta haluaa tutkia ${s.topic}. He kirjoittivat tutkimuskysymykset:</p><p><b>Aino:</b> ${tq(A)}</p><p><b>Eetu:</b> ${tq(B)}</p>`+P('a','Kumman kysymys on parempi tutkimuksen lähtökohdaksi? Perustele.')+P('b','Mitkä asiat tutkimuksessa pitää pitää samoina, kun se tehdään paremman kysymyksen mukaan?'),
+  a:P('a',`${gN} kysymys on parempi. ${why(bN)}`)+P('b',`Samoina pidetään ${same}.`)};}
+
 /* A3 Kuvaajan tulkinta ja mallin rajoitus (T11) */
 function genGraph(hard){
- const ds=dsOk();if(!hard){const d=pick(ds),{p,ys}=mkData(d,false),i=Math.floor(rand()*(d.xv.length-1)),xr=(d.xv[i]+d.xv[i+1])/2,yr=roundSig(p.f(xr),2);
-  return {type:'open',q:`<p>${p.info} Mittaustulokset (pisteet) ja niiden kautta piirretty kuvaaja on esitetty alla.</p>`+fitSVG(d,d.xv.map((x,k)=>[x,ys[k]]),p.f)+P('a',`Lue kuvaajasta, kuinka suuri ${d.yn.toLowerCase()} on, kun ${d.xn.toLowerCase()} on ${raw(xr)} ${d.xu}.`)+P('b',`Miten ${d.yn.toLowerCase()} muuttuu, kun ${d.xn.toLowerCase()} kasvaa?`),
-   a:P('a',`Noin <b>${raw(yr)} ${d.yu}</b>. Arvo luetaan kuvaajan kohdalta mittauspisteiden välistä. Lukutarkkuuden takia noin ±10 % poikkeava arvo hyväksytään.`)+P('b',d.dir)};}
+ const ds=dsOk();if(!hard){const d=pick(ds),{p,ys}=mkData(d,false),i=Math.floor(rand()*(d.xv.length-1)),xr=(d.xv[i]+d.xv[i+1])/2,yr=roundSig(p.f(xr),2);const pr=pick(d.pairs.filter(([u,v])=>d.xv.includes(u)&&d.xv.includes(v)));
+  return {type:'open',q:`<p>${p.info} Mittaustulokset (pisteet) ja niiden kautta piirretty kuvaaja on esitetty alla.</p>`+fitSVG(d,d.xv.map((x,k)=>[x,ys[k]]),p.f)+P('a',`Lue kuvaajasta, kuinka suuri ${d.yn.toLowerCase()} on, kun ${d.xn.toLowerCase()} on ${raw(xr)} ${d.xu}.`)+P('b',`Lue kuvaajasta ${d.yn.toLowerCase()}, kun ${d.xn.toLowerCase()} on ${raw(pr[0])} ${d.xu} ja kun se on ${raw(pr[1])} ${d.xu}. Miten ${d.yn.toLowerCase()} muuttuu, kun ${d.xn.toLowerCase()} kaksinkertaistuu?`),
+   a:P('a',`Noin <b>${raw(yr)} ${d.yu}</b>. Arvo luetaan kuvaajan kohdalta mittauspisteiden välistä. Lukutarkkuuden takia noin ±10 % poikkeava arvo hyväksytään.`)+P('b',`Noin ${n2(p.f(pr[0]))} ${d.yu} ja noin ${n2(p.f(pr[1]))} ${d.yu}. Kun ${d.xn.toLowerCase()} kaksinkertaistuu, ${d.yn.toLowerCase()} ${d.half?'puolittuu':'kaksinkertaistuu'}. ${d.dir}`)};}
  const kinds=[];if(ds.some(d=>d.id==='ramp'))kinds.push('fric');if(ds.some(d=>d.id==='lift'))kinds.push('lift');if(ds.some(d=>d.id==='bounce'))kinds.push('bounce');
  const k=pick(kinds.length?kinds:['basic']);
  if(k==='fric'){const d=DATASETS.find(x=>x.id==='ramp'),G=pick([150,200,240,300]),h=pick([0.5,0.6]),fr0=pick([15,20,25,30]),xv=[1,1.5,2,3,4,5];
@@ -1321,12 +1388,12 @@ function genFlaw(){const t=pick(FLAW.filter(chOk));
  return {type:'open',q:`<p>${t.txt}</p>`+P('a','Mitkä asiat heikentävät tutkimuksen luotettavuutta?')+P('b','Miten tutkimusta pitäisi parantaa?'),a:`<p>${t.a}</p>`};}
 
 QEASY.push(
- {id:'tq',gen:()=>genTQ(false),ok:()=>TQ.some(chOk),w:3},{id:'data',gen:()=>genData(false),ok:()=>dsOk().length>0,w:3},{id:'graph',gen:()=>genGraph(false),ok:()=>dsOk().length>0,w:3},
+ {id:'tq',gen:()=>genTQ(false),ok:()=>TQ.some(chOk),w:3},{id:'data',gen:genDataP,ok:()=>dsOk().length>0,w:3},{id:'graph',gen:()=>genGraph(false),ok:()=>dsOk().length>0,w:3},
  {id:'pred',gen:()=>genPred(false),ok:()=>PRED.some(chOk),w:4},{id:'deb',gen:()=>genDeb(false),ok:()=>DEB.some(chOk),w:3},{id:'sust',gen:()=>genSust(false),ok:()=>SUST.some(chOk),w:3},
  {id:'tech',gen:()=>genTech(false),ok:()=>TECH.some(chOk),w:3},{id:'match',gen:genMatch,ok:()=>QROWS.filter(r=>SEL.has(r[2])).length>=4,w:3},
 );
 QHARD.push(
- {id:'tqh',gen:()=>genTQ(true),ok:()=>TQ.some(chOk),w:3},{id:'datah',gen:genDataE,ok:()=>dsOk().length>0,w:4},{id:'graphh',gen:()=>genGraph(true),ok:()=>dsOk().length>0,w:4},
+ {id:'tqh',gen:()=>genTQ(true),ok:()=>TQ.some(chOk),w:3},{id:'tqcmp',gen:genTQCmpP,ok:()=>TQP.some(chOk),w:3},{id:'datah',gen:genDataE,ok:()=>dsOk().length>0,w:4},{id:'graphh',gen:()=>genGraph(true),ok:()=>dsOk().length>0,w:4},
  {id:'predh',gen:()=>genPred(true),ok:()=>PRED.some(chOk),w:3},{id:'debh',gen:()=>genDeb(true),ok:()=>DEB.some(chOk),w:4},{id:'claim',gen:genClaim,ok:()=>CLAIMS.some(chOk),w:3},
  {id:'susth',gen:()=>genSust(true),ok:()=>SUST.some(chOk),w:3},{id:'techh',gen:()=>genTech(true),ok:()=>TECH.some(chOk),w:3},{id:'flaw',gen:genFlaw,ok:()=>FLAW.some(chOk),w:4},
 );
@@ -1374,11 +1441,11 @@ function renderParts(t){const res=[],html=[];
 
 let qcount=0;
 const allowedQ=q=>q.gen?q.ok():okT(q.q+' '+(q.o?q.o.join(' '):'')+' '+(q.ex||q.a||''));
-/* Tehtävätyyppien osuudet vastaavat koetta: luvut ovat tyyppien esiintymiskerrat 300 arvotussa kokeessa (koegeneraattori v5).
+/* Tehtävätyyppien osuudet vastaavat koetta: luvut ovat tyyppien esiintymiskerrat 300 arvotussa kokeessa (koegeneraattori v14; yksikkömuunnokset ovat vain monisteessa, joten niille on pieni oma paino).
    Perustason monivalinnat (mc) ja vaikeat selitä- ja tutkimustehtävät ovat omia ryhmiään, joista kysymykset tulevat pakkana ilman toistoa. */
 const EXAMW={
- easy:{conv:94,diagread:111,pick:115,tf:73,bound:90,order:106,mc:109,units:77,uconv:119,tq:138,data:117,graph:113,pred:85,deb:143,sust:152,tech:163,match:122},
- hard:{eff:23,diaghard:41,rise:35,err:16,pickh:19,tfh:28,orderh:9,tqh:14,datah:42,graphh:42,susth:145,claim:11,techh:24,flaw:23,explain:29,research:33,predh:19,debh:11,boundh:0}};
+ easy:{conv:92,diagread:121,pick:112,tf:93,bound:87,order:110,mc:141,units:83,uconv:40,tq:134,data:123,graph:121,pred:89,deb:152,sust:147,tech:158,match:107},
+ hard:{eff:20,diaghard:46,rise:38,err:19,pickh:17,tfh:24,orderh:10,tqh:8,tqcmp:24,datah:36,graphh:31,susth:153,claim:7,techh:12,flaw:18,explain:27,research:21,predh:20,debh:7,boundh:0}};
 const isRes=q=>/Suunnittele|tutkisit|Miten voisit mitata/.test(q.q);
 const slotOf=(q,level)=>q.id||(level==='easy'?'mc':(q.a&&isRes(q))?'research':'explain');
 const decks={easy:{},hard:{}},lastSlot={easy:null,hard:null};
