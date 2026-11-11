@@ -428,13 +428,14 @@ function rS(F,s,G,h){
   return [E(sub,`: ${d}`),E(`${V(u)} = ${fr(n,d)}`)];
 }
 /* massa painosta */
-const mBlk=(Gt,ask=true)=>blk('G',MG,[GV('G',Gt),...(ask?[Q('m')]:[])],pS(Gt,['m',null],[null,'10 N/kg']));
+/* massa painosta yksinkertaisesti: m = G (ilman yksikköä) / 10 kg */
+const mBlk=Gt=>[E(`${V('m')} = ${fr(Gt.replace(/\s*N$/,''),'10')} kg`)];
 
 /* Jokainen tehtävä palauttaa: text, steps (viimeinen = laskun sijoitus), x (tarkka tulos), unit, ins (lähtöarvot) */
 const EASY=[
  {tags:['G'],f:()=>{const [o,lo,hi]=pick(MASS),m=rnd(lo,hi,'kg');
    return {text:`${o} massa on ${B(m)}. Kuinka suuri on sen paino?`,
-   steps:blk('G',MG,[GV('m',m.t),Q('G')],subD('G',`${num(m)} · 10 N`)),x:m.v*10,unit:'N',ins:[m]}}},
+   steps:[E(`${V('G')} = ${num(m)} · 10 N`)],x:m.v*10,unit:'N',ins:[m]}}},
  {tags:['Fs'],f:()=>{const sc=pick(PUSH),F=R(sc.F,'N'),s=R(sc.s,'m');
    return {text:`${who(sc)} ${sc.verb} voimalla ${B(F)} matkan ${B(s)}. Kuinka paljon työtä tehdään?`,
    steps:blk('W',FS,[GV('F',F.t),GV('s',s.t),Q('W')],subD('W',`${F.t} · ${s.t}`)),x:F.v*s.v,unit:'J',ins:[F,s]}}},
@@ -517,7 +518,7 @@ const GN=(mk,G)=>`${V('G')} = ${raw(mk)} · 10 N = ${val(G,'N')}`;
 const CHAL=[
  {tags:['G'],f:()=>{const [o,lo,hi]=pick([['Kännykän',140,230],['Omenan',100,300],['Jalkapallon',410,450],['Kananmunan',50,70],['Suklaalevyn',100,200],['Kynän',8,20]]),g=rnd(lo,hi,'g'),mk=g.v/1000;
    return {text:`${o} massa on ${B(g)}. Mikä on sen paino?`,
-   steps:blk('G',MG,[GV('m',`${g.t} = ${val(mk,'kg')}`),Q('G')],subD('G',`${raw(mk)} · 10 N`)),x:g.v/100,unit:'N',ins:[g]}}},
+   steps:[`Muunna kilogrammoiksi: ${g.t} = ${val(mk,'kg')}`,E(`${V('G')} = ${raw(mk)} · 10 N`)],x:g.v/100,unit:'N',ins:[g]}}},
  {tags:['Fs'],f:()=>{const s=rnd(0.4,3,'km'),W=inp(s.v*1000*(30+rand()*70)/1000,sfp(),'kJ'),n=name(),Wj=val(W.v*1000,'J'),sm=val(s.v*1000,'m');
    return {text:`${n} vetää pulkkaa hiihtoretkellä ${B(s)} matkan ja tekee ${B(W)} työtä. Kuinka suurella voimalla ${n} vetää pulkkaa?`,
    steps:blk('W',FS,[GV('W',`${W.t} = ${Wj}`),GV('s',`${s.t} = ${sm}`),Q('F')],pS(Wj,['F',null],['s',sm])),x:W.v/s.v,unit:'N',ins:[W,s]}}},
