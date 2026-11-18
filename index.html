@@ -668,7 +668,7 @@ function updCount(){const k=FORMULAS.filter(f=>on[f.id]).length;
 /* Laskutehtävien aihepiirien osuudet vastaavat koetta (300 arvottua koetta, koegeneraattori v5).
    Perustehtävä: kokeen perustason laskut. Vaikea: kokeen vaikeat laskut ja perustason yhtälötehtävät (solve) yhteensä.
    Pelkät massa → paino -laskut eivät ole kokeessa omina tehtävinään; ne tulevat vain, jos muita aiheita ei ole valittu. Haastavat ovat tasan. */
-const CALCW={easy:{fall:100,work:69,lift:71,P:51,ramp:63,lever:36},hard:{fall:100,brake:40,work:119,lift:120,P:64,ramp:84,lever:86}};
+const CALCW={easy:{fall:125,work:77,lift:69,P:41,ramp:63,lever:43},hard:{fall:125,brake:38,work:118,lift:108,P:64,ramp:85,lever:72}};
 const famP=g=>g.fam||(g.tags.includes('ramp')?'ramp':g.tags.includes('lever')?'lever':g.tags.includes('P')?'P':g.tags.includes('Gh')?'lift':g.tags.includes('Fs')?'work':'G');
 function pickCalc(list,level){const W=CALCW[level];if(!W)return pick(list);const fams=[...new Set(list.map(famP))].filter(f=>W[f]);if(!fams.length)return pick(list);
   let r=rand()*fams.reduce((a,f)=>a+W[f],0);for(const f of fams){r-=W[f];if(r<=0)return pick(list.filter(g=>famP(g)===f));}return pick(list.filter(g=>famP(g)===fams[fams.length-1]));}
@@ -998,19 +998,35 @@ const HEATC={'Hehkulamppu':'Hehkulangassa on sähkövastus, joka kuumentaa lanka
  'Vesivoimala':'Turbiinin ja generaattorin liikkuvissa osissa on kitkaa, ja generaattorin ja sähköjohtojen sähkövastus lämmittää niitä. Kitkaa ja sähkövastusta ei voi kokonaan poistaa.',
  'Aurinkopaneeli':'Osa auringonvalosta lämmittää paneelia sen sijaan, että se muuttuisi sähköenergiaksi, ja paneelin sähkövastus lämmittää sitä lisää. Tätä ei voi kokonaan estää.',
  'Hissin moottori':'Moottorin ja vaijerien liikkuvissa osissa on kitkaa, ja moottorin sähkövastus lämmittää sitä. Kitkaa ja sähkövastusta ei voi kokonaan poistaa.'};
-function genDiag(hard){
- const [dev,src,use,[lo,hi],usep]=pick(DEV.filter(d=>okT(d[0]+' '+d[1]+' '+d[2]))),Ein=pick([200,400,500,600,800,1000,1200,1500,2000,2500]);
+/* Mekaaniset energiakaaviot (työ ja nostaminen näkyvät): kuudes kenttä kertoo tilannekohtaiset sanamuodot.
+   Arvonnassa mekaaninen tilanne valitaan noin 2/3 todennäköisyydellä, jos valitut kappaleet sallivat. */
+DEV.push(
+ ['Laatikon vetäminen luiskaa pitkin','Vetämiseen tehty työ','Laatikon potentiaalienergia',[60,85],'potentiaalienergiaa',
+  {gen:'Luiskan',same:'vetämiseen tehdään yhtä paljon työtä',loc:'tässä tilanteessa',ask2:'Kuinka paljon työtä vetämiseen tehdään?',saa:'vetämiseen tehty työ',why:'luiskalla halutaan saada laatikko lavalle eli kasvattaa sen potentiaalienergiaa',task:'laatikon nostamiseen'}],
+ ['Kuorman nostaminen kiinteällä väkipyörällä','Vetämiseen tehty työ','Kuorman potentiaalienergia',[80,92],'potentiaalienergiaa',
+  {gen:'Väkipyörän',same:'köyden vetämiseen tehdään yhtä paljon työtä',loc:'tässä tilanteessa',ask2:'Kuinka paljon työtä köyden vetämiseen tehdään?',saa:'vetämiseen tehty työ',why:'väkipyörällä halutaan nostaa kuorma ylös eli kasvattaa sen potentiaalienergiaa',task:'kuorman nostamiseen'}],
+ ['Kiven nostaminen kangella','Kangen painamiseen tehty työ','Kiven potentiaalienergia',[85,95],'potentiaalienergiaa',
+  {gen:'Kangen',same:'kankea painetaan yhtä paljon työtä tehden',loc:'tässä tilanteessa',ask2:'Kuinka paljon työtä kangen painamiseen tehdään?',saa:'kangen painamiseen tehty työ',why:'kangella halutaan nostaa kivi eli kasvattaa sen potentiaalienergiaa',task:'kiven nostamiseen'}],
+ ['Pyöräilijä nousee mäen','Kemiallinen energia','Potentiaalienergia',[18,24],'potentiaalienergiaa',
+  {gen:'Pyöräilyn',same:'pyöräilijä käyttää yhtä paljon energiaa',loc:'tässä tilanteessa',ask2:'Kuinka paljon energiaa pyöräilijä käyttää?',saa:'pyöräilijän käyttämä energia',why:'pyöräilijä haluaa päästä mäen päälle eli kasvattaa potentiaalienergiaansa',task:'mäen nousemiseen'}]);
+Object.assign(HEATC,{
+ 'Laatikon vetäminen luiskaa pitkin':'Laatikon ja luiskan välinen kitka muuttaa osan työstä lämmöksi, joka lämmittää pintoja. Kitkaa ei voi kokonaan poistaa, mutta liukas pinta tai pyörät pienentävät sitä.',
+ 'Kuorman nostaminen kiinteällä väkipyörällä':'Väkipyörän akselissa on kitkaa, ja köysi hankaa pyörää. Kitka muuttaa osan työstä lämmöksi. Sitä voi pienentää esimerkiksi voitelemalla akselin, mutta ei kokonaan poistaa.',
+ 'Kiven nostaminen kangella':'Kangen ja kiven sekä kangen ja tukipisteen välillä on kitkaa, kun ne liukuvat toisiaan vasten. Kitka muuttaa osan työstä lämmöksi, eikä sitä voi kokonaan poistaa.',
+ 'Pyöräilijä nousee mäen':'Lihakset lämpenevät työtä tehdessään, ja pyörän kitka ja ilmanvastus muuttavat osan energiasta lämmöksi. Niitä ei voi kokonaan poistaa.'});
+function genDiag(hard){const L=DEV.filter(d=>okT(d[0]+' '+d[1]+' '+d[2])),Lm=L.filter(d=>d[5]),Le=L.filter(d=>!d[5]);
+ const [dev,src,use,[lo,hi],usep,M]=pick(Lm.length&&(!Le.length||rand()<2/3)?Lm:Le),Ein=pick([200,400,500,600,800,1000,1200,1500,2000,2500]);
  let eta=lo+Math.floor(rand()*(hi-lo+1));let U=Math.round(Ein*eta/100/10)*10;if(U<=0)U=10;eta=U/Ein*100;const H=Ein-U,sz=x=>Math.max(x,Ein*0.16);
  const k=Math.floor(rand()*3),parts=[[use,k===0?null:U,sz(U),'eu'],['Lämpö',k===1?null:H,sz(H),'eh']];
- const ask=['Kuinka paljon '+usep+' syntyy?','Kuinka paljon lämpöä syntyy?','Kuinka paljon energiaa laite saa?'][k];
+ const ask=['Kuinka paljon '+usep+' syntyy?','Kuinka paljon lämpöä syntyy?',M?M.ask2:'Kuinka paljon energiaa laite saa?'][k];
  const ansV=[U,H,Ein][k],calc=[`${raw(Ein)} J − ${raw(H)} J = ${raw(U)} J`,`${raw(Ein)} J − ${raw(U)} J = ${raw(H)} J`,`${raw(U)} J + ${raw(H)} J = ${raw(Ein)} J`][k];
- const q=[`<p>Energiakaavio kuvaa laitetta: <b>${dev}</b>.</p>`+diag('',src,k===2?null:Ein,parts),P('a',ask+' Perustele.')];
- const a=[P('a',`<b>${raw(ansV)} J</b>. Energia ei häviä eikä synny tyhjästä, joten syntyvää energiaa on yhteensä yhtä paljon kuin laite saa: ${calc}.`)];
- if(hard){q.push(P('b','Mikä kaaviossa on hyötyenergiaa?'),P('c','Laitteen hyötysuhdetta halutaan parantaa. Miten kaavion pitäisi muuttua, kun laite saa saman määrän energiaa? Perustele.'));
-  q.push(P('d','Mistä lämpö tässä laitteessa syntyy? Miksi sitä ei voi kokonaan poistaa?'));
+ const q=[`<p>Energiakaavio kuvaa ${M?'tilannetta':'laitetta'}: <b>${dev}</b>.</p>`+diag('',src,k===2?null:Ein,parts),P('a',ask+' Perustele.')];
+ const a=[P('a',`<b>${raw(ansV)} J</b>. Energia ei häviä eikä synny tyhjästä, joten syntyvää energiaa on yhteensä yhtä paljon kuin ${M?M.saa:'laite saa'}: ${calc}.`)];
+ if(hard){q.push(P('b','Mikä kaaviossa on hyötyenergiaa?'),P('c',`${M?M.gen:'Laitteen'} hyötysuhdetta halutaan parantaa. Miten kaavion pitäisi muuttua, kun ${M?M.same:'laite saa saman määrän energiaa'}? Perustele.`));
+  q.push(P('d',`Mistä lämpö ${M?M.loc:'tässä laitteessa'} syntyy? Miksi sitä ei voi kokonaan poistaa?`));
   a.push(P('b',`${use}. Lämpö ei ole tässä hyödyllistä.`),P('c',`Hyötyenergian osuus kasvaa ja lämmön osuus pienenee: ${usep} olisi enemmän kuin ${raw(U)} J ja lämpöä vähemmän kuin ${raw(H)} J. Yhteismäärä pysyy samana (${raw(Ein)} J), koska energia ei häviä eikä synny tyhjästä. Hyötysuhde kertoo, kuinka suuri osa saadusta energiasta muuttuu hyötyenergiaksi.`),
    P('d',HEATC[dev]||'Osa energiasta muuttuu aina esimerkiksi kitkan tai sähkövastuksen takia lämmöksi, eikä kitkaa tai sähkövastusta voi kokonaan poistaa.'));}
- else{q.push(P('b','Mikä kaaviossa on hyötyenergiaa ja mikä hukkaa? Perustele.'));a.push(P('b',`Hyötyenergiaa on ${use.toLowerCase()}, koska laitteella halutaan tuottaa ${usep}. Hukkaa on lämpö, koska sitä ei tarvita laitteen tehtävään.`));}
+ else{q.push(P('b','Mikä kaaviossa on hyötyenergiaa ja mikä hukkaa? Perustele.'));a.push(P('b',M?`Hyötyenergiaa on ${use.toLowerCase()}, koska ${M.why}. Hukkaa on lämpö, koska sitä ei tarvita ${M.task}.`:`Hyötyenergiaa on ${use.toLowerCase()}, koska laitteella halutaan tuottaa ${usep}. Hukkaa on lämpö, koska sitä ei tarvita laitteen tehtävään.`));}
  return {type:'open',q:q.join(''),a:a.join('')};}
 
 /* Nousutehon mittaaminen */
@@ -1335,7 +1351,19 @@ const SUST=[
  {ch:'19',what:'pölynimurointi',goal:'Molemmilla imuroidaan sama huone yhtä puhtaaksi.',A:['vanha pölynimuri',1600],B:['uusi pölynimuri',800],t:[10,15,20],same:true,
   extra:'Uudempi laite tekee saman työn pienemmällä teholla, joten energiaa kuluu vähemmän.'},
 ];
-function genSust(hard){const t=pick(SUST.filter(chOk).filter(x=>hard||x.same||x.sameP));
+/* Mekaaniset vertailut (nostaminen ja liikkuminen): arvonnassa noin puolet tehtävistä, jos ne sopivat tasolle. */
+SUST.push(
+ {ch:'19',mech:1,what:'rakennustarvikkeiden nostaminen',goal:'Molemmat nosturit nostavat saman kuorman samalle korkeudelle.',A:['vanha nosturi',3000],B:['uusi nosturi',2000],t:[1,2,3],same:true,
+  extra:'Nostotyö on molemmilla sama. Uudessa nosturissa pienempi osa energiasta muuttuu lämmöksi, joten sen hyötysuhde on parempi.'},
+ {ch:'19',mech:1,what:'veden pumppaaminen säiliöön',goal:'Molemmat pumput nostavat saman vesimäärän samaan säiliöön.',A:['vanha pumppu',1500],B:['uusi pumppu',900],t:[5,10,15],same:true,
+  extra:'Veden nostotyö on molemmilla sama. Uusi pumppu tekee sen pienemmällä energiankulutuksella, koska siinä vähemmän energiaa muuttuu lämmöksi.'},
+ {ch:'19',mech:1,what:'tavaroiden vieminen kolmanteen kerrokseen',goal:'Molemmilla tavoilla samat tavarat päätyvät samaan kerrokseen.',A:['hissi',5000],B:['tavaroiden kantaminen portaita',150],tA:[1],tB:[3,4],same:false,
+  extra:'Hissi nostaa tavaroiden lisäksi raskaan hissikorin, ja moottorissa osa energiasta muuttuu lämmöksi. Portaita kantaessa energia tulee ruoasta eikä sähköverkosta.'},
+ {ch:'19',mech:1,what:'koulumatka',goal:'Molemmilla kuljetaan sama matka.',A:['sähköpotkulauta',350],B:['polkupyörä',120],tA:[12,15],tB:[18,20],same:false,
+  extra:'Polkupyörällä energia tulee pyöräilijän ruoasta, eikä sähköä tarvitse tuottaa. Pyöräily vie vähän kauemmin, mutta kuluttaa vähemmän energiaa.'},
+ {ch:'19',mech:1,what:'järven ylittäminen veneellä',goal:'Molemmilla ylitetään sama järvi.',A:['moottorivene',8000],B:['soutuvene',150],tA:[8,10],tB:[30,40],same:false,
+  extra:'Soutaminen kestää kauemmin, mutta soutajan teho on niin pieni, että energiaa kuluu paljon vähemmän. Moottorissa suuri osa polttoaineen energiasta muuttuu lämmöksi.'});
+function genSust(hard){const L=SUST.filter(chOk).filter(x=>hard||x.same||x.sameP),Lm=L.filter(x=>x.mech),Le=L.filter(x=>!x.mech);const t=pick(Lm.length&&(!Le.length||rand()<0.5)?Lm:Le);
  const ta=t.same?pick(t.t):pick(t.tA),tb=t.same?ta:pick(t.tB),WA=t.A[1]*ta*60,WB=t.B[1]*tb*60,best=WA<WB?t.A[0]:t.B[0];
  const desc=`<p><b>${cap(t.A[0])}</b>: teho ${raw(t.A[1])} W, käyttöaika ${ta} min.<br><b>${cap(t.B[0])}</b>: teho ${raw(t.B[1])} W, käyttöaika ${tb} min.</p>`;
  if(!hard){const why=t.same?'Käyttöaika on sama, joten pienempitehoinen kuluttaa vähemmän energiaa.':'Teho on sama, joten lyhyempi käyttöaika kuluttaa vähemmän energiaa.';
@@ -1445,8 +1473,8 @@ const allowedQ=q=>q.gen?q.ok():okT(q.q+' '+(q.o?q.o.join(' '):'')+' '+(q.ex||q.a
 /* Tehtävätyyppien osuudet vastaavat koetta: luvut ovat tyyppien esiintymiskerrat 300 arvotussa kokeessa (koegeneraattori v14; yksikkömuunnokset ovat vain monisteessa, joten niille on pieni oma paino).
    Perustason monivalinnat (mc) ja vaikeat selitä- ja tutkimustehtävät ovat omia ryhmiään, joista kysymykset tulevat pakkana ilman toistoa. */
 const EXAMW={
- easy:{conv:92,diagread:121,pick:112,tf:93,bound:87,order:110,mc:141,units:83,uconv:40,tq:134,data:123,graph:121,pred:89,deb:152,sust:147,tech:158,match:107},
- hard:{eff:20,diaghard:46,rise:38,err:19,pickh:17,tfh:24,orderh:10,tqh:8,tqcmp:24,datah:36,graphh:31,susth:153,claim:7,techh:12,flaw:18,explain:27,research:21,predh:20,debh:7,boundh:0}};
+ easy:{conv:106,diagread:124,pick:112,tf:88,bound:112,order:95,mc:131,units:80,uconv:40,tq:139,data:138,graph:106,pred:89,deb:137,sust:144,tech:154,match:107},
+ hard:{eff:20,diaghard:30,rise:31,err:19,pickh:23,tfh:20,orderh:20,tqh:9,tqcmp:19,datah:33,graphh:23,susth:155,claim:9,techh:22,flaw:23,explain:35,research:24,predh:20,debh:13,boundh:0}};
 const isRes=q=>/Suunnittele|tutkisit|Miten voisit mitata/.test(q.q);
 const slotOf=(q,level)=>q.id||(level==='easy'?'mc':(q.a&&isRes(q))?'research':'explain');
 const decks={easy:{},hard:{}},lastSlot={easy:null,hard:null};
